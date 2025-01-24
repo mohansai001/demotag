@@ -49,6 +49,29 @@ app.get('/api/github-token', (req, res) => {
     const githubToken = process.env.GITHUB_TOKEN; // Access the GitHub token from environment variables
     res.json({ token: githubToken });
 });
+//login
+app.post("/api/check-admin", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT ec_mapping FROM admin_table WHERE email = $1",
+      [email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Email not found in admin_table" });
+    }
+
+    res.json({ ec_mapping: result.rows[0].ec_mapping });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 app.post('/api/invite-candidate', async (req, res) => {
@@ -1490,15 +1513,40 @@ app.put('/api/update-status', async (req, res) => {
     res.status(500).json({ message: 'Failed to create Teams meeting' });
   }
 });
-app.get('/api/candidate-total', async (req, res) => {
+app.get('/api/candidate-total-by-team', async (req, res) => {
   try {
-      const result = await pool.query('SELECT COUNT(*) AS total_count FROM candidate_info');
-      const totalCount = result.rows[0].total_count;
+    // Extract ECs from query parameters
+    const { ecs } = req.query;
 
-      res.json({ totalCount });
+    // Validate input
+    if (!ecs) {
+      return res.status(400).json({ error: 'Please provide ECs as a query parameter.' });
+    }
+
+    // Split the provided ECs into an array
+    const ecList = ecs.split(',').map(ec => ec.trim());
+
+    // Query to fetch the count of candidates for the specified ECs
+    const query = `
+      SELECT eng_center, COUNT(*) AS total_count
+      FROM candidate_info
+      WHERE eng_center = ANY($1)
+      GROUP BY eng_center
+    `;
+
+    // Execute the query with the EC list
+    const result = await pool.query(query, [ecList]);
+
+    // Transform the result into a key-value object
+    const countsByTeam = result.rows.reduce((acc, row) => {
+      acc[row.eng_center] = row.total_count;
+      return acc;
+    }, {});
+
+    res.json(countsByTeam);
   } catch (error) {
-      console.error('Error fetching total count:', error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching total count by team:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
