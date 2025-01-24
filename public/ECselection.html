@@ -1,0 +1,224 @@
+<html>
+  <head> </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@latest/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body,
+      html {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+        color: #333;
+        height: 100%;
+      }
+
+      .sidebar-menu {
+        width: 200px;
+        position: fixed;
+        top: 0px;
+        left: 0;
+        height: 100%;
+        margin-top: 55px;
+        /*     overflow: auto; */
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+        border: 1px solid;
+        background: white;
+        z-index: 1001;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .sidebar-menu.show {
+        transform: translateX(0); /* Show the sidebar */
+      }
+
+      #toggle-sidebar-btn {
+        position: fixed;
+        top: 10px;
+        background-color: white;
+        color: black;
+        border: none;
+        /* padding: 10px 15px; */
+        cursor: pointer;
+        font-size: 18px;
+        width: 200px;
+        border-radius: 4px;
+        height: 41px;
+      }
+
+      .sidebar-option {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease; /* Smooth transitions for all properties */
+        position: relative;
+        width: 80%;
+        color: black;
+        border-radius: 5px; /* Adds rounded corners */
+      }
+
+      .sidebar-option:hover {
+        background-color: #daf7a6; /* Light gray hover background */
+        color: black; /* Text changes to blue */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        transform: translateY(-2px); /* Slight upward movement */
+      }
+
+      .sidebar-option::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 3px;
+        background-color: black; /* Highlight bar color */
+        transition: width 0.3s ease;
+      }
+
+      .sidebar-option:hover::before {
+        width: 100%; /* Expands the highlight bar */
+      }
+
+      .card-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 90%;
+        margin-left: 150px;
+        gap: 20px;
+        flex-wrap: wrap;
+        transform: translateY(50%);
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 200px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-top: 10px;
+      }
+
+      .card-icon {
+        font-size: 40px;
+        color: #6c63ff;
+      }
+      .backbutton {
+        width: 30px;
+        background-color: whitesmoke;
+        height: 30px;
+        border-radius: 50%;
+        margin-left: 215px;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+
+    <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰Menu</button>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar-menu hidden">
+      <div
+        class="sidebar-option active"
+        data-target="dashboard"
+        data-tooltip="Dashboard"
+        onclick="navigateTo('Dashboard.html')"
+      >
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </div>
+      <div
+        class="sidebar-option"
+        data-target="interviews"
+        data-tooltip="Interviews"
+        onclick="navigateTo('ECselection.html')"
+      >
+        <i class="fas fa-users"></i>
+        <span>Recruit</span>
+      </div>
+      <div
+        class="sidebar-option"
+        data-target="candidateInfo"
+        data-tooltip="candidateInfo"
+        onclick="navigateTo('candidatespage.html')"
+      >
+        <i class="fas fa-tasks"></i><span>RRF Tracking</span>
+      </div>
+      <div
+        class="sidebar-option"
+        data-target="candidateInfo"
+        data-tooltip="candidateInfo"
+        onclick="navigateTo('GTPrescreening.html')"
+      >
+        <i class="fas fa-tasks"></i><span>GT's Prescreening</span>
+      </div>
+
+      <div
+        class="sidebar-option logout-option"
+        data-tooltip="Logout"
+        onclick="navigateTo('index.html')"
+        style="bottom: -180px"
+      >
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </div>
+    </div>
+
+    <div class="backbutton" onclick="navigateToPage()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="card-container">
+      <div class="card" onclick="navigateTo('cloudrecruit.html', 'Cloud EC')">
+        <i class="fas fa-cloud card-icon"></i>
+        <div class="card-title">Cloud EC</div>
+      </div>
+      <div class="card" onclick="navigateTo('apprecruit.html', 'App EC')">
+        <i class="fas fa-cogs card-icon"></i>
+        <div class="card-title">App EC</div>
+      </div>
+      <div class="card" onclick="navigateTo('datarecruit.html', 'Data EC')">
+        <i class="fas fa-database card-icon"></i>
+        <div class="card-title">Data EC</div>
+      </div>
+      <div class="card" onclick="navigateTo('corerecruit.html', 'Core EC')">
+        <i class="fas fa-microchip card-icon"></i>
+        <div class="card-title">Core EC</div>
+      </div>
+    </div>
+
+    <script src="./javascript/ECselection.js"></script>
+  </body>
+</html>

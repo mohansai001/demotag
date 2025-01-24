@@ -1,0 +1,293 @@
+<style>
+  .interview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 10px;
+  }
+
+  .filter-select,
+  .time-range {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: 1px solid #bb86fc;
+  }
+
+  .kanban-board {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .kanban-column {
+    flex: 1;
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .kanban-column-header {
+    background-color: #daf7a6; /* Light green */
+    color: #121212; /* Dark text */
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+    display: block;
+  }
+
+  .kanban-card {
+    background-color: #ffffff;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+
+  .kanban-column-content {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .kanban-board {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .candidate-row {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .kanban-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 250px;
+  }
+
+  .kanban-card h4 {
+    margin: 0 0 5px 0;
+    color: black;
+  }
+
+  .kanban-card p {
+    margin: 0;
+    font-size: 14px;
+  }
+</style>
+<div id="interviews">
+  <h2>Interviews</h2>
+  <div class="interview-header">
+    <div class="filters">
+      <select class="filter-select" id="account-filter">
+        <option value="">All Accounts</option>
+        <!-- Add account options here -->
+      </select>
+      <select class="filter-select" id="project-filter">
+        <option value="">All Projects</option>
+        <!-- Add project options here -->
+      </select>
+      <select class="filter-select" id="role-filter">
+        <option value="">All Roles</option>
+        <!-- Add role options here -->
+      </select>
+    </div>
+    <select class="time-range" id="time-range">
+      <option value="week">One Week</option>
+      <option value="month">One Month</option>
+      <option value="90days">90 Days</option>
+    </select>
+  </div>
+  <div class="kanban-board">
+    <!-- Pre-screening Column -->
+    <div class="kanban-column" id="pre-screening">
+      <div class="kanban-column-header">Pre-screening</div>
+      <div class="kanban-column-content">
+        <!-- Pre-screening cards will be added here -->
+      </div>
+    </div>
+
+    <!-- Technical Round Column -->
+    <div class="kanban-column" id="technical-round">
+      <div class="kanban-column-header">Technical Round</div>
+      <div class="kanban-column-content">
+        <!-- Technical round cards will be added here -->
+      </div>
+    </div>
+
+    <!-- Fitment Round Column -->
+    <div class="kanban-column" id="fitment-round">
+      <div class="kanban-column-header">Fitment Round</div>
+      <div class="kanban-column-content">
+        <!-- Fitment round cards will be added here -->
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  async function fetchPrescreeningCandidates() {
+    try {
+      const response = await fetch(
+        "https://tagaiaccelerator.vercel.app/api/candidate-prescreening"
+      );
+      const data = await response.json();
+      console.log("Prescreening data:", data); // Debugging log
+      return data;
+    } catch (error) {
+      console.error("Error fetching prescreening candidates:", error);
+      return [];
+    }
+  }
+
+  async function fetchTechnicalRoundData(email) {
+    try {
+      const response = await fetch(
+        `https://tagaiaccelerator.vercel.app/api/technical-round?email=${email}`
+      );
+      const data = await response.json();
+      console.log("Technical round data for email", email, ":", data); // Debugging log
+      return data;
+    } catch (error) {
+      console.error("Error fetching technical round data:", error);
+      return [];
+    }
+  }
+
+  async function renderKanbanBoard() {
+    const prescreeningCandidates = await fetchPrescreeningCandidates();
+    const kanbanBoard = document.querySelector(".kanban-board");
+
+    kanbanBoard.innerHTML = ""; // Clear existing content
+
+    for (const candidate of prescreeningCandidates) {
+      // Create a row container for this candidate
+      const rowContainer = document.createElement("div");
+      rowContainer.className = "candidate-row";
+
+      // Create the Pre-screening card
+      const preScreeningCard = document.createElement("div");
+      preScreeningCard.className = "kanban-card";
+      preScreeningCard.innerHTML = `
+      <h4>${candidate.candidate_name}</h4>
+      <p>Role: ${candidate.role}</p>
+      <p>Email: ${candidate.candidate_email || "Not provided"}</p>
+      <p>Status: ${candidate.candidate_status}</p>
+    `;
+      rowContainer.appendChild(preScreeningCard);
+
+      // Create the Technical Round card
+      const technicalCard = document.createElement("div");
+      technicalCard.className = "kanban-card";
+
+      if (candidate.candidate_status.toLowerCase() === "rejected") {
+        // If the candidate is rejected
+        technicalCard.innerHTML = `
+        <h4>${candidate.candidate_name}</h4>
+        <p>Rejected in Pre-screening</p>
+      `;
+      } else if (candidate.candidate_email) {
+        // If the candidate is shortlisted and email is provided, fetch technical round data
+        const technicalRoundData = await fetchTechnicalRoundData(
+          candidate.candidate_email
+        );
+
+        if (technicalRoundData.length > 0) {
+          // Populate technical round data
+          technicalCard.innerHTML = `
+          <h4>${candidate.candidate_name}</h4>
+          ${technicalRoundData
+            .map(
+              (result) => `
+            <p>Test Name: ${result.test_name}</p>
+            <p>Score: ${result.score}</p>
+            <p>Performance: ${result.performance_category}</p>
+            <p>Report: <a href="${result.pdf_report_url}" target="_blank" download>Download Report</a></p>
+          `
+            )
+            .join("")}
+        `;
+        } else {
+          technicalCard.innerHTML = `
+          <h4>${candidate.candidate_name}</h4>
+          <p>No technical round data available</p>
+        `;
+        }
+      } else {
+        // If email is not provided
+        technicalCard.innerHTML = `
+        <h4>${candidate.candidate_name}</h4>
+        <p>No email provided for technical round data</p>
+      `;
+      }
+
+      // Append the Technical Round card to the row
+      rowContainer.appendChild(technicalCard);
+
+      // Append the candidate row to the Kanban board
+      kanbanBoard.appendChild(rowContainer);
+    }
+  }
+
+  // Initial render
+  renderKanbanBoard();
+
+  //   function renderInterviewCards() {
+  //     const stages = [
+  //       "pre-screening",
+  //       "technical-round",
+  //       "fitment-round",
+  //       "hr-round",
+  //       "offer-released",
+  //       "on-boarded",
+  //     ];
+
+  //     stages.forEach((stage) => {
+  //       const column = document.getElementById(stage);
+  //       column.innerHTML = ""; // Clear existing cards
+
+  //       const stageData = interviewData.filter(
+  //         (interview) => interview.stage === stage
+  //       );
+  //       stageData.forEach((interview) => {
+  //         const card = document.createElement("div");
+  //         card.className = "kanban-card";
+  //         card.innerHTML = `
+  //                         <h4>${interview.name}</h4>
+  //                         <p>${interview.role}</p>
+  //                         <p>${interview.account} - ${interview.project}</p>
+  //                     `;
+  //         column.appendChild(card);
+  //       });
+  //     });
+  //   }
+
+  // Initial render
+  //   renderInterviewCards();
+
+  //   // Add event listeners for filters and time range
+  //   document
+  //     .getElementById("account-filter")
+  //     .addEventListener("change", renderInterviewCards);
+  //   document
+  //     .getElementById("project-filter")
+  //     .addEventListener("change", renderInterviewCards);
+  //   document
+  //     .getElementById("role-filter")
+  //     .addEventListener("change", renderInterviewCards);
+  //   document
+  //     .getElementById("time-range")
+  //     .addEventListener("change", renderInterviewCards);
+</script>

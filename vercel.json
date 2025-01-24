@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/nodecode.js", "use": "@vercel/node" },
+    { "src": "public/*", "use": "@vercel/static" },
+    { "src": "public/javascript/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/nodecode.js" },
+    {
+      "handle": "filesystem"
+    },
+    { "src": "/(.*)", "dest": "/public/$1" },
+    { "src": "/javascript/(.*)", "dest": "/public/javascript/$1" }
+  ]
+}

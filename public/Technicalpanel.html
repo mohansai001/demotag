@@ -1,0 +1,181 @@
+<html>
+
+<head>
+    <link href="tag.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        #sidebar {
+            width: 225px;
+            height: 84%;
+            margin-top: 52px;
+            /* overflow-y: auto; */
+        }
+
+        .sidebar-menu {
+            width: 200px;
+            position: fixed;
+            top: -20px;
+            left: 0;
+            height: 100%;
+            transition: transform 0.3s ease;
+            transform: translateX(-100%);
+            margin-top: 74px;
+            border: 2px solid;
+            background: white;
+            height: 465px;
+
+        }
+
+        .sidebar-menu.show {
+            transform: translateX(0);
+            /* Show the sidebar */
+        }
+
+
+
+        #toggle-sidebar-btn {
+            position: fixed;
+            top: -8px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            width: 92px;
+            border-radius: 4px;
+            height: 41px;
+            margin-left: 0px;
+            font-weight: normal;
+        }
+
+
+    </style>
+    <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar-menu hidden">
+
+
+        <div class="sidebar-option active" data-target="dashboard" data-tooltip="Dashboard"
+            onclick="navigateTo('Dashboard.html')">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="sidebar-option" data-target="interviews" data-tooltip="Interviews"
+            onclick="navigateTo('Recruitment.html')">
+            <i class="fas fa-users"></i>
+            <span>Recruitment</span>
+        </div>
+        <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo"
+            onclick="navigateTo('GTPrescreening.html')">
+            <i class="fas fa-tasks"></i><span>GT's Prescreening</span>
+        </div>
+        <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo"
+            onclick="navigateTo('L1-ImochaOnline.html')">
+            <i class="fas fa-tasks"></i><span>L1-ImochaOnline</span>
+        </div>
+
+        <!--     <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('L2-Technical.html')">
+        <i class="fas fa-tasks"></i><span>Assessment</span>
+    </div> -->
+
+        <div class="sidebar-option logout-option" data-tooltip="Logout" onclick="navigateTo('index.html')"
+            style="bottom: -180px;">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </div>
+    </div>
+
+    <div id="technical-panel">
+        <h2>Technical Panel</h2>
+        <div class="technical-panel-grid" id="technical-profiles">
+            <!-- Technical profile cards will be added here -->
+        </div>
+    </div>
+    </div>
+    </div>
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        // Sample data for technical profiles
+        // const technicalProfiles = [
+        //     { id:"VAM 6018", name: "Vardhan", l1Technical: "Available", azure: "Expert", aws: "Proficient", account: "Account A", available: true },
+        //     { name: "Prayanka", l1Technical: "Available", azure: "Proficient", aws: "Expert", account: "Account B", available: true },
+        //     { name: "SaiVamsi", l1Technical: "Available", azure: "Beginner", aws: "Proficient", account: "Account C", available: true },
+        //     { name: "Tarun", l1Technical: "Available", azure: "Expert", aws: "Expert", account: "Account A", available: true },
+        //     { name: "Sai Kishore", l1Technical: "Available", azure: "Proficient", aws: "Beginner", account: "Account B", available: true },
+        //     { name: "Anirban", l1Technical: "Available", azure: "Expert", aws: "Proficient", account: "Account C", available: true },
+        //     { name: "Abhijit", l1Technical: "Available", azure: "Proficient", aws: "Proficient", account: "Account A", available: true },
+        //     { name: "Sankara", l1Technical: "Available", azure: "Beginner", aws: "Expert", account: "Account B", available: true },
+        //     { name: "Srinivas", l1Technical: "Available", azure: "Expert", aws: "Expert", account: "Account C", available: true },
+        //     { name: "Mohit", l1Technical: "Available", azure: "Proficient", aws: "Proficient", account: "Account A", available: true },
+        //     { name: "Rajesh", l1Technical: "Available", azure: "Expert", aws: "Beginner", account: "Account B", available: true },
+        //     { name: "Priya", l1Technical: "Out of office", azure: "Proficient", aws: "Expert", account: "Account C", available: false },
+        //     { name: "Vikram", l1Technical: "Available", azure: "Beginner", aws: "Proficient", account: "Account A", available: true },
+        //     { name: "Neha", l1Technical: "Available", azure: "Expert", aws: "Expert", account: "Account B", available: true },
+        //     { name: "Arun", l1Technical: "Out of office", azure: "Proficient", aws: "Beginner", account: "Account C", available: false },
+        //     { name: "Kavita", l1Technical: "Available", azure: "Expert", aws: "Proficient", account: "Account A", available: true },
+        // ];
+
+
+        async function fetchTechnicalProfiles() {
+            try {
+                const response = await fetch('https://tagaiaccelerator.vercel.app/api/technical-profiles');
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profiles');
+                }
+                const profiles = await response.json();
+                renderTechnicalProfiles(profiles);
+            } catch (error) {
+                console.error('Error fetching technical profiles:', error);
+            }
+        }
+
+        function renderTechnicalProfiles(technicalProfiles) {
+            const profilesContainer = document.getElementById('technical-profiles');
+            profilesContainer.innerHTML = ''; // Clear existing cards
+
+            // Iterate over each profile and create a profile card
+            technicalProfiles.forEach(profile => {
+                const card = document.createElement('div');
+                card.className = 'technical-profile-card';
+                card.innerHTML = `
+                    <h3>${profile.name}</h3>
+                    <div class="profile-info">
+                        <span>VAM ID:</span><span>${profile.id}</span>
+                        <span>Mail ID:</span><span>${profile.email}</span>
+                        <span>L1 Technical:</span><span>${profile.status}</span>
+                        <span>Azure:</span><span>${profile.azure}</span>
+                        <span>AWS:</span><span>${profile.aws}</span>
+                        <span>Account:</span><span>${profile.account}</span>
+                    </div>
+                    <div class="availability ${profile.status === 'Available' ? 'available' : 'unavailable'}">
+                        ${profile.status === 'Available' ? 'Available' : 'Unavailable'}
+                    </div>
+                `;
+                profilesContainer.appendChild(card);
+            });
+        }
+
+        // Call fetchTechnicalProfiles() to load and display profiles when the page is ready
+        fetchTechnicalProfiles();
+
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Initial render
+        renderTechnicalProfiles();
+
+    </script>
+</body>
+
+</html>

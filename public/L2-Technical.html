@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment & Feedback Form</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body,
+        html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+            color: #e0e0e0;
+            height: 100%;
+
+        }
+
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: black;
+            --text-color: #333;
+            --border-color: #d1d5db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 325px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: black;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+
+        body,
+        html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #E5E4E2;
+            color: #e0e0e0;
+            height: 100%;
+
+        }
+        .chip {
+            display: inline-block;
+            margin-left: 10px;
+            /* Adjust spacing from the Dashboard */
+            padding: 5px 10px;
+            font-size: 8px;
+            font-weight: bold;
+            color: white;
+            background-color: grey;
+            /* Orange color for 'Coming Soon' */
+            border-radius: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .chip.primary {
+            background-color: grey;
+            /* Define your primary color */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 1px solid #333;
+            padding: 20px;
+            box-sizing: border-box;
+            /* margin-left: 174px; */
+
+            background-color: white;
+        }
+
+        .form-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .form-header .form-group {
+            width: 48%;
+            margin-bottom: 10px;
+        }
+
+        .form-header .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-header .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .rating-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            background-color: #1f4e79;
+            padding: 10px;
+            border: 1px solid #333;
+
+        }
+
+        .skills-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .skills-table th,
+        .skills-table td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .skills-table th {
+            background-color: #1f4e79;
+            color: white;
+        }
+
+        .skills-title {
+            text-align: left;
+            background-color: white;
+            font-weight: bold;
+            color: black;
+        }
+
+        .form-input,
+        .comment-input {
+            width: 100%;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+
+        .feedback-section {
+            margin-top: 25px;
+        }
+
+        .feedback-section-text {
+            margin-top: 5px;
+        }
+
+        .feedback-section label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .feedback-section textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .result-section label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-select {
+            padding: 8px;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <div id="toast" class="toast"></div>
+
+    <div class="form-container" id="form-container">
+        <div style="color: #000000">
+            <p>Email: <span id="candidate-email"></span></p>
+            <p>iMocha Score: <span id="imocha-score"></span></p>
+        </div>
+        <br>
+        <!-- Header Section -->
+        <div class="form-header">
+            <div class="form-group">
+                <label for="candidate-name">Name of the Candidate</label>
+                <input type="text" id="candidate-name" class="form-input" placeholder="" readonly>
+            </div>
+            <div class="form-group">
+                <label for="position">Position Interviewed For</label>
+                <input type="text" id="position" class="form-input" placeholder="" readonly>
+            </div>
+            <div class="form-group">
+                <label for="business-unit">Business Unit/Dept *</label>
+                <input type="text" id="business-unit" class="form-input" placeholder="Enter business unit" required>
+            </div>
+            <div class="form-group">
+                <label for="interview-mode">Mode of Interview *</label>
+                <input type="text" id="interview-mode" class="form-input" placeholder="Enter interview mode" required>
+            </div>
+            <div class="form-group">
+                <label for="interviewer-name">Interviewer Mail</label>
+                <input type="text" id="interviewer-name" class="form-input" placeholder=" " readonly>
+            </div>
+            <div class="form-group">
+                <label for="interview-date">Date of Interview</label>
+                <input type="text" id="interview-date" class="form-input" readonly>
+            </div>
+        </div>
+
+        <!-- Rating Section -->
+        <div class="rating-section">
+            Rating: 1 (Poor) | 2 (Needs Improvement) | 3 (Good) | 4 (Very Good) | 5 (Outstanding)
+        </div>
+
+        <!-- Skills Assessment Section -->
+        <table class="skills-table">
+            <tr>
+                <th>Skills To Be Assessed</th>
+                <th>Rating</th>
+                <th>Comments</th>
+            </tr>
+            <tr>
+                <td class="skills-title">Overall System Understanding *</td>
+                <td><input type="number" class="form-input" min="1" max="5" required></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Primary Skill *</td>
+                <td><input type="number" class="form-input" min="1" max="5" required></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Secondary Skill</td>
+                <td><input type="number" class="form-input" min="1" max="5"></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments"></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Additional Skill</td>
+                <td><input type="number" class="form-input" min="1" max="5"></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments"></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Customer Communication *</td>
+                <td><input type="number" class="form-input" min="1" max="5" required></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Approach/Attitude *</td>
+                <td><input type="number" class="form-input" min="1" max="5" required></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Communication Skills *</td>
+                <td><input type="number" class="form-input" min="1" max="5" required></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+            </tr>
+            <tr>
+                <td class="skills-title">Continuous Learning *</td>
+                <td><input type="number" class="form-input" min="1" max="5" required></td>
+                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+            </tr>
+        </table>
+
+        <!-- Feedback Section -->
+        <div class="feedback-section">
+            <label for="detailed-feedback">Detailed Feedback: *</label>
+            <textarea id="detailed-feedback" class="feedback-section-text"
+                placeholder="Enter your detailed feedback here..." required></textarea>
+        </div>
+
+        <!-- Result Section -->
+        <div class="result-section">
+            <label for="result">Result:</label>
+            <select id="result" class="result-select">
+                <option value="">Select Result</option>
+                <option value="Recommended">Selected</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button id="submit-button" style="background-color: #1f4e79; color: #ffffff; height: 25px; width: 200px; border-radius: 5px">Submit</button>
+        </div>
+
+
+    </div>
+</div>
+
+    <!-- Include html2pdf.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', type);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function downloadPDF() {
+            const formContainer = document.querySelector('.form-container');
+
+            // Temporarily remove positioning styles
+            formContainer.style.marginLeft = '0';
+            formContainer.style.marginTop = '0';
+
+            const options = {
+                margin: 1,
+                filename: 'Interview_Feedback_Form.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(options).from(formContainer).save().then(() => {
+                // Restore the original styles after generating the PDF
+                formContainer.style.marginLeft = '22%';
+                formContainer.style.marginTop = '-41%';
+            });
+        }
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+        // Get the candidate email from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const candidateEmail = urlParams.get('candidateEmail');
+
+        if (candidateEmail) {
+            // Fetch candidate data from the server based on the email
+            fetch(`https://tagaiaccelerator.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Check if the data is returned successfully
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        // Populate the form fields with the returned data
+                        document.getElementById('candidate-name').value = data.candidate_name;
+                        document.getElementById('position').value = data.role;
+                        document.getElementById('interviewer-name').value = data.panel_name;
+                        document.getElementById('interview-date').value = data.l_2_interviewdate;
+                        document.getElementById('imocha-score').textContent = data.l_1_score;
+                        document.getElementById('candidate-email').textContent = candidateEmail;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching candidate data:', error);
+                    showToast("Failed to load candidate data.", "error");
+                });
+        }
+    });
+
+
+    document.getElementById('submit-button').addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Collect the form data
+        const feedback = document.getElementById('detailed-feedback').value;
+        const result = document.getElementById('result').value;
+        const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
+
+        // Check if the feedback and result are provided
+        if (!feedback || !result) {
+            showToast("Please fill in all required fields.", "error");
+            return;
+        }
+
+        // Send the data to the backend for updating the database
+        fetch('https://tagaiaccelerator.vercel.app/api/updateCandidateFeedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                candidateEmail: candidateEmail,
+                feedback: feedback,
+                result: result,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Feedback and result updated successfully.');
+                window.close();
+            } else {
+                showToast('Error updating the feedback and result.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred while submitting the feedback.', 'error');
+        });
+    });
+    
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .calendar-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .day-header {
+            color: #999;
+            font-size: 12px;
+            padding: 5px;
+        }
+
+        .day {
+            padding: 10px;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .day.active {
+            background-color: #e8f4ff;
+            color: #0099ff;
+        }
+
+        .day.other-month {
+            color: #ccc;
+        }
+
+        .meetings-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 450px;
+        }
+
+        .meeting-date {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .meeting-card {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .meeting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .meeting-title {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .meeting-company {
+            color: #0099ff;
+            text-decoration: none;
+        }
+
+        .meeting-location {
+            color: #666;
+            font-size: 14px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meeting-time {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .attendees {
+            display: flex;
+            gap: 5px;
+            margin: 15px 0;
+        }
+
+        .attendee {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-resume {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-mocha {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-feedback {
+            background: #FF9800;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <h2>October 2014</h2>
+        </div>
+        <div class="calendar-grid">
+            <div class="day-header">MON</div>
+            <div class="day-header">TUE</div>
+            <div class="day-header">WED</div>
+            <div class="day-header">THU</div>
+            <div class="day-header">FRI</div>
+            <div class="day-header">SAT</div>
+            <div class="day-header">SUN</div>
+            
+            <div class="day other-month">30</div>
+            <div class="day other-month">31</div>
+            <div class="day">1</div>
+            <div class="day">2</div>
+            <div class="day">3</div>
+            <div class="day">4</div>
+            <div class="day">5</div>
+            
+            <div class="day">6</div>
+            <div class="day">7</div>
+            <div class="day active">8</div>
+            <div class="day">9</div>
+            <div class="day">10</div>
+            <div class="day">11</div>
+            <div class="day">12</div>
+            
+            <div class="day">13</div>
+            <div class="day">14</div>
+            <div class="day">15</div>
+            <div class="day">16</div>
+            <div class="day">17</div>
+            <div class="day">18</div>
+            <div class="day">19</div>
+            
+            <div class="day">20</div>
+            <div class="day">21</div>
+            <div class="day">22</div>
+            <div class="day active">23</div>
+            <div class="day">24</div>
+            <div class="day">25</div>
+            <div class="day">26</div>
+            
+            <div class="day">27</div>
+            <div class="day">28</div>
+            <div class="day">29</div>
+            <div class="day">30</div>
+            <div class="day other-month">1</div>
+            <div class="day other-month">2</div>
+            <div class="day other-month">3</div>
+        </div>
+    </div>
+
+    <div class="meetings-container">
+        <h3 class="meeting-date">Thursday October 23rd</h3>
+        
+        <div class="meeting-card">
+            <div class="meeting-header">
+                <div>
+                    <h4 class="meeting-title">Meeting with <a href="#" class="meeting-company">Creativedash</a> for Fulltime - Web Designer</h4>
+                </div>
+                <img src="/api/placeholder/40/40" alt="Company logo" class="company-logo">
+            </div>
+            
+            <div class="meeting-location">
+                <span>📍</span> Chennai, India
+            </div>
+            
+            <div class="meeting-time">
+                <span>🕐</span> Thursday October 23rd, 2014 10am - 11am
+            </div>
+            
+            <div>with...</div>
+            <div class="attendees">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-resume">Candidate Resume</button>
+                <button class="btn btn-mocha">I Mocha Result</button>
+                <button class="btn btn-feedback">Feedback Form</button>
+            </div>
+        </div>
+
+        <div class="meeting-card">
+            <div class="meeting-header">
+                <div>
+                    <h4 class="meeting-title">Meeting with <a href="#" class="meeting-company">Dribbble</a> for Contract - iOS Designer</h4>
+                </div>
+                <img src="/api/placeholder/40/40" alt="Company logo" class="company-logo">
+            </div>
+            
+            <div class="meeting-location">
+                <span>📍</span> Mumbai, India
+            </div>
+            
+            <div class="meeting-time">
+                <span>🕐</span> Thursday October 23rd, 2014 1pm - 2pm
+            </div>
+            
+            <div>with...</div>
+            <div class="attendees">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+                <img src="/api/placeholder/32/32" alt="Attendee" class="attendee">
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-resume">Candidate Resume</button>
+                <button class="btn btn-mocha">I Mocha Result</button>
+                <button class="btn btn-feedback">Feedback Form</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
