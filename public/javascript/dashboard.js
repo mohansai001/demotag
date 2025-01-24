@@ -1,7 +1,7 @@
 
     // Navigate to index.html on clicking the button
     
-
+   
     function navigateTo(page) {
         window.location.href = page;
     }
@@ -65,7 +65,7 @@ const roleChart = new Chart(roleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0],  // Initial placeholder data
-            backgroundColor: ['#E6E6FA', '#DAF7A6', '#d9ead3', '#bb86fc']
+            backgroundColor: '#DAF7A6'
         }]
     },
     options: {
@@ -115,7 +115,7 @@ const newStatusChart = new Chart(newStatusCtx, {
         labels: ['React JS', 'Snowflake', 'Hadoop Engineer', 'Java FullStack' ,'.Net Fullstack'],
         datasets: [{
             data: [0, 0, 0, 0,0], // Replace with actual data
-            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#d9ead3']
+            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#98FB98']
         }]
     },
     options: {
@@ -152,7 +152,7 @@ const newRoleChart = new Chart(newRoleCtx, {
         datasets: [{
             label: 'Applicants',
             data: [0, 0, 0, 0,0], // Initial placeholder data
-            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#d9ead3']
+            backgroundColor: '#FFD700'
         }]
     },
     options: {
@@ -265,7 +265,7 @@ const secondRoleChart = new Chart(secondRoleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0,0,0,0], // Placeholder data
-            backgroundColor: ['#FFB6C1', '#FFD700', '#90EE90', '#D3D3D3','#C0C0C0','#DCDCDC','#B0C4DE']
+            backgroundColor: '#FFB6C1'
         }]
     },
     options: {
@@ -411,86 +411,128 @@ async function fetchAndUpdateSecondCharts() {
 // Initialize on Page Load for Second Set of Charts
 fetchAndUpdateSecondCharts();
 
-// Doughnut Chart for Department Overview
-async function fetchTotalCountAndUpdateCharts() {
-    try {
-        // Fetch total count from API
-        const response = await fetch('https://demotag.vercel.app/api/candidate-total'); // Replace with your API endpoint
-        const data = await response.json();
-        const totalCount = data.totalCount; // Extract total count
 
-        // Doughnut Chart (Department Chart)
-        const departmentCtx = document.getElementById('departmentChart').getContext('2d');
-        const departmentChart = new Chart(departmentCtx, {
-            type: 'doughnut',
+
+
+
+// Doughnut Chart for Department Overview
+async function fetchTotalCountAndUpdateCharts(ecMapping) {
+    try {
+        // Convert the EC mapping array to a comma-separated string
+        const ecs = ecMapping.join(",");
+        console.log("EC Mapping:", ecs); // Debugging line
+
+        // Fetch total counts by team from the API, passing the ECs as a query parameter
+        const response = await fetch(`https://demotag.vercel.app/api/candidate-total-by-team?ecs=${encodeURIComponent(ecs)}`);
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch data");
+        }
+
+        const data = await response.json();
+        console.log("Fetched Data:", data); // Debugging line
+
+        // Extract counts for each department (EC)
+        const cloudCount = data["Cloud EC"] || 0;
+        const appCount = data["App EC"] || 0;
+        const dataCount = data["Data EC"] || 0;
+
+        // Render Doughnut Chart (Department Chart)
+        const departmentCtx = document.getElementById("departmentChart").getContext("2d");
+        new Chart(departmentCtx, {
+            type: "doughnut",
             data: {
-                labels: ['Cloud', 'App', 'Data'], // Replace "Cloud" with totalCount dynamically
+                labels: ["Cloud", "App", "Data"],
                 datasets: [{
-                    data: [totalCount, 0, 0], // Match the data values
-                    backgroundColor: ['#FFB6C1', '#87CEEB', '#FFD700']
-                }]
+                    data: [cloudCount, appCount, dataCount],
+                    backgroundColor: ["#FFB6C1", "#87CEEB", "#FFD700"],
+                }],
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: { color: 'black' }
-                    },
-                    datalabels: {
-                        color: 'black',
-                        formatter: (value) => (value > 0 ? value : null),
-                        anchor: 'center',
-                        align: 'center',
-                        font: { size: 14 }
-                    }
-                }
-            },
-            plugins: [ChartDataLabels]
+            plugins: [ChartDataLabels],
         });
 
-        // Bar Chart (Applications per Department)
-        const departmentRoleCtx = document.getElementById('departmentRoleChart').getContext('2d');
-        const departmentRoleChart = new Chart(departmentRoleCtx, {
-            type: 'bar',
+        // Render Bar Chart (Applications per Department)
+        const departmentRoleCtx = document.getElementById("departmentRoleChart").getContext("2d");
+        new Chart(departmentRoleCtx, {
+            type: "bar",
             data: {
-                labels: ['cloud', 'App', 'Data'], // Replace "Cloud" dynamically
+                labels: ["Cloud", "App", "Data"],
                 datasets: [{
-                    label: 'Applications',
-                    data: [totalCount, 0, 0], // Update the data array
-                    backgroundColor: ['#FFB6C1', '#87CEEB', '#FFD700']
-                }]
+                    label: "Applications",
+                    data: [cloudCount, appCount, dataCount],
+                    backgroundColor: ["#ADD8E6", "#FFA07A", "#90EE90"],
+                }],
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: 'black' }
-                    },
-                    x: {
-                        ticks: { color: 'black' }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    datalabels: {
-                        anchor: 'center',
-                        align: 'center',
-                        color: 'black',
-                        formatter: (value) => value,
-                        font: { size: 12 }
-                    }
-                }
-            },
-            plugins: [ChartDataLabels]
+            plugins: [ChartDataLabels],
         });
     } catch (error) {
-        console.error('Error fetching total count:', error);
+        console.error("Error fetching total count by team:", error);
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Extract the 'ec_mapping' parameter from the URL query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const ecMappingParam = urlParams.get("ec_mapping");
+
+    // Log the EC Mapping parameter to debug
+    console.log("EC Mapping parameter from URL:", ecMappingParam);
+
+    // If the 'ec_mapping' parameter exists, split it into an array
+    const ecMapping = ecMappingParam ? ecMappingParam.split(",") : [];
+    console.log("EC Mapping array:", ecMapping); // Debugging line
+
+    // Call the function to fetch data and update charts
+    fetchTotalCountAndUpdateCharts(ecMapping);
+});
+document.addEventListener("DOMContentLoaded", () => {
+    // Get the EC mapping from the URL query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const ecMappingParam = urlParams.get("ec_mapping");
+
+    if (ecMappingParam) {
+        // Split the EC mapping into an array
+        const ecMapping = ecMappingParam.split(",").map(ec => ec.trim());
+
+        // Unhide the corresponding elements based on the EC mapping
+        ecMapping.forEach(ec => {
+            switch (ec) {
+                case "Cloud EC":
+                    document.querySelectorAll('.dashboard-chart h3').forEach(h3 => {
+                        if (h3.textContent.includes("Cloud EC")) {
+                            h3.closest(".dashboard-chart").hidden = false;
+                        }
+                    });
+                    break;
+
+                case "App EC":
+                    document.querySelectorAll('.dashboard-chart h3').forEach(h3 => {
+                        if (h3.textContent.includes("App EC")) {
+                            h3.closest(".dashboard-chart").hidden = false;
+                        }
+                    });
+                    break;
+
+                case "Data EC":
+                    document.querySelectorAll('.dashboard-chart h3').forEach(h3 => {
+                        if (h3.textContent.includes("Data EC")) {
+                            h3.closest(".dashboard-chart").hidden = false;
+                        }
+                    });
+                    break;
+
+                default:
+                    console.warn("Unknown EC:", ec);
+            }
+        });
+    }
+});
+
+
+
+
+
+
 
 
 
@@ -545,173 +587,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 document.addEventListener('DOMContentLoaded', fetchTotalCountAndUpdateCharts);
 
 
-    // Create the line chart
-    // Get the context of the horizontal bar chart
-
-
-// Create the horizontal bar chart
-// async function fetchCounts() {
-//     try {
-//         // Fetch counts for rejected candidates in the prescreening phase
-//         const rejectedResponse = await fetch('https://demotag.vercel.appapi/rejected-prescreening-count');
-//         const rejectedData = await rejectedResponse.json();
-//         const rejectedCount = rejectedData.count;
-
-//         // Fetch counts for shortlisted candidates in the Move to L1 phase
-//         const shortlistedResponse = await fetch('https://demotag.vercel.appapi/shortlisted-prescreening-count');
-//         const shortlistedData = await shortlistedResponse.json();
-//         const shortlistedCount = shortlistedData.count;
-
-//         // Create the chart with the fetched data
-// new Chart(experienceCtx, {
-//     type: 'bar',
-//     data: {
-//         labels: ['Rejected', 'Shortlisted'],
-//         datasets: [{
-//             label: 'Number of Applications',
-//             data: [rejectedCount, shortlistedCount],
-//             backgroundColor: ['#DAF7A6', '#E6E6FA']
-//         }]
-//     },
-//     options: {
-//         responsive: true,
-//         maintainAspectRatio: false,
-//         scales: {
-//             x: {
-//                 beginAtZero: true,
-//                 ticks: {
-//                     color: 'black'
-//                 }
-//             },
-//             y: {
-//                 ticks: {
-//                     color: 'black'
-//                 }
-//             }
-//         },
-//         plugins: {
-//             legend: {
-//                 display: false // Hide the legend
-//             },
-//             datalabels: {
-//                 anchor: 'center', // Aligns the labels at the center of the bars
-//                 align: 'center',  // Positions the labels inside the bars
-//                 color: '#000', // Label text color (change to a suitable color)
-//                 formatter: function(value, context) {
-//                     return value; // Displays the count directly inside the bar
-//                 },
-//                 font: {
-//                     size: 12 // Adjust the font size as needed
-//                 }
-//             }
-//         }
-//     },
-//     plugins: [ChartDataLabels] // Include the plugin in the chart
-// });
-
-//     } catch (error) {
-//         console.error('Error fetching data:', error);
-//     }
-// }
-// async function fetchCounts1() {
-//     try {
-//         // Fetch counts for rejected candidates in the prescreening phase
-//         const rejectedResponse = await fetch('https://demotag.vercel.appapi/rejected-l1-count');
-//         const rejectedData = await rejectedResponse.json();
-//         const rejectedCount = rejectedData.count;
-
-//         // Fetch counts for shortlisted candidates in the Move to L1 phase
-//         const shortlistedResponse = await fetch('https://demotag.vercel.app/api/shortlisted-l1-count');
-//         const shortlistedData = await shortlistedResponse.json();
-//         const shortlistedCount = shortlistedData.count;
-
-//         // Create the chart with the fetched data
-//       new Chart(experienceCtxCopy, {
-//     type: 'bar',
-//     data: {
-//         labels: ['Rejected', 'Shortlisted'],
-//         datasets: [{
-//             label: 'Number of Applications',
-//             data: [rejectedCount, shortlistedCount],
-//             backgroundColor: ['#DAF7A6', '#E6E6FA']
-//         }]
-//     },
-//     options: {
-//         responsive: true,
-//         maintainAspectRatio: false,
-//         scales: {
-//             x: {
-//                 beginAtZero: true,
-//                 ticks: {
-//                     color: 'black'
-//                 }
-//             },
-//             y: {
-//                 ticks: {
-//                     color: 'black'
-//                 }
-//             }
-//         },
-//         plugins: {
-//             legend: {
-//                 display: false // Hide the legend
-//             },
-//             datalabels: {
-//                 anchor: 'center', // Aligns the labels at the center of the bars
-//                 align: 'center',  // Positions the labels inside the bars
-//                 color: '#000', // Label text color (change to a suitable color)
-//                 formatter: function(value, context) {
-//                     return value; // Displays the count directly inside the bar
-//                 },
-//                 font: {
-//                     size: 12 // Adjust the font size as needed
-//                 }
-//             }
-//         }
-//     },
-//     plugins: [ChartDataLabels] // Include the plugin in the chart
-// });
-
-//     } catch (error) {
-//         console.error('Error fetching data:', error);
-//     }
-// }
-
-
-// new Chart(experienceCtxCopy2, {
-//     type: 'bar',
-//     data: {
-//         labels: ['Rejected', 'shortlisted ' ],
-//         datasets: [{
-//             label: 'Number of Applications',
-//             data: [25, 40,],
-//              backgroundColor: ['#DAF7A6', '#E6E6FA']
-//         }]
-//     },
-//     options: {
-//         // indexAxis: 'y',
-//         responsive: true,
-//         maintainAspectRatio: false,
-//         scales: {
-//             x: {
-//                 beginAtZero: true,
-//                 ticks: {
-//                     color: 'black'
-//                 }
-//             },
-//             y: {
-//                 ticks: {
-//                     color: 'black'
-//                 }
-//             }
-//         },
-//         plugins: {
-//             legend: {
-//                 display: false
-//             }
-//         }
-//     }
-// });
+   
 
 async function fetchDevOpsCount() {
     try {
@@ -869,12 +745,9 @@ async function fetchgetCandidates() {
     // Show the loading overlay
     const loadingOverlay = document.getElementById('loading-overlay');
     loadingOverlay.style.display = 'flex';
-	  
-
 
     try {
         // Fetch all necessary data
-	
         await loadCandidateCounts();
         await fetchDevOpsCount();
         await fetchplatformCount();
@@ -885,7 +758,6 @@ async function fetchgetCandidates() {
      await fetchPrescreeningCount();
      await fetchL1Count();
      await fetchL2Count();
-	// await initializeMSAL();
         // await fetchCounts();
         // await fetchCounts1();
     } catch (error) {
@@ -1581,6 +1453,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Call the function to populate the date
   populateTaskDate();
 
+
+
+
+
+
+
+
+
+
   // Initialize the chart with empty data (no static data)
  document.addEventListener('DOMContentLoaded', () => {
     const ctx = document.getElementById('hrChart').getContext('2d');
@@ -1692,53 +1573,73 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('#popup span').addEventListener('click', closePopup);
 });
 
-// Global MSAL instance
-// Declare msalInstance globally
-let msalInstance;
-
-// Initialize MSAL in a function
-function initializeMSAL() {
-    const msalConfig = {
-        auth: {
-            clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with Azure AD app client ID
-            authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Tenant ID
-            redirectUri: "https://demotag.vercel.app", // Redirect URI
-        },
-    };
-
-    msalInstance = new msal.PublicClientApplication(msalConfig);
-    console.log("MSAL instance initialized");
-}
-
-// Ensure this is called when the page loads
 
 
 
+  // Fetch HR names and populate the dropdown
+//   async function fetchHRNames() {
+//     try {
+//       const response = await fetch('https://demotag.vercel.app/api/hr-names');
+//       const result = await response.json();
 
-// Logout Function
-// Logout Function
-function logout() {
-  if (!msalInstance) {
-    console.error("MSAL instance is not initialized.");
-    return;
-  }
+//       if (result.success) {
+//         const hrDropdown = document.getElementById('hrnames');
+//         hrDropdown.innerHTML = '<option value="default" disabled selected>Select HR</option>'; // Reset dropdown
 
-  msalInstance.logoutPopup({
-    postLogoutRedirectUri: "https://demotag.vercel.app", // Redirect URI after logout
-  }).then(() => {
-    // After successful logout, log the event
-    manageLog('User logged out');
-    // Redirect to index.html after logout
-    window.location.href = "index.html";
-  }).catch((error) => {
-    console.error("Logout failed:", error);
-    alert("Logout failed. Please try again.");
-  });
-}
+//         result.hrNames.forEach((name) => {
+//           const option = document.createElement('option');
+//           option.value = name;
+//           option.textContent = name;
+//           hrDropdown.appendChild(option);
+//         });
+//       } else {
+//         console.error('Failed to fetch HR names:', result.error);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching HR names:', error);
+//     }
+//   }
 
-// Logging function to track events (you can extend or modify as needed)
-function manageLog(message) {
-  console.log(message); // Logs to the console
-  // Optionally send logs to a remote server
-}
+  // Fetch recruitment phase data for the selected HR
+//   async function fetchHRPhaseData(hrName) {
+//     try {
+//       const response = await fetch(`https://demotag.vercel.app/api/hr-phases?hrName=${encodeURIComponent(hrName)}`);
+//       const result = await response.json();
+
+//       if (result.success) {
+//         // Update the chart with dynamic data for selected HR
+//         hrChart.data.labels = ['Recruitment Phases']; // Single bar
+//         hrChart.data.datasets[0].data = [result.data.PreScreening || 0];
+//         hrChart.data.datasets[1].data = [result.data['L1 iMocha'] || 0];
+//         hrChart.data.datasets[2].data = [result.data['L2 Interview'] || 0];
+//         hrChart.data.datasets[3].data = [result.data['Fitment Round'] || 0];
+//         hrChart.update();
+//       } else {
+//         console.error('Failed to fetch HR phase data:', result.error);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching HR phase data:', error);
+//     }
+//   }
+
+  // Update chart data based on "Last Week/Last Month" dropdown
+//   document.getElementById('filter').addEventListener('change', (event) => {
+//     const selected = event.target.value;
+//     // Fetch the HR phase data for the selected HR and time period
+//     const selectedHR = document.getElementById('hrnames').value;
+//     if (selectedHR !== 'default') {
+//       fetchHRPhaseData(selectedHR, selected); // Fetch dynamic HR data for the selected time period
+//     }
+//   });
+
+  // Handle HR name change to fetch dynamic HR data
+//   document.getElementById('hrnames').addEventListener('change', (event) => {
+//     const hrName = event.target.value;
+//     if (hrName !== 'default') {
+//       fetchHRPhaseData(hrName); // Fetch dynamic HR data
+//     }
+//   });
+
+  // Initialize by fetching HR names when the page loads
+//   document.addEventListener('DOMContentLoaded', fetchHRNames);
 
