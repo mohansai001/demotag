@@ -1,63 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Recruitment Portal</title>
     <link href="./tag.css" rel="stylesheet" type="text/css" />
     <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
-    <style>
-      /* Success Modal styles */
-      #success-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-      }
-      .modal-content {
-        background-color: white;
-        padding: 20px;
-        text-align: center;
-        border-radius: 8px;
-        width: 300px;
-      }
-      .close-modal {
-        background-color: #daf7a6;
-        color: black;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 5px;
-        display: block;
-        margin: 0px auto;
-        width: 40%;
-      }
-
-      /* Toast Notification styles */
-      .toast {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #f44336;
-        color: white;
-        padding: 16px;
-        border-radius: 8px;
-        font-size: 16px;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-        z-index: 1000;
-      }
-
-      .toast.show {
-        opacity: 1;
-      }
-    </style>
   </head>
   <body>
     <div
@@ -69,7 +15,7 @@
 
     <div id="login-container">
       <h1 style="text-align: center">
-        Welcome To ValueMomentum Hire Assist Portal
+        Welcome To Engineering Center's Recruitment Portal
       </h1>
 
       <form id="login-form">
@@ -82,28 +28,12 @@
           <option value="">Select Your Team</option>
           <option value="tag">TAG Team</option>
           <option value="panel">Panel Login</option>
-
-          <option value="App EC">App EC</option>
-          <option value="Cloud EC">Cloud EC</option>
-          <option value="Data EC">Data EC</option>
-          <option value="Core EC">Core EC</option>
         </select>
         <button type="button" id="msal-login-button" style="width: 53%">
           Login
         </button>
       </form>
     </div>
-
-    <!-- Success Modal -->
-    <div id="success-modal">
-      <div class="modal-content">
-        <h3 style="color: black" id="welcome-message">Welcome!</h3>
-        <button id="close-modal" class="close-modal">Close</button>
-      </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Please select a team.</div>
 
     <script>
       // MSAL Configuration
@@ -118,8 +48,9 @@
 
       const msalInstance = new msal.PublicClientApplication(msalConfig);
 
+      // Scopes
       const loginRequest = {
-        scopes: ["openid", "profile", "user.read"],
+        scopes: ["openid", "profile", "user.read"], // Add other scopes as needed
       };
 
       // Handle Login Button Click
@@ -127,61 +58,62 @@
       loginButton.addEventListener("click", async function () {
         const team = document.getElementById("team-select").value;
 
-        // Validation for team selection
         if (!team) {
-          showToast("Please select a team.");
+          alert("Please select a team.");
           return;
         }
 
         try {
-          // Trigger MSAL login popup
           const loginResponse = await msalInstance.loginPopup(loginRequest);
           const account = loginResponse.account;
 
           if (account) {
-            const email = account.username; // Retrieve the authenticated user's email
+            const email = account.username; // Get the user's email
+            alert(`Welcome, ${account.name}!`);
 
-            // Check if the email is from the correct domain
-            if (!email.endsWith("@valuemomentum.com")) {
-              alert(
-                "Invalid email domain. Please use an @valuemomentum.com email address."
-              );
+            // Check if the email is in the admin_table
+            const response = await fetch(
+              "http://localhost:3000/api/check-admin",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }),
+              }
+            );
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              alert(errorData.error || "Error checking admin access.");
               return;
             }
 
-            // Successful login - Show success modal
-            const modal = document.getElementById("success-modal");
-            const welcomeMessage = document.getElementById("welcome-message");
-            welcomeMessage.textContent = `Welcome, ${account.name}! You have successfully logged in.`;
-            modal.style.display = "flex";
+            const { ec_mapping } = await response.json();
+            alert(`EC Mapping: ${ec_mapping}`);
 
-            const closeModalBtn = document.getElementById("close-modal");
-            closeModalBtn.onclick = function () {
-              modal.style.display = "none";
-              if (team === "tag") {
-                window.location.href = "Dashboard.html"; // Redirect to Dashboard for TAG Team
-              } else if (team === "panel") {
-                window.location.href = "panelpage.html"; // Redirect to Panel Page for Panel Login
-              }
-            };
+            // Redirect based on the selected team, passing the ec_mapping as a query parameter
+            if (team === "tag") {
+              window.location.href = `Dashboard.html?ec_mapping=${encodeURIComponent(
+                ec_mapping
+              )}`; // Redirect to Dashboard for TAG Team
+            } else if (team === "panel") {
+              window.location.href = `panelpage.html?ec_mapping=${encodeURIComponent(
+                ec_mapping
+              )}`; // Redirect to Panel Page for Panel Login
+            }
           }
         } catch (error) {
-          console.error(error);
-          alert("Authentication failed. Please try again.");
+          console.error("Login failed:", error);
+          if (error instanceof msal.InteractionRequiredAuthError) {
+            alert("Interaction required for login. Please try again.");
+          } else {
+            alert(
+              "Authentication failed. Please check your network or contact support."
+            );
+          }
         }
       });
-
-      // Function to show toast notification
-      function showToast(message) {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.classList.add("show");
-
-        // Hide the toast after 3 seconds
-        setTimeout(function () {
-          toast.classList.remove("show");
-        }, 3000);
-      }
     </script>
   </body>
 </html>
