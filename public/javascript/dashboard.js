@@ -494,39 +494,43 @@ document.addEventListener("DOMContentLoaded", () => {
         // Split the EC mapping into an array
         const ecMapping = ecMappingParam.split(",").map(ec => ec.trim());
 
-        // Unhide the corresponding elements based on the EC mapping
+        // Iterate over EC mapping and unhide corresponding sections
         ecMapping.forEach(ec => {
             switch (ec) {
                 case "Cloud EC":
-                    document.querySelectorAll('.dashboard-chart h3').forEach(h3 => {
-                        if (h3.textContent.includes("Cloud EC")) {
-                            h3.closest(".dashboard-chart").hidden = false;
+                    document.querySelectorAll('.dashboard-charts .dashboard-chart').forEach(chart => {
+                        const h3 = chart.querySelector("h3");
+                        if (h3 && h3.textContent.includes("Cloud EC")) {
+                            chart.hidden = false;
                         }
                     });
                     break;
 
                 case "App EC":
-                    document.querySelectorAll('.dashboard-chart h3').forEach(h3 => {
-                        if (h3.textContent.includes("App EC")) {
-                            h3.closest(".dashboard-chart").hidden = false;
+                    document.querySelectorAll('.dashboard-charts .dashboard-chart1').forEach(chart => {
+                        const h3 = chart.querySelector("h3");
+                        if (h3 && h3.textContent.includes("App EC")) {
+                            chart.hidden = false;
                         }
                     });
                     break;
 
                 case "Data EC":
-                    document.querySelectorAll('.dashboard-chart h3').forEach(h3 => {
-                        if (h3.textContent.includes("Data EC")) {
-                            h3.closest(".dashboard-chart").hidden = false;
+                    document.querySelectorAll('.dashboard-charts .dashboard-chart1').forEach(chart => {
+                        const h3 = chart.querySelector("h3");
+                        if (h3 && h3.textContent.includes("Data EC")) {
+                            chart.hidden = false;
                         }
                     });
                     break;
 
                 default:
-                    console.warn("Unknown EC:", ec);
+                    console.warn(`Unknown EC type: ${ec}`);
             }
         });
     }
 });
+
 
 
 
