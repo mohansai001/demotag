@@ -490,7 +490,7 @@
 
         if (candidateEmail) {
             // Fetch candidate data from the server based on the email
-            fetch(`https://tagaiaccelerator.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+            fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
                 .then(response => response.json())
                 .then(data => {
                     // Check if the data is returned successfully
@@ -529,7 +529,7 @@
         }
 
         // Send the data to the backend for updating the database
-        fetch('https://tagaiaccelerator.vercel.app/api/updateCandidateFeedback', {
+        fetch('https://demotag.vercel.app/api/updateCandidateFeedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

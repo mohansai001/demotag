@@ -109,7 +109,7 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
 
         console.log('Fetching meetings for date:', formattedSelectedDate);
 
-        const response = await fetch(`https://tagaiaccelerator.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}`);
+        const response = await fetch(`https://demotag.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}`);
         if (!response.ok) {
             throw new Error('Failed to fetch shortlisted candidates');
         }

@@ -18,7 +18,7 @@
         if (hrId) {
           try {
             const response = await fetch(
-              `https://tagaiaccelerator.vercel.app/api/hr/${hrId}`
+              `https://demotag.vercel.app/api/hr/${hrId}`
             );
 
             if (!response.ok) {
@@ -129,7 +129,7 @@
           return;
         }
 
-        const targetUrl = `https://tagaiaccelerator.vercel.app/api/invite-candidate`;
+        const targetUrl = `https://demotag.vercel.app/api/invite-candidate`;
         const requestData = {
           email: candidateEmail,
           name: candidateName,
@@ -177,7 +177,7 @@
         const recruitmentPhase = "No iMocha Exam";
     
         // Update recruitment phase in the database
-        fetch('https://tagaiaccelerator.vercel.app/api/update-candidate-recruitment-phase', {
+        fetch('https://demotag.vercel.app/api/update-candidate-recruitment-phase', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

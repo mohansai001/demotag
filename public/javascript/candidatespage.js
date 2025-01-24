@@ -15,7 +15,7 @@ async function fetchCandidatesInfo() {
   loadingOverlay.style.display = 'flex'; // Show the loading overlay
 
   try {
-    const response = await fetch('https://tagaiaccelerator.vercel.app/api/get-shortlisted-candidates');
+    const response = await fetch('https://demotag.vercel.app/api/get-shortlisted-candidates');
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
@@ -125,7 +125,7 @@ function handleScheduleClick(event) {
         const dateTime = document.getElementById('datetime-input').value;
 
         // API request to create Teams meeting and update status
-        const response = await fetch(`https://tagaiaccelerator.vercel.app/api/update-status`, {
+        const response = await fetch(`https://demotag.vercel.app/api/update-status`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

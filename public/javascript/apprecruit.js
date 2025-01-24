@@ -4,7 +4,7 @@ window.location.href = "ECselection.html";
 }
 async function loadCandidateCounts() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidate-counts');
+        const response = await fetch('https://demotag.vercel.app/api/candidate-counts');
         const data = await response.json();
 
         // Update the counts on the page
@@ -233,7 +233,7 @@ function animateProgressBar(progressBar) {
 }
 async function getGithubToken() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/github-token');
+        const response = await fetch('https://demotag.vercel.app/api/github-token');
         if (!response.ok) throw new Error('Network response was not ok');
 
         const data = await response.json();
@@ -366,7 +366,7 @@ const githubToken = await getGithubToken(); // Fetch the GitHub token here
 // Function to send resume count to the database
 async function sendCountToDatabase(count) {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/send-resumes-count', {
+        const response = await fetch('https://demotag.vercel.app/send-resumes-count', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -843,7 +843,7 @@ function displayEvaluationInCards(content, resumeUrl) {
                 const updateField = statusText === "Rejected" ? "rejected" : "shortlisted";
 
                 // API call to update the relevant column in resume_counts
-                fetch('https://tagaiaccelerator.vercel.app/update-resume-count', {
+                fetch('https://demotag.vercel.app/update-resume-count', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -980,7 +980,7 @@ function sendCandidateInfoToDB(name, email, status, role, suitabilityPercentage,
     // The resume_score column will now store the suitability percentage
     const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
-    fetch('https://tagaiaccelerator.vercel.app/api/add-candidate-info', {
+    fetch('https://demotag.vercel.app/api/add-candidate-info', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1018,7 +1018,7 @@ function sendPrescreeningInfoToDB(name, email, status, role, suitabilityPercenta
     // The resume_score column will now store the suitability percentage
     const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
-    fetch('https://tagaiaccelerator.vercel.app/api/add-prescreening-info', {
+    fetch('https://demotag.vercel.app/api/add-prescreening-info', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1095,7 +1095,7 @@ function showInterviews() {
 }
 async function fetchCandidates() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidates');
+        const response = await fetch('https://demotag.vercel.app/api/candidates');
         const data = await response.json();
 
         const tableBody = document.querySelector('#candidateTable tbody');

@@ -205,11 +205,11 @@ function updateNewBarChartData(teamACount, teamBCount, teamCCount, teamDCount,te
 // Fetch data and update the new charts
 async function fetchNewCountsAndUpdateChart() {
     try {
-        const teamACount = await fetch('https://tagaiaccelerator.vercel.app/api/reactjs-resume-count').then(res => res.json()).then(data => data.count || 0);
-        const teamBCount = await fetch('https://tagaiaccelerator.vercel.app/api/snow-resume-count').then(res => res.json()).then(data => data.count || 0);
-        const teamCCount = await fetch('https://tagaiaccelerator.vercel.app/api/hadoop-resume-count').then(res => res.json()).then(data => data.count || 0);
-        const teamDCount = await fetch('https://tagaiaccelerator.vercel.app/api/java-resume-count').then(res => res.json()).then(data => data.count || 0);
-        const teamECount = await fetch('https://tagaiaccelerator.vercel.app/api/.net-resume-count').then(res => res.json()).then(data => data.count || 0);
+        const teamACount = await fetch('https://demotag.vercel.app/api/reactjs-resume-count').then(res => res.json()).then(data => data.count || 0);
+        const teamBCount = await fetch('https://demotag.vercel.app/api/snow-resume-count').then(res => res.json()).then(data => data.count || 0);
+        const teamCCount = await fetch('https://demotag.vercel.app/api/hadoop-resume-count').then(res => res.json()).then(data => data.count || 0);
+        const teamDCount = await fetch('https://demotag.vercel.app/api/java-resume-count').then(res => res.json()).then(data => data.count || 0);
+        const teamECount = await fetch('https://demotag.vercel.app/api/.net-resume-count').then(res => res.json()).then(data => data.count || 0);
 
         // Update the charts with the fetched counts
         updateNewChartData(teamACount, teamBCount, teamCCount, teamDCount,teamECount);
@@ -375,13 +375,13 @@ async function fetchAndUpdateSecondCharts() {
             dataArchitectCount,
             dataScientistCount
         ] = await Promise.all([
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-resume-count', 'Data Engineer'),
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-ops-resume-count', 'Data-Ops Engineer'),
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-bi-resume-count', 'Data – BI Visualization Engineer'),
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-modeller-resume-count', 'Data Modeller'),
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-analyst-resume-count', 'Data Analyst'),
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-architect-resume-count', 'Data Architect'),
-            fetchNewCounts('https://tagaiaccelerator.vercel.app/api/data-scientist-resume-count', 'Data Scientist – AI/ML')
+            fetchNewCounts('https://demotag.vercel.app/api/data-resume-count', 'Data Engineer'),
+            fetchNewCounts('https://demotag.vercel.app/api/data-ops-resume-count', 'Data-Ops Engineer'),
+            fetchNewCounts('https://demotag.vercel.app/api/data-bi-resume-count', 'Data – BI Visualization Engineer'),
+            fetchNewCounts('https://demotag.vercel.app/api/data-modeller-resume-count', 'Data Modeller'),
+            fetchNewCounts('https://demotag.vercel.app/api/data-analyst-resume-count', 'Data Analyst'),
+            fetchNewCounts('https://demotag.vercel.app/api/data-architect-resume-count', 'Data Architect'),
+            fetchNewCounts('https://demotag.vercel.app/api/data-scientist-resume-count', 'Data Scientist – AI/ML')
         ]);
 
         // Update New Charts and HTML
@@ -415,7 +415,7 @@ fetchAndUpdateSecondCharts();
 async function fetchTotalCountAndUpdateCharts() {
     try {
         // Fetch total count from API
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidate-total'); // Replace with your API endpoint
+        const response = await fetch('https://demotag.vercel.app/api/candidate-total'); // Replace with your API endpoint
         const data = await response.json();
         const totalCount = data.totalCount; // Extract total count
 
@@ -496,7 +496,7 @@ async function fetchTotalCountAndUpdateCharts() {
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/rrf-details');
+        const response = await fetch('https://demotag.vercel.app/api/rrf-details');
         if (!response.ok) {
             throw new Error('Failed to fetch data');
         }
@@ -553,12 +553,12 @@ document.addEventListener('DOMContentLoaded', fetchTotalCountAndUpdateCharts);
 // async function fetchCounts() {
 //     try {
 //         // Fetch counts for rejected candidates in the prescreening phase
-//         const rejectedResponse = await fetch('https://tagaiaccelerator.vercel.appapi/rejected-prescreening-count');
+//         const rejectedResponse = await fetch('https://demotag.vercel.appapi/rejected-prescreening-count');
 //         const rejectedData = await rejectedResponse.json();
 //         const rejectedCount = rejectedData.count;
 
 //         // Fetch counts for shortlisted candidates in the Move to L1 phase
-//         const shortlistedResponse = await fetch('https://tagaiaccelerator.vercel.appapi/shortlisted-prescreening-count');
+//         const shortlistedResponse = await fetch('https://demotag.vercel.appapi/shortlisted-prescreening-count');
 //         const shortlistedData = await shortlistedResponse.json();
 //         const shortlistedCount = shortlistedData.count;
 
@@ -616,12 +616,12 @@ document.addEventListener('DOMContentLoaded', fetchTotalCountAndUpdateCharts);
 // async function fetchCounts1() {
 //     try {
 //         // Fetch counts for rejected candidates in the prescreening phase
-//         const rejectedResponse = await fetch('https://tagaiaccelerator.vercel.appapi/rejected-l1-count');
+//         const rejectedResponse = await fetch('https://demotag.vercel.appapi/rejected-l1-count');
 //         const rejectedData = await rejectedResponse.json();
 //         const rejectedCount = rejectedData.count;
 
 //         // Fetch counts for shortlisted candidates in the Move to L1 phase
-//         const shortlistedResponse = await fetch('https://tagaiaccelerator.vercel.app/api/shortlisted-l1-count');
+//         const shortlistedResponse = await fetch('https://demotag.vercel.app/api/shortlisted-l1-count');
 //         const shortlistedData = await shortlistedResponse.json();
 //         const shortlistedCount = shortlistedData.count;
 
@@ -715,7 +715,7 @@ document.addEventListener('DOMContentLoaded', fetchTotalCountAndUpdateCharts);
 
 async function fetchDevOpsCount() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/devops-resume-count');
+        const response = await fetch('https://demotag.vercel.app/api/devops-resume-count');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         console.log('Fetched data for DevOps:', data);
@@ -730,7 +730,7 @@ async function fetchDevOpsCount() {
 
 async function fetchplatformCount() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/platform-resume-count');
+        const response = await fetch('https://demotag.vercel.app/api/platform-resume-count');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         console.log('Fetched data for Platform:', data);
@@ -745,7 +745,7 @@ async function fetchplatformCount() {
 
 async function fetchcloudopsCount() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/cloudops-resume-count');
+        const response = await fetch('https://demotag.vercel.app/api/cloudops-resume-count');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         console.log('Fetched data for CloudOps:', data);
@@ -760,7 +760,7 @@ async function fetchcloudopsCount() {
 
 async function fetchsiteCount() {
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/site-resume-count');
+        const response = await fetch('https://demotag.vercel.app/api/site-resume-count');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         console.log('Fetched data for Site:', data);
@@ -826,7 +826,7 @@ async function fetchAllCountsAndUpdateChart() {
 //table data
 async function fetchgetCandidates() {
             try {
-                const response = await fetch('https://tagaiaccelerator.vercel.app/api/getcandidates');
+                const response = await fetch('https://demotag.vercel.app/api/getcandidates');
                 const data = await response.json();
 
                 const tableBody = document.querySelector('#candidateTable tbody');
@@ -898,7 +898,7 @@ async function fetchgetCandidates() {
 	
 	//document.getElementById('imochaTestResults').addEventListener('click', () => {
         // Call the backend to generate the Excel file
-     //   fetch('https://tagaiaccelerator.vercel.app/download-candidate-info', {
+     //   fetch('https://demotag.vercel.app/download-candidate-info', {
           //  method: 'GET',
           //  headers: {
              //   'Content-Type': 'application/json',
@@ -926,7 +926,7 @@ async function fetchgetCandidates() {
    // });
 	//document.getElementById('imochareport').addEventListener('click', () => {
         // Call the backend to generate the Excel file
-     //   fetch('https://tagaiaccelerator.vercel.app/Imocha-candidate-info', {
+     //   fetch('https://demotag.vercel.app/Imocha-candidate-info', {
        //     method: 'GET',
      //       headers: {
     //            'Content-Type': 'application/json',
@@ -979,7 +979,7 @@ async function fetchgetCandidates() {
 
 
 //    function downloadExcelReport() {
-//             fetch('https://tagaiaccelerator.vercel.app/api/candidate-info', {
+//             fetch('https://demotag.vercel.app/api/candidate-info', {
 //                 method: 'GET',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -1028,7 +1028,7 @@ function handleDownloadSelection() {
         // fetch counts
         async function loadCandidateCounts() {
         try {
-            const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidate-counts');
+            const response = await fetch('https://demotag.vercel.app/api/candidate-counts');
             const data = await response.json();
 
             // Update the counts on the page
@@ -1074,7 +1074,7 @@ function downloadPageAsPpt() {
 async function fetchCounts() {
     // Fetch counts for specific test names from your backend API
     try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/test-counts');
+        const response = await fetch('https://demotag.vercel.app/api/test-counts');
         if (!response.ok) {
             throw new Error(`Failed to fetch counts: ${response.status}`);
         }
@@ -1169,7 +1169,7 @@ async function fetchCandidates() {
         // Show the spinner
         headerSpinner.style.display = "table-header-group";
 
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidates');
+        const response = await fetch('https://demotag.vercel.app/api/candidates');
         const data = await response.json();
 
         const tableBody = document.querySelector('#applicationsTable tbody');
@@ -1267,7 +1267,7 @@ async function fetchShortlistedCandidates() {
         // Show the spinner
         shortlistedSpinner.style.display = "table-header-group";
 
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidates/shortlisted');
+        const response = await fetch('https://demotag.vercel.app/api/candidates/shortlisted');
         const data = await response.json();
 
         const tableBody = document.querySelector('#shortlistedTable tbody');
@@ -1367,7 +1367,7 @@ async function fetchRejectedCandidates() {
         // Show the spinner
         rejectedSpinner.style.display = "table-header-group";
 
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/candidates/rejected');
+        const response = await fetch('https://demotag.vercel.app/api/candidates/rejected');
         const data = await response.json();
 
         const tableBody = document.querySelector('#rejectedTable tbody');
@@ -1449,7 +1449,7 @@ document.addEventListener('DOMContentLoaded', fetchRejectedCandidates);
 async function fetchPrescreeningCount() {
     try {
         // Replace with your actual API endpoint
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/prescreening-count');
+        const response = await fetch('https://demotag.vercel.app/api/prescreening-count');
         const data = await response.json();
 
         const count = data.prescreening_count; // Fetch the prescreening count
@@ -1475,7 +1475,7 @@ async function fetchPrescreeningCount() {
 async function fetchL1Count() {
     try {
         // Replace with your actual API endpoint
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/move-to-l1-count');
+        const response = await fetch('https://demotag.vercel.app/api/move-to-l1-count');
         const data = await response.json();
 
         const count = data.move_to_l1_count; // Fetch the prescreening count
@@ -1501,7 +1501,7 @@ async function fetchL1Count() {
 async function fetchL2Count() {
     try {
         // Replace with your actual API endpoint
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/moved-to-l2-count');
+        const response = await fetch('https://demotag.vercel.app/api/moved-to-l2-count');
         const data = await response.json();
 
         const count = data.moved_to_l2_count; // Fetch the prescreening count
@@ -1609,7 +1609,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch phase counts and update chart for all HRs
     async function fetchPhaseCounts() {
       try {
-        const response = await fetch('https://tagaiaccelerator.vercel.app/api/phase-counts');
+        const response = await fetch('https://demotag.vercel.app/api/phase-counts');
         const data = await response.json();
 
         // Map recruitment_phase to the dataset index
@@ -1702,7 +1702,7 @@ function initializeMSAL() {
         auth: {
             clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with Azure AD app client ID
             authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Tenant ID
-            redirectUri: "https://tagaiaccelerator.vercel.app", // Redirect URI
+            redirectUri: "https://demotag.vercel.app", // Redirect URI
         },
     };
 
@@ -1724,7 +1724,7 @@ function logout() {
   }
 
   msalInstance.logoutPopup({
-    postLogoutRedirectUri: "https://tagaiaccelerator.vercel.app", // Redirect URI after logout
+    postLogoutRedirectUri: "https://demotag.vercel.app", // Redirect URI after logout
   }).then(() => {
     // After successful logout, log the event
     manageLog('User logged out');

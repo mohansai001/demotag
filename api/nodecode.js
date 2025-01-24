@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 
 // CORS configuration
 const corsOptions = {
-  //origin: 'https://tagaiaccelerator.vercel.app', // Your Vercel frontend domain
+  //origin: 'https://demotag.vercel.app', // Your Vercel frontend domain
   methods: 'GET, POST, PUT, OPTIONS', // Allow specific HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
   credentials: true // Enable cookies/sessions if needed
@@ -500,7 +500,7 @@ app.post('/api/send-email', (req, res) => {
   const { candidateEmail, score, performanceCategory, testName, pdfReportUrl } = data;
 
   // Encode the details to be safely passed in the URL
-  const feedbackFormUrl = `https://tagaiaccelerator.vercel.app/assessment-form-html.html?email=${encodeURIComponent(candidateEmail)}&score=${encodeURIComponent(score)}&performanceCategory=${encodeURIComponent(performanceCategory)}`;
+  const feedbackFormUrl = `https://demotag.vercel.app/assessment-form-html.html?email=${encodeURIComponent(candidateEmail)}&score=${encodeURIComponent(score)}&performanceCategory=${encodeURIComponent(performanceCategory)}`;
 
   const mailOptions = {
     from: 'sapireddyvamsi@gmail.com', // Sender address (your email)
