@@ -5,57 +5,40 @@
     <link href="./tag.css" rel="stylesheet" type="text/css" />
     <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
     <style>
-      /* Popup Styles */
-      .popup {
-    display: none;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 200px;
-    padding: 15px;
-    text-align: center;
-    font-size: 14px;
-  }
-  .popup h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #333;
-  }
-  .popup p {
-    margin: 8px 0;
-    font-size: 12px;
-    color: #555;
-  }
-  .popup button {
-    margin-top: 10px;
-    padding: 5px 10px;
-    font-size: 12px;
-    background-color: #0078d7;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .popup button:hover {
-    background-color: #005a9e;
-  }
-  /* Dim background */
-  .overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 999;
-  }
-
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -88,12 +71,12 @@
       </form>
     </div>
 
-    <!-- Popup Modal -->
-    <div class="overlay" id="overlay"></div>
-    <div class="popup" id="popup">
-      <h3 id="popup-title">Message</h3>
-      <p id="popup-message">This is the popup message.</p>
-      <button id="popup-close">Close</button>
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="modal-text">This is a modal message.</p>
+      </div>
     </div>
 
     <script>
@@ -114,26 +97,25 @@
         scopes: ["openid", "profile", "user.read"], // Add other scopes as needed
       };
 
-      // Popup Utility Functions
-      const overlay = document.getElementById("overlay");
-      const popup = document.getElementById("popup");
-      const popupTitle = document.getElementById("popup-title");
-      const popupMessage = document.getElementById("popup-message");
-      const popupClose = document.getElementById("popup-close");
+      // Modal Script
+      const modal = document.getElementById("myModal");
+      const modalText = document.getElementById("modal-text");
+      const closeModal = document.querySelector(".close");
 
-      function showPopup(title, message) {
-        popupTitle.textContent = title;
-        popupMessage.textContent = message;
-        overlay.style.display = "block";
-        popup.style.display = "block";
+      closeModal.onclick = () => {
+        modal.style.display = "none";
+      };
+
+      window.onclick = (event) => {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      function showModal(message) {
+        modalText.textContent = message;
+        modal.style.display = "block";
       }
-
-      function closePopup() {
-        overlay.style.display = "none";
-        popup.style.display = "none";
-      }
-
-      popupClose.addEventListener("click", closePopup);
 
       // Handle Login Button Click
       const loginButton = document.getElementById("msal-login-button");
@@ -141,7 +123,7 @@
         const team = document.getElementById("team-select").value;
 
         if (!team) {
-          showPopup("Error", "Please select a team.");
+          showModal("Please select a team.");
           return;
         }
 
@@ -151,7 +133,7 @@
 
           if (account) {
             const email = account.username; // Get the user's email
-            showPopup("Welcome", `Welcome, ${account.name}!`);
+            showModal(`Welcome, ${account.name}!`);
 
             // Check if the email is in the admin_table
             const response = await fetch(
@@ -167,12 +149,12 @@
 
             if (!response.ok) {
               const errorData = await response.json();
-              showPopup("Error", errorData.error || "Error checking admin access.");
+              showModal(errorData.error || "Error checking admin access.");
               return;
             }
 
             const { ec_mapping } = await response.json();
-            showPopup("EC Mapping", `EC Mapping: ${ec_mapping}`);
+            showModal(`EC Mapping: ${ec_mapping}`);
 
             // Redirect based on the selected team, passing the ec_mapping as a query parameter
             if (team === "tag") {
@@ -188,10 +170,9 @@
         } catch (error) {
           console.error("Login failed:", error);
           if (error instanceof msal.InteractionRequiredAuthError) {
-            showPopup("Error", "Interaction required for login. Please try again.");
+            showModal("Interaction required for login. Please try again.");
           } else {
-            showPopup(
-              "Error",
+            showModal(
               "Authentication failed. Please check your network or contact support."
             );
           }
