@@ -475,11 +475,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     const ecMappingParam = urlParams.get("ec_mapping");
 
-    // Log the EC Mapping parameter to debug
-    console.log("EC Mapping parameter from URL:", ecMappingParam);
+    let ecMapping = [];
 
-    // If the 'ec_mapping' parameter exists, split it into an array
-    const ecMapping = ecMappingParam ? ecMappingParam.split(",") : [];
+    if (ecMappingParam) {
+        // Store the EC Mapping in localStorage
+        localStorage.setItem("ec_mapping", ecMappingParam);
+        ecMapping = ecMappingParam.split(",");
+
+        // Ensure the URL always contains the ec_mapping parameter
+        history.replaceState(null, "", `?ec_mapping=${encodeURIComponent(ecMappingParam)}`);
+    } else {
+        // Retrieve the EC Mapping from localStorage if not in the URL
+        const storedEcMapping = localStorage.getItem("ec_mapping");
+        if (storedEcMapping) {
+            ecMapping = storedEcMapping.split(",");
+
+            // Update the URL to include ec_mapping from localStorage
+            history.replaceState(null, "", `?ec_mapping=${encodeURIComponent(storedEcMapping)}`);
+        }
+    }
+
     console.log("EC Mapping array:", ecMapping); // Debugging line
 
     // Call the function to fetch data and update charts
