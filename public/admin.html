@@ -225,6 +225,9 @@
 
   <body>
     <div class="header">
+      <div class="buttons">
+      <button id="logoutbtn">Logout</button>
+    </div>
       <h1>Admin Management Portal</h1>
       <div class="buttons">
         <button id="submitBtn">Submit</button>
@@ -475,6 +478,9 @@
 
           event.target.reset();
         });
+      document.getElementById('logoutbtn').addEventListener('click', function() {
+    window.location.href = '/';
+  });
     </script>
   </body>
 </html>
