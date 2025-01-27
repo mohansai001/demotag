@@ -4,6 +4,42 @@
     <title>Recruitment Portal</title>
     <link href="./tag.css" rel="stylesheet" type="text/css" />
     <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
+    <style>
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
     <div
@@ -35,6 +71,14 @@
       </form>
     </div>
 
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="modal-text">This is a modal message.</p>
+      </div>
+    </div>
+
     <script>
       // MSAL Configuration
       const msalConfig = {
@@ -53,13 +97,33 @@
         scopes: ["openid", "profile", "user.read"], // Add other scopes as needed
       };
 
+      // Modal Script
+      const modal = document.getElementById("myModal");
+      const modalText = document.getElementById("modal-text");
+      const closeModal = document.querySelector(".close");
+
+      closeModal.onclick = () => {
+        modal.style.display = "none";
+      };
+
+      window.onclick = (event) => {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      function showModal(message) {
+        modalText.textContent = message;
+        modal.style.display = "block";
+      }
+
       // Handle Login Button Click
       const loginButton = document.getElementById("msal-login-button");
       loginButton.addEventListener("click", async function () {
         const team = document.getElementById("team-select").value;
 
         if (!team) {
-          alert("Please select a team.");
+          showModal("Please select a team.");
           return;
         }
 
@@ -69,7 +133,7 @@
 
           if (account) {
             const email = account.username; // Get the user's email
-            alert(`Welcome, ${account.name}!`);
+            showModal(`Welcome, ${account.name}!`);
 
             // Check if the email is in the admin_table
             const response = await fetch(
@@ -85,12 +149,12 @@
 
             if (!response.ok) {
               const errorData = await response.json();
-              alert(errorData.error || "Error checking admin access.");
+              showModal(errorData.error || "Error checking admin access.");
               return;
             }
 
             const { ec_mapping } = await response.json();
-            alert(`EC Mapping: ${ec_mapping}`);
+            showModal(`EC Mapping: ${ec_mapping}`);
 
             // Redirect based on the selected team, passing the ec_mapping as a query parameter
             if (team === "tag") {
@@ -106,9 +170,9 @@
         } catch (error) {
           console.error("Login failed:", error);
           if (error instanceof msal.InteractionRequiredAuthError) {
-            alert("Interaction required for login. Please try again.");
+            showModal("Interaction required for login. Please try again.");
           } else {
-            alert(
+            showModal(
               "Authentication failed. Please check your network or contact support."
             );
           }
