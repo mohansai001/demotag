@@ -63,13 +63,13 @@ app.post("/api/check-admin", async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Email not found in admin_table" });
+      return res.status(404).json({ error: "User not available" });
     }
 
     const { ec_mapping, status } = result.rows[0];
 
     if (status !== "Enable") {
-      return res.status(403).json({ error: "Account is disabled. Please contact support." });
+      return res.status(403).json({ error: "Account is disabled. Please contact admin." });
     }
 
     res.json({ ec_mapping });
