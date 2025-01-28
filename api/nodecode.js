@@ -1635,44 +1635,45 @@ app.get('/api/phase-counts', async (req, res) => {
 //admin details
 
 app.post('/api/add-admin', async (req, res) => {
-  const { vamid, name, email, ec_mapping } = req.body;
-
-  if (!vamid || !name || !email || !ec_mapping) {
+  const { vamid, name, email, ec_mapping, status } = req.body;
+ 
+  // Check for required fields including status
+  if (!vamid || !name || !email || !ec_mapping || !status) {
     return res.status(400).json({
       success: false,
       message: 'Missing required fields.',
     });
   }
-
+ 
   try {
     const query = `
-      INSERT INTO admin_table (vamid, name, email, ec_mapping)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO admin_table (vamid, name, email, ec_mapping, status)
+      VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (vamid) DO UPDATE
-      SET name = EXCLUDED.name, email = EXCLUDED.email, ec_mapping = EXCLUDED.ec_mapping;
+      SET name = EXCLUDED.name, email = EXCLUDED.email, ec_mapping = EXCLUDED.ec_mapping, status = EXCLUDED.status;
     `;
-    const values = [vamid, name, email, ec_mapping];
+    const values = [vamid, name, email, ec_mapping, status]; // Add status to values array
     await pool.query(query, values);
-
+ 
     return res.status(200).json({
       success: true,
-      message: 'Admin added/updated successfully!',
+      message: 'User added/updated successfully!',
     });
   } catch (error) {
-    console.error('Error adding admin:', error);
+    console.error('Error adding user:', error);
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while adding the admin.',
+      message: 'An error occurred while adding the user.',
     });
   }
 });
-
-
-
+ 
+ 
+ 
 app.get('/api/admin-details', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT vamid, email, name, ec_mapping
+      SELECT vamid, email, name, ec_mapping, status
       FROM admin_table
     `);
  
@@ -1692,7 +1693,8 @@ app.get('/api/admin-details', async (req, res) => {
         cloudEC: ecMapping.includes('Cloud EC'), // Check if Cloud EC exists in ec_mapping
         appEC: ecMapping.includes('App EC'),     // Check if App EC exists in ec_mapping
         dataEC: ecMapping.includes('Data EC'),   // Check if Data EC exists in ec_mapping
-        coreEC: ecMapping.includes('Core EC')    // Check if Core EC exists in ec_mapping
+        coreEC: ecMapping.includes('Core EC'),    // Check if Core EC exists in ec_mapping
+        status: row.status
       };
     });
  
@@ -1708,45 +1710,44 @@ app.post('/api/update-ec-mapping', async (req, res) => {
   const { selectedAdmins } = req.body;
  
   if (!selectedAdmins || selectedAdmins.length === 0) {
-      return res.status(400).json({ message: 'No admin selections provided' });
+    return res.status(400).json({ message: 'No admin selections provided' });
   }
  
   try {
-      // Iterate over each selected admin and update EC mappings
-      for (const admin of selectedAdmins) {
-          const { vamid, ec_mapping } = admin;
+    // Iterate over each selected admin and update EC mappings and status
+    for (const admin of selectedAdmins) {
+      const { vamid, ec_mapping, status } = admin;
  
-          if (!vamid || !ec_mapping) {
-              continue; // Skip this admin if there's missing data
-          }
- 
-          // Check if the record exists in the admin_table
-          const result = await pool.query('SELECT * FROM admin_table WHERE vamid = $1', [vamid]);
-         
-          if (result.rows.length === 0) {
-              // Insert a new record if no matching vamid is found
-              await pool.query(`
-                  INSERT INTO admin_table (vamid, ec_mapping)
-                  VALUES ($1, $2)
-              `, [vamid, ec_mapping]);
- 
-          } else {
-              // Update the existing record with the new EC mappings
-              await pool.query(`
-                  UPDATE admin_table
-                  SET ec_mapping = $1
-                  WHERE vamid = $2
-              `, [ec_mapping, vamid]);
-          }
+      if (!vamid || !ec_mapping || !status) {
+        continue; // Skip this admin if there's missing data
       }
  
-      return res.status(200).json({ success: true, message: 'EC mappings updated successfully!' });
+      // Check if the record exists in the admin_table
+      const result = await pool.query('SELECT * FROM admin_table WHERE vamid = $1', [vamid]);
+ 
+      if (result.rows.length === 0) {
+        // Insert a new record if no matching vamid is found
+        await pool.query(`
+          INSERT INTO admin_table (vamid, ec_mapping, status)
+          VALUES ($1, $2, $3)
+        `, [vamid, ec_mapping, status]);
+ 
+      } else {
+        // Update the existing record with the new EC mappings and status
+        await pool.query(`
+          UPDATE admin_table
+          SET ec_mapping = $1, status = $2
+          WHERE vamid = $3
+        `, [ec_mapping, status, vamid]);
+      }
+    }
+ 
+    return res.status(200).json({ success: true, message: 'EC mappings and status updated successfully!' });
   } catch (error) {
-      console.error('Error updating EC mappings:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+    console.error('Error updating EC mappings:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 
 
