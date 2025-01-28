@@ -1483,88 +1483,93 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the chart with empty data (no static data)
 document.addEventListener('DOMContentLoaded', () => {
-  const ctx = document.getElementById('hrChart').getContext('2d');
+    const ctx = document.getElementById('hrChart').getContext('2d');
 
-  let hrChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: [], // HR emails will be added dynamically here
-      datasets: [], // Datasets will represent recruitment phases
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-          labels: { boxWidth: 12, font: { size: 10 } },
+    let hrChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Prescreening', 'Move to L1', 'L2 Scheduled', 'Shortlisted'], // All recruitment phases as labels
+        datasets: [], // Data will be added dynamically here
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { boxWidth: 12, font: { size: 10 } },
+          },
+        },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true },
         },
       },
-      scales: {
-        x: { stacked: true },
-        y: { stacked: true, beginAtZero: true },
-      },
-    },
-  });
+    });
 
-  // Fetch phase counts and update chart with HRs as labels
-  async function fetchPhaseCounts() {
-    try {
-      const response = await fetch('https://demotag.vercel.app/api/phase-counts');
-      const data = await response.json();
+    // Fetch phase counts and update chart for all HRs
+    async function fetchPhaseCounts() {
+      try {
+        const response = await fetch('https://demotag.vercel.app/api/phase-counts');
+        const data = await response.json();
 
-      // Map recruitment_phase to dataset
-      const phases = ['Prescreening', 'Move to L1', 'L2 Scheduled', 'Shortlisted'];
+        // Map recruitment_phase to the dataset index
+        const phaseMap = {
+          prescreening: 0,
+          'Move to L1': 1,
+          'L2 Scheduled': 2,
+          Shortlisted: 3,
+        };
 
-      // Initialize a map for datasets
-      const phaseData = {
-        Prescreening: [],
-        'Move to L1': [],
-        'L2 Scheduled': [],
-        Shortlisted: [],
-      };
+        // Prepare a map of HR emails to their corresponding phase data
+        const hrData = {};
 
-      // Prepare a unique list of HR emails
-      const hrEmails = [...new Set(data.map((item) => item.hr_email))];
+        // Organize data by HR email and phase
+        data.forEach((item) => {
+          const hrEmail = item.hr_email;
+          const phase = item.recruitment_phase;
+          const count = parseInt(item.phase_count, 10);
 
-      // Organize data by HR email and phase
-      hrEmails.forEach((hrEmail) => {
-        phases.forEach((phase) => {
-          const record = data.find((item) => item.hr_email === hrEmail && item.recruitment_phase === phase);
-          phaseData[phase].push(record ? parseInt(record.phase_count, 10) : 0);
+          if (!hrData[hrEmail]) {
+            hrData[hrEmail] = [0, 0, 0, 0]; // Initialize array for HR's phases
+          }
+
+          if (phaseMap[phase] !== undefined) {
+            hrData[hrEmail][phaseMap[phase]] = count;
+          }
         });
-      });
 
-      // Set HR emails as chart labels
-      hrChart.data.labels = hrEmails;
+        // Reset datasets
+        hrChart.data.datasets = [];
 
-      // Create datasets for each phase
-      hrChart.data.datasets = phases.map((phase) => ({
-        label: phase,
-        data: phaseData[phase],
-        backgroundColor: getRandomColor(), // Assign a random color for each phase
-      }));
+        // Add a dataset for each HR email
+        Object.keys(hrData).forEach((hrEmail) => {
+          hrChart.data.datasets.push({
+            label: hrEmail, // Use HR email as the label
+            data: hrData[hrEmail],
+            backgroundColor: getRandomColor(), // Random color for each HR
+          });
+        });
 
-      // Update the chart with the new data
-      hrChart.update();
-    } catch (error) {
-      console.error('Error fetching phase counts:', error);
+        // Update the chart with the new data
+        hrChart.update();
+      } catch (error) {
+        console.error('Error fetching phase counts:', error);
+      }
     }
-  }
 
-  // Function to generate a random color for each dataset
-  function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+    // Function to generate a random color for each HR email
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     }
-    return color;
-  }
 
-  // Fetch and update the chart when the page loads
-  fetchPhaseCounts();
-});
-
+    // Fetch and update the chart when the page loads
+    fetchPhaseCounts();
+  });
 
   document.addEventListener("DOMContentLoaded", () => {
     // Get references to the elements
