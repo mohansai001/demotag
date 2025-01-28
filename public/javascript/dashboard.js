@@ -152,7 +152,7 @@ const newRoleChart = new Chart(newRoleCtx, {
         datasets: [{
             label: 'Applicants',
             data: [0, 0, 0, 0,0], // Initial placeholder data
-            backgroundColor: '#FFD700'
+            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#98FB98']
         }]
     },
     options: {
@@ -265,7 +265,7 @@ const secondRoleChart = new Chart(secondRoleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0,0,0,0], // Placeholder data
-            backgroundColor: '#FFB6C1'
+            backgroundColor: ['#FFB6C1', '#FFD700', '#90EE90', '#D3D3D3','#C0C0C0','#DCDCDC','#B0C4DE']
         }]
     },
     options: {
