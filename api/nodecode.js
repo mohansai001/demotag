@@ -58,7 +58,7 @@ app.post("/api/check-admin", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT ec_mapping FROM admin_table WHERE email = $1",
+      "SELECT ec_mapping, status FROM admin_table WHERE email = $1",
       [email]
     );
 
@@ -66,13 +66,18 @@ app.post("/api/check-admin", async (req, res) => {
       return res.status(404).json({ error: "Email not found in admin_table" });
     }
 
-    res.json({ ec_mapping: result.rows[0].ec_mapping });
+    const { ec_mapping, status } = result.rows[0];
+
+    if (status !== "Enable") {
+      return res.status(403).json({ error: "Account is disabled. Please contact support." });
+    }
+
+    res.json({ ec_mapping });
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 app.post('/api/invite-candidate', async (req, res) => {
     const { inviteId, email, name, sendEmail, callbackURL, redirectURL, disableMandatoryFields, hideInstruction } = req.body;
