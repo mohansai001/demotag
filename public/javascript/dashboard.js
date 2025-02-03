@@ -24,7 +24,7 @@ const statusChart = new Chart(statusCtx, {
         labels: ['Devops', 'Platform', 'Cloudops', 'Migration'],
         datasets: [{
             data: [, , , ], // Replace with actual data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#76d7c4', '#f5cba7']
+            backgroundColor: ['#E6E6FA', '#DAF7A6', '#bb86fc', '#d9ead3']
         }]
     },
     options: {
@@ -65,7 +65,7 @@ const roleChart = new Chart(roleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0],  // Initial placeholder data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#76d7c4', '#f5cba7']
+            backgroundColor: '#DAF7A6'
         }]
     },
     options: {
@@ -115,7 +115,7 @@ const newStatusChart = new Chart(newStatusCtx, {
         labels: ['React JS', 'Snowflake', 'Hadoop Engineer', 'Java FullStack' ,'.Net Fullstack'],
         datasets: [{
             data: [0, 0, 0, 0,0], // Replace with actual data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f']
+            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#98FB98']
         }]
     },
     options: {
@@ -152,7 +152,7 @@ const newRoleChart = new Chart(newRoleCtx, {
         datasets: [{
             label: 'Applicants',
             data: [0, 0, 0, 0,0], // Initial placeholder data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f']
+            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#98FB98']
         }]
     },
     options: {
@@ -234,7 +234,7 @@ const secondStatusChart = new Chart(secondStatusCtx, {
         labels: ['Data Engineer', 'Data-Ops Engineer', 'Data – BI Visualization Engineer', 'Data Modeller','Data Analyst','Data Architect','Data Scientist –AI/ML'],
         datasets: [{
             data: [0, 0, 0, 0,0,0,0], // Placeholder data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f','#95a5a6','#3498db']
+            backgroundColor: ['#FFB6C1', '#FFD700', '#90EE90', '#D3D3D3','#C0C0C0','#DCDCDC','#B0C4DE']
         }]
     },
     options: {
@@ -265,7 +265,7 @@ const secondRoleChart = new Chart(secondRoleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0,0,0,0], // Placeholder data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f','#95a5a6','#3498db']
+            backgroundColor: ['#FFB6C1', '#FFD700', '#90EE90', '#D3D3D3','#C0C0C0','#DCDCDC','#B0C4DE']
         }]
     },
     options: {
@@ -917,19 +917,53 @@ function handleDownloadSelection() {
         }
 
         // fetch counts
-        async function loadCandidateCounts() {
-        try {
-            const response = await fetch('https://demotag.vercel.app/api/candidate-counts');
-            const data = await response.json();
+  // Function to get URL parameters
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
 
-            // Update the counts on the page
-            document.getElementById('uploadCount').innerText = data.totalCount;
-            document.getElementById('shortlistedCount').innerText = data.shortlistedCount;
-            document.getElementById('rejectedCount').innerText = data.rejectedCount;
-        } catch (error) {
-            console.error('Error fetching candidate counts:', error);
+// Function to load candidate counts
+let isLoading = false;
+
+async function loadCandidateCounts(ec_mapping) {
+    if (isLoading) return;  // Prevent duplicate calls
+    isLoading = true;
+
+    try {
+        console.log("Fetching data for:", ec_mapping);
+        const response = await fetch(`https://demotag.vercel.app/api/candidate-counts?eng_center=${encodeURIComponent(ec_mapping)}`);
+        const data = await response.json();
+
+        console.log("API Response:", data);
+
+        if (data.error) {
+            console.error(data.error);
+            return;
         }
+
+        document.getElementById('uploadCount').innerText = data.totalCount;
+        document.getElementById('shortlistedCount').innerText = data.shortlistedCount;
+        document.getElementById('rejectedCount').innerText = data.rejectedCount;
+    } catch (error) {
+        console.error('Error fetching candidate counts:', error);
+    } finally {
+        isLoading = false;  // Reset flag after fetching
     }
+}
+
+
+
+// Extract ec_mapping from URL and load data
+document.addEventListener("DOMContentLoaded", () => {
+    const ec_mapping = getQueryParam("ec_mapping");
+    if (ec_mapping) {
+        loadCandidateCounts(ec_mapping);
+    } else {
+        console.error("ec_mapping parameter is missing in the URL.");
+    }
+});
+
 
 function downloadPageAsPpt() {
         html2canvas(document.body).then(canvas => {
@@ -1662,4 +1696,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize by fetching HR names when the page loads
 //   document.addEventListener('DOMContentLoaded', fetchHRNames);
-
