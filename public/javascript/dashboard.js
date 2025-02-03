@@ -24,7 +24,7 @@ const statusChart = new Chart(statusCtx, {
         labels: ['Devops', 'Platform', 'Cloudops', 'Migration'],
         datasets: [{
             data: [, , , ], // Replace with actual data
-            backgroundColor: ['#E6E6FA', '#DAF7A6', '#bb86fc', '#d9ead3']
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#76d7c4', '#f5cba7']
         }]
     },
     options: {
@@ -65,7 +65,7 @@ const roleChart = new Chart(roleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0],  // Initial placeholder data
-            backgroundColor: '#DAF7A6'
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4']
         }]
     },
     options: {
@@ -115,7 +115,7 @@ const newStatusChart = new Chart(newStatusCtx, {
         labels: ['React JS', 'Snowflake', 'Hadoop Engineer', 'Java FullStack' ,'.Net Fullstack'],
         datasets: [{
             data: [0, 0, 0, 0,0], // Replace with actual data
-            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#98FB98']
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f']
         }]
     },
     options: {
@@ -152,7 +152,7 @@ const newRoleChart = new Chart(newRoleCtx, {
         datasets: [{
             label: 'Applicants',
             data: [0, 0, 0, 0,0], // Initial placeholder data
-            backgroundColor: ['#FFC0CB', '#FFD700', '#87CEEB', '#90EE90','#98FB98']
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f']
         }]
     },
     options: {
@@ -234,7 +234,7 @@ const secondStatusChart = new Chart(secondStatusCtx, {
         labels: ['Data Engineer', 'Data-Ops Engineer', 'Data – BI Visualization Engineer', 'Data Modeller','Data Analyst','Data Architect','Data Scientist –AI/ML'],
         datasets: [{
             data: [0, 0, 0, 0,0,0,0], // Placeholder data
-            backgroundColor: ['#FFB6C1', '#FFD700', '#90EE90', '#D3D3D3','#C0C0C0','#DCDCDC','#B0C4DE']
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f','#95a5a6','#3498db']
         }]
     },
     options: {
@@ -265,7 +265,7 @@ const secondRoleChart = new Chart(secondRoleCtx, {
         datasets: [{
             label: 'Applications',
             data: [0, 0, 0, 0,0,0,0], // Placeholder data
-            backgroundColor: ['#FFB6C1', '#FFD700', '#90EE90', '#D3D3D3','#C0C0C0','#DCDCDC','#B0C4DE']
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f','#95a5a6','#3498db']
         }]
     },
     options: {
