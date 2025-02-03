@@ -934,26 +934,47 @@ app.get('/api/getcandidates', async (req, res) => {
 });
 
 app.get('/api/candidate-counts', async (req, res) => {
-    try {
-        // Query to get the total count
-        const totalResult = await pool.query('SELECT COUNT(*) AS total_count FROM candidate_info');
+  try {
+      const { eng_center } = req.query;
 
-        // Query to get the count of shortlisted candidates
-        const shortlistedResult = await pool.query("SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE prescreening_status = 'Shortlisted'");
+      if (!eng_center) {
+          return res.status(400).json({ error: "eng_center parameter is required" });
+      }
 
-        // Query to get the count of rejected candidates
-        const rejectedResult = await pool.query("SELECT COUNT(*) AS rejected_count FROM candidate_info WHERE prescreening_status = 'Rejected'");
+      // Convert comma-separated string to an array and trim spaces
+      const engCentersArray = eng_center.split(',').map(center => center.trim());
 
-        // Respond with the counts
-        res.json({
-            totalCount: totalResult.rows[0].total_count,
-            shortlistedCount: shortlistedResult.rows[0].shortlisted_count,
-            rejectedCount: rejectedResult.rows[0].rejected_count
-        });
-    } catch (error) {
-        console.error('Error fetching counts:', error);
-        res.status(500).send('Server error');
-    }
+      // Generate placeholders ($1, $2, $3, ...) dynamically
+      const placeholders = engCentersArray.map((_, index) => `$${index + 1}`).join(',');
+
+      // Query to get the total count for multiple eng_center values
+      const totalResult = await pool.query(
+          `SELECT COUNT(*) AS total_count FROM candidate_info WHERE eng_center IN (${placeholders})`,
+          engCentersArray
+      );
+
+      // Query to get the count of shortlisted candidates
+      const shortlistedResult = await pool.query(
+          `SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Shortlisted'`,
+          engCentersArray
+      );
+
+      // Query to get the count of rejected candidates
+      const rejectedResult = await pool.query(
+          `SELECT COUNT(*) AS rejected_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Rejected'`,
+          engCentersArray
+      );
+
+      // Respond with the counts
+      res.json({
+          totalCount: totalResult.rows[0].total_count,
+          shortlistedCount: shortlistedResult.rows[0].shortlisted_count,
+          rejectedCount: rejectedResult.rows[0].rejected_count
+      });
+  } catch (error) {
+      console.error('Error fetching counts:', error);
+      res.status(500).send('Server error');
+  }
 });
 
 
