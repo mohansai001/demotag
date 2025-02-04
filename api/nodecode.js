@@ -1467,14 +1467,19 @@ app.post('/api/updateCandidateFeedback', async (req, res) => {
 // panel call
 app.get('/api/panel-candidates-info', async (req, res) => {
   try {
-    // Get the date parameter from the query string
-    const { l_2_interviewdate } = req.query;
+    const { l_2_interviewdate, userEmail } = req.query;
+
     const query = `
       SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, imocha_report, meeting_link, l_2_interviewtime
-      FROM candidate_info WHERE prescreening_status = 'Shortlisted' AND recruitment_phase = 'L2 Scheduled' AND l_2_interviewdate = $1;`;
- 
-    const result = await pool.query(query, [l_2_interviewdate]);
- 
+      FROM candidate_info
+      WHERE prescreening_status = 'Shortlisted'
+        AND recruitment_phase = 'L2 Scheduled'
+        AND l_2_interviewdate = $1
+        AND panel_name = $2;`;  // Add the condition to check for panel_name containing the user's email
+    
+    // Use the '%' wildcard to match any occurrence of the userEmail in the panel_name field
+    const result = await pool.query(query, [l_2_interviewdate, userEmail]);
+
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching shortlisted candidates:', error);
