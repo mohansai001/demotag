@@ -15,7 +15,7 @@ async function fetchCandidatesInfo() {
   loadingOverlay.style.display = 'flex'; // Show the loading overlay
 
   try {
-    const response = await fetch('https://demotag.vercel.app/api/get-shortlisted-candidates');
+    const response = await fetch('http://localhost:3000/api/get-shortlisted-candidates');
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
@@ -124,8 +124,26 @@ function handleScheduleClick(event) {
         const panel = document.getElementById('panel-select').value; // Panel email
         const dateTime = document.getElementById('datetime-input').value;
 
+        const date = new Date(dateTime);
+
+        // Convert the date to IST (Indian Standard Time), which is UTC +5:30
+        const istOffset = 5.5 * 60; // IST is 5 hours 30 minutes ahead of UTC
+        const gmtTime = date.getTime(); // Get time in milliseconds (UTC time)
+        const istTime = new Date(gmtTime + (istOffset * 60 * 1000)); // Convert to IST
+
+        // Manually format the date to YYYY-MM-DDTHH:mm:ss (IST time)
+        const year = istTime.getFullYear();
+        const month = String(istTime.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
+        const day = String(istTime.getDate()).padStart(2, '0');
+        const hours = String(istTime.getHours()).padStart(2, '0');
+        const minutes = String(istTime.getMinutes()).padStart(2, '0');
+        const seconds = String(istTime.getSeconds()).padStart(2, '0');
+
+        // Formatted IST datetime string
+        const istDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
         // API request to create Teams meeting and update status
-        const response = await fetch(`https://demotag.vercel.app/api/update-status`, {
+        const response = await fetch(`http://localhost:3000/api/update-status`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -134,7 +152,7 @@ function handleScheduleClick(event) {
             email: candidateEmail,
             status: 'L2 Scheduled',
             panel: panel,
-            dateTime: dateTime,
+            dateTime: istDateTime, // Send the manually formatted IST date
           }),
         });
 
@@ -169,6 +187,7 @@ function handleScheduleClick(event) {
 
 
 
+
 // Close modal functionality
 document.getElementById('close-modal-btn').addEventListener('click', () => {
   document.getElementById("schedule-modal").classList.remove("active");
@@ -185,3 +204,35 @@ document.querySelectorAll('schedule-btn').forEach(button => {
     button.addEventListener('click', handleScheduleClick);
   }
 });
+
+document.getElementById('domain-select').addEventListener('change', function() {
+  var selectedDomain = this.value;
+  fetchPanelEmails(selectedDomain);
+});
+
+function fetchPanelEmails(domain) {
+  // Fetch the emails for the selected domain from the backend
+  fetch(`/api/get-panel-emails?domain=${domain}`)
+      .then(response => response.json())
+      .then(data => {
+          const panelSelect = document.getElementById('panel-select');
+          panelSelect.innerHTML = '<option value="">Select Panel</option>';  // Clear previous options
+
+          // If no emails were returned
+          if (Array.isArray(data) && data.length > 0) {
+              data.forEach(email => {
+                  let option = document.createElement('option');
+                  option.value = email;
+                  option.textContent = email;
+                  panelSelect.appendChild(option);
+              });
+          } else {
+              let option = document.createElement('option');
+              option.textContent = "No panels available for this domain";
+              panelSelect.appendChild(option);
+          }
+      })
+      .catch(error => {
+          console.error('Error fetching panel emails:', error);
+      });
+}
