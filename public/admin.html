@@ -430,6 +430,7 @@
           const result = await response.json();
           if (result.success) {
             showToast("EC mappings updated successfully");
+            window.location.reload();
             fetchAdminDetails();
           } else {
             showToast("Error updating EC mappings", 'failure');
@@ -495,6 +496,7 @@
 
           if (result.success) {
             showToast("User added successfully!");
+            window.location.reload();
             document.getElementById("popupForm").style.display = "none";
           } else {
             showToast("Error adding user", 'failure');
