@@ -211,6 +211,8 @@
 
             if (account) {
               const email = account.username;
+              localStorage.setItem("userEmail", email);
+              console.log("Logged in email:", email);
               showModal(`Welcome, ${account.name}!`);
 
               // Check admin status and EC mapping
