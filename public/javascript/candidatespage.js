@@ -15,7 +15,7 @@ async function fetchCandidatesInfo() {
   loadingOverlay.style.display = 'flex'; // Show the loading overlay
 
   try {
-    const response = await fetch('http://localhost:3000/api/get-shortlisted-candidates');
+    const response = await fetch('https://demotag.vercel.app/api/get-shortlisted-candidates');
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
@@ -65,10 +65,6 @@ async function fetchCandidatesInfo() {
     loadingOverlay.style.display = 'none'; // Hide the loading overlay
   }
 }
-
-
-
-
 
 // Call fetch function when the page loads
 document.addEventListener('DOMContentLoaded', fetchCandidatesInfo);
@@ -143,7 +139,7 @@ function handleScheduleClick(event) {
         const istDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
         // API request to create Teams meeting and update status
-        const response = await fetch(`http://localhost:3000/api/update-status`, {
+        const response = await fetch(`https://demotag.vercel.app/api/update-status`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -183,10 +179,6 @@ function handleScheduleClick(event) {
     console.error('Error in handleScheduleClick:', error);
   }
 }
-
-
-
-
 
 // Close modal functionality
 document.getElementById('close-modal-btn').addEventListener('click', () => {
