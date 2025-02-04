@@ -103,13 +103,15 @@ function renderCalendar(month, year) {
 
 async function fetchMeetingsForSelectedDate(selectedDate) {
     const meetingContainer = document.getElementById('meeting-container'); // Ensure this element exists
+    const userEmail = localStorage.getItem("userEmail"); // Get the logged-in user's email
     try {
         selectedDate.setHours(0, 0, 0, 0); 
         const formattedSelectedDate = selectedDate.toLocaleDateString('en-CA');
 
         console.log('Fetching meetings for date:', formattedSelectedDate);
 
-        const response = await fetch(`https://demotag.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}`);
+        // Fetch the meetings, including the logged-in user's email
+        const response = await fetch(`https://demotag.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}&userEmail=${userEmail}`);
         if (!response.ok) {
             throw new Error('Failed to fetch shortlisted candidates');
         }
@@ -176,7 +178,6 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
 }
 
 
-
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('show');
@@ -217,6 +218,8 @@ document.getElementById("prevMonthBtn").addEventListener("click", () => {
         currentYear--;
     }
     renderCalendar(currentMonth, currentYear);
+    monthSelector.value = currentMonth;
+    yearSelector.value = currentYear;
 });
 
 document.getElementById("nextMonthBtn").addEventListener("click", () => {
@@ -226,4 +229,6 @@ document.getElementById("nextMonthBtn").addEventListener("click", () => {
         currentYear++;
     }
     renderCalendar(currentMonth, currentYear);
+    monthSelector.value = currentMonth;
+    yearSelector.value = currentYear;
 });
