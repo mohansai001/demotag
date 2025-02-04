@@ -1770,6 +1770,34 @@ app.post('/api/update-ec-mapping', async (req, res) => {
   }
 });
 
+app.get('/api/get-panel-emails', async (req, res) => {
+  try {
+    const { domain } = req.query;  // Get domain from query parameters
+    
+    if (!domain) {
+      return res.status(400).json({ message: 'Domain is required' });
+    }
+    
+    // Query the database for emails based on the domain
+    const result = await pool.query(`
+      SELECT email
+      FROM panel_details
+      WHERE account = $1
+    `, [domain]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No emails found for the selected domain' });
+    }
+
+    // Extract emails from the result
+    const emails = result.rows.map(row => row.email);
+
+    res.status(200).json(emails);
+  } catch (error) {
+    console.error('Error fetching panel emails:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 
