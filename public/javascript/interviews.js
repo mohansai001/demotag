@@ -80,15 +80,25 @@ function renderCalendar(month, year) {
     }
 }
 
-async function fetchMeetingsForSelectedDate(selectedDate) {
+window.onload = function () {
+    const userEmail = localStorage.getItem("userEmail");
+    console.log(`Logged in as: ${userEmail}`);
+
+    // Call the API to fetch the candidate details based on the user email
+    fetchMeetingsForSelectedDate(userEmail);
+};
+
+async function fetchMeetingsForSelectedDate(userEmail) {
     const meetingContainer = document.getElementById('meeting-container'); // Ensure this element exists
     try {
+        const selectedDate = new Date(); // You can modify this to get the selected date
         selectedDate.setHours(0, 0, 0, 0);
         const formattedSelectedDate = selectedDate.toLocaleDateString('en-CA');
-
+        
         console.log('Fetching meetings for date:', formattedSelectedDate);
 
-        const response = await fetch(`https://demotag.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}`);
+        // Pass the user email along with the date to the backend API
+        const response = await fetch(`https://demotag.vercel.app/api/hr-candidates-info?l_2_interviewdate=${formattedSelectedDate}&hr_email=${encodeURIComponent(userEmail)}`);
         if (!response.ok) {
             throw new Error('Failed to fetch shortlisted candidates');
         }
