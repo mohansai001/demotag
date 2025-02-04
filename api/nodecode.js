@@ -1481,6 +1481,29 @@ app.get('/api/panel-candidates-info', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+app.get('/api/hr-candidates-info', async (req, res) => {
+  try {
+    const { l_2_interviewdate, hr_email } = req.query;
+
+    // Updated SQL query to also check for hr_email
+    const query = `
+      SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, imocha_report, meeting_link, l_2_interviewtime
+      FROM candidate_info 
+      WHERE prescreening_status = 'Shortlisted' 
+        AND recruitment_phase = 'L2 Scheduled' 
+        AND l_2_interviewdate = $1
+        AND hr_email = $2;`;
+
+    // Pass both l_2_interviewdate and hr_email to the query
+    const result = await pool.query(query, [l_2_interviewdate, hr_email]);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching shortlisted candidates:', error);
+    res.status(500).send('Server error');
+  }
+});
 //l2 update
 // Example Express.js route to update candidate status, panel, and date/time
 // const fetch = require('node-fetch');
