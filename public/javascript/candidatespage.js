@@ -32,31 +32,35 @@ async function fetchCandidatesInfo() {
       const row = document.createElement('tr');
       row.classList.add('candidate');
       row.dataset.status = candidate.recruitment_phase === 'Imocha Completed' ? 'completed' : 'not-completed';
-
+    
       const formattedDate = candidate.date
         ? new Date(candidate.date).toISOString().split('T')[0]
         : 'N/A';
-
-      // const isScoreAvailable = candidate.score !== null && candidate.score !== undefined;
+    
       const isEligibleForScheduling = candidate.recruitment_phase === 'Moved to L2' || candidate.recruitment_phase === 'No iMocha Exam';
-
+      const showPendingText = (!candidate.score || candidate.score === 'N/A') && candidate.recruitment_phase === 'Move to L1';
+    
       row.innerHTML = `
-    <td>${candidate.rrf_id}</td>
-    <td>${candidate.candidate_name}</td>
-    <td>${candidate.candidate_email}</td>
-    <td>${candidate.candidate_phone}</td>
-    <td>${candidate.role}</td>
-    <td>${candidate.score || 'N/A'}</td>
-    <td>${candidate.recruitment_phase}</td>
-    <td>${formattedDate}</td>
-    <td><button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button></td>
-  `;
-
+        <td>${candidate.rrf_id}</td>
+        <td>${candidate.candidate_name}</td>
+        <td>${candidate.candidate_email}</td>
+        <td>${candidate.candidate_phone}</td>
+        <td>${candidate.role}</td>
+        <td>${candidate.score || 'N/A'}</td>
+        <td>${candidate.recruitment_phase}</td>
+        <td>${formattedDate}</td>
+        <td>
+          ${showPendingText 
+            ? '<span class="pending-text">Pending iMocha Exam</span>' 
+            : `<button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button>`}
+        </td>
+      `;
+    
       const button = row.querySelector('.schedule-btn');
-      if (isEligibleForScheduling) {
+      if (button && isEligibleForScheduling) {
         button.addEventListener('click', handleScheduleClick);
       }
-
+    
       tableBody.appendChild(row);
     });
   } catch (error) {
