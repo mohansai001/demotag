@@ -155,8 +155,8 @@
       const msalInstance = new msal.PublicClientApplication(msalConfig);
 
       // Scopes
-      const loginRequest = {
-        scopes: ["openid", "profile", "user.read"], // Add other scopes as needed
+     const loginRequest = {
+        scopes: ["openid", "profile", "user.read", "Mail.Send"],
       };
 
       // Handle Team Selection Change
