@@ -32,14 +32,13 @@ async function fetchCandidatesInfo() {
       const row = document.createElement('tr');
       row.classList.add('candidate');
       row.dataset.status = candidate.recruitment_phase === 'Imocha Completed' ? 'completed' : 'not-completed';
-    
+
       const formattedDate = candidate.date
         ? new Date(candidate.date).toISOString().split('T')[0]
         : 'N/A';
-    
+
       const isEligibleForScheduling = candidate.recruitment_phase === 'Moved to L2' || candidate.recruitment_phase === 'No iMocha Exam';
-      const showPendingText = (!candidate.score || candidate.score === 'N/A') && candidate.recruitment_phase === 'Move to L1';
-    
+
       row.innerHTML = `
         <td>${candidate.rrf_id}</td>
         <td>${candidate.candidate_name}</td>
@@ -49,26 +48,189 @@ async function fetchCandidatesInfo() {
         <td>${candidate.score || 'N/A'}</td>
         <td>${candidate.recruitment_phase}</td>
         <td>${formattedDate}</td>
-        <td>
-          ${showPendingText 
-            ? '<span class="pending-text">Pending iMocha Exam</span>' 
-            : `<button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button>`}
-        </td>
+        <td><button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button></td>
       `;
-    
+
       const button = row.querySelector('.schedule-btn');
-      if (button && isEligibleForScheduling) {
+      if (isEligibleForScheduling) {
         button.addEventListener('click', handleScheduleClick);
       }
-    
+
       tableBody.appendChild(row);
     });
+
+    // Automatically send emails for completed candidates after loading data
+    await sendEmailsForCompletedCandidates(candidates);
+
   } catch (error) {
     console.error('Error fetching candidates:', error);
   } finally {
     loadingOverlay.style.display = 'none'; // Hide the loading overlay
   }
 }
+
+const msalConfig = {
+  auth: {
+    clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
+    authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
+    redirectUri: "https://demotag.vercel.app", // Must match the redirect URI registered in Azure AD
+  }
+};
+
+// Initialize MSAL instance
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+// Get the logged-in user's email from localStorage
+const loggedInUserEmail = localStorage.getItem("userEmail");
+
+/**
+ * Sends an email for the given candidate if not already sent.
+ * Before sending, it checks the candidate's email status by calling the backend.
+ * After a successful send, it updates the status to "emailsent" in the candidate_info table.
+ */
+async function sendEmailForCandidate(candidate) {
+  // Only proceed if the candidate has a completed iMocha report.
+  if (!candidate.imocha_report) return;
+
+  // Check if an email has already been sent for this candidate by calling your API.
+  const emailStatus = await getCandidateEmailStatus(candidate.candidate_email);
+  if (emailStatus === 'emailsent') {
+    console.log(`Email already sent for candidate ${candidate.candidate_name} (${candidate.candidate_email}). Skipping email.`);
+    return;
+  }
+
+  // Prepare the token request for Mail.Send
+  const tokenRequest = {
+    scopes: ["Mail.Send"],
+    account: msalInstance.getAllAccounts()[0]
+  };
+
+  // Acquire an access token (try silently, then fallback to popup)
+  let tokenResponse;
+  try {
+    tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
+  } catch (silentError) {
+    console.warn("Silent token acquisition failed; trying popup.", silentError);
+    tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
+  }
+  const accessToken = tokenResponse.accessToken;
+
+  // Construct the email message payload for Graph API
+  const emailData = {
+    message: {
+      subject: `iMocha Completed for ${candidate.candidate_name}`,
+      body: {
+        contentType: "HTML",
+        content: `
+          <h3>Candidate iMocha Test Completed</h3>
+          <p><strong>Name:</strong> ${candidate.candidate_name}</p>
+          <p><strong>Email:</strong> ${candidate.candidate_email}</p>
+          <p><strong>Phone:</strong> ${candidate.candidate_phone}</p>
+          <p><strong>Role:</strong> ${candidate.role}</p>
+          <p><strong>Score:</strong> ${candidate.score || 'N/A'}</p>
+          <p><strong>Status:</strong> ${candidate.l_1_status}</p>
+          <p><strong>Recruitment Phase:</strong> ${candidate.recruitment_phase}</p>
+          <p><strong>PDF Report:</strong> <a href="${candidate.imocha_report}" target="_blank">View Report</a></p>
+          <p>Sent from: ${loggedInUserEmail}</p>
+        `
+      },
+      toRecipients: [
+        {
+          emailAddress: {
+            address: candidate.hr_email
+          }
+        }
+      ]
+    },
+    saveToSentItems: "true"
+  };
+
+  // Send the email via Microsoft Graph API
+  const response = await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(emailData)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Error sending email: ${errorData.error.message}`);
+  }
+  console.log(`Email sent for candidate ${candidate.candidate_name} to ${candidate.hr_email}`);
+
+  // Update email status in the candidate_info table to "emailsent"
+  try {
+    await updateEmailStatus(candidate.candidate_email, 'emailsent');
+    console.log(`Email status updated to 'emailsent' for candidate ${candidate.candidate_name}`);
+  } catch (updateError) {
+    console.error(`Failed to update email status for candidate ${candidate.candidate_name}:`, updateError);
+  }
+}
+
+/**
+ * Iterates through candidate records and sends emails for those who have completed iMocha.
+ * It checks each candidate’s email status before sending the email.
+ * @param {Array<Object>} candidates - Array of candidate objects.
+ */
+async function sendEmailsForCompletedCandidates(candidates) {
+  for (const candidate of candidates) {
+    try {
+      await sendEmailForCandidate(candidate);
+    } catch (error) {
+      console.error(`Error sending email for candidate ${candidate.candidate_name}:`, error);
+    }
+  }
+  alert("Emails processed for all completed iMocha candidates (if any).");
+}
+
+/**
+ * Gets the email status for a candidate by calling a backend API.
+ * Expects the API to return JSON in the format: { status: "emailsent" } or { status: null }.
+ * @param {string} candidateEmail
+ * @returns {Promise<string|null>}
+ */
+async function getCandidateEmailStatus(candidateEmail) {
+  try {
+    const response = await fetch(`https://demotag.vercel.app/api/get-email-status?candidate_email=${encodeURIComponent(candidateEmail)}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch email status for ${candidateEmail}`);
+    }
+    const data = await response.json();
+    return data.status; // e.g., "emailsent" or null
+  } catch (error) {
+    console.error(`Error fetching email status for ${candidateEmail}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Updates the email status for a candidate in the candidate_info table.
+ * @param {string} candidateEmail
+ * @param {string} status - The new status to set (e.g., "emailsent").
+ * @returns {Promise<void>}
+ */
+async function updateEmailStatus(candidateEmail, status) {
+  try {
+    const response = await fetch('https://demotag.vercel.app/api/update-email-status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ candidate_email: candidateEmail, status })
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to update email status: ${errorData.message}`);
+    }
+  } catch (error) {
+    console.error(`Error updating email status for ${candidateEmail}:`, error);
+    throw error;
+  }
+}
+
 
 // Call fetch function when the page loads
 document.addEventListener('DOMContentLoaded', fetchCandidatesInfo);
@@ -240,7 +402,7 @@ document.getElementById('dateRangeForm').addEventListener('submit', async (event
   const endDate = document.getElementById('endDate').value;
 
   try {
-    const response = await fetch('http://localhost:3000/api/callTestAttempts', {
+    const response = await fetch('https://demotag.vercel.app/api/callTestAttempts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ startDate, endDate }),
