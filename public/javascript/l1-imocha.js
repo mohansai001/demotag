@@ -1,3 +1,4 @@
+
       function navigateBack() {
         window.location.href = "cloudrecruit.html";
       }
@@ -119,6 +120,25 @@
           "Lead AWS Platform Engineer": 1295883,
           "Junior Azure Cloudops Engineer": 1292781,
           "Junior AWS Cloudops Engineer": 1292779,
+          "AWS DataEngineer":1303946,
+          "Azure DataEngineer":1293813,
+          "Databricks DataEngineer":1293971,
+          "Hadoop DataEngineer":1263132,
+          "DataStage DataEngineer":1304065,
+          "IBM MDM DataEngineer":1233151,
+          "ETL DataEngineer":1294495,
+          "Oracle DataEngineer":1302835,
+          "IDMC DataEngineer": 1294495,
+          "Marklogic DataEngineer":1304066,
+          "SQL DataEngineer":1304100,
+          "Snowflake DataEngineer":1292173,
+          "SSIS DataEngineer":1293822,
+          "Power BI Data – BI Visualization Engineer":1303985,
+          "Tableau Data – BI Visualization Engineer":1303999,
+          "WebFOCUS Data – BI Visualization Engineer":1304109,
+          "DataAnalyst":1304111,
+          "Data Modeller":1304149
+       
         };
 
         const inviteId = roleToInviteIdMap[role];
@@ -172,41 +192,3 @@
           sendButton.disabled = false;
         }
       };
-
-      function skipEmailInvite() {
-        const recruitmentPhase = "No iMocha Exam";
-    
-        // Update recruitment phase in the database
-        fetch('https://demotag.vercel.app/api/update-candidate-recruitment-phase', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: candidateId,
-                recruitment_phase: recruitmentPhase
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log("Recruitment phase updated to 'No iMocha Exam'");
-            } else {
-                console.log("Error updating recruitment phase");
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            console.log("Error updating recruitment phase");
-        });
-  
-    
-        setTimeout(() => {
-            showToast("Skipping iMocha exam", "success");
-        }, 0);
-    
-        setTimeout(() => {
-            window.location.href = "candidatespage.html";
-        }, 3000);
-    }
-    
