@@ -154,7 +154,7 @@
             padding: 0;
             background-color: #E5E4E2;
             color: #e0e0e0;
-            height: 100%;
+            height: fit-content;
 
         }
         .chip {
@@ -182,8 +182,7 @@
         }
 
         .form-container {
-            width: 100%;
-            max-width: 900px;
+            width: 90%;
             margin: 0 auto;
             border: 1px solid #333;
             padding: 20px;
@@ -325,6 +324,37 @@
         .toast.error {
             background-color: #f44336;
         }
+
+        .header {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        td, th {
+            border: 0.5px solid #b9b8b8;
+            padding: 4px;
+            text-align: left;
+            color: black;
+        }
+        table td:nth-child(1), table th:nth-child(1) {
+            width: 10%;
+        }
+        table td:nth-child(2), table th:nth-child(2) {
+            width: 20%;
+        }
+        table td:nth-child(3), table th:nth-child(3), table td:nth-child(4), table th:nth-child(4), table td:nth-child(5), table th:nth-child(5){
+            width: 7%;
+        }
+        table td:nth-child(6), table th:nth-child(6), table td:nth-child(7), table th:nth-child(7){
+            width: 24%;
+        }
+
     </style>
 </head>
 
@@ -340,84 +370,174 @@
         </div>
         <br>
         <!-- Header Section -->
-        <div class="form-header">
-            <div class="form-group">
-                <label for="candidate-name">Name of the Candidate</label>
-                <input type="text" id="candidate-name" class="form-input" placeholder="" readonly>
-            </div>
-            <div class="form-group">
-                <label for="position">Position Interviewed For</label>
-                <input type="text" id="position" class="form-input" placeholder="" readonly>
-            </div>
-            <div class="form-group">
-                <label for="business-unit">Business Unit/Dept *</label>
-                <input type="text" id="business-unit" class="form-input" placeholder="Enter business unit" required>
-            </div>
-            <div class="form-group">
-                <label for="interview-mode">Mode of Interview *</label>
-                <input type="text" id="interview-mode" class="form-input" placeholder="Enter interview mode" required>
-            </div>
-            <div class="form-group">
-                <label for="interviewer-name">Interviewer Mail</label>
-                <input type="text" id="interviewer-name" class="form-input" placeholder=" " readonly>
-            </div>
-            <div class="form-group">
-                <label for="interview-date">Date of Interview</label>
-                <input type="text" id="interview-date" class="form-input" readonly>
-            </div>
+
+        <div>
+            <table>
+                <tr>
+                    <td class="header">RRF Code</td>
+                    <td><input type="text" id="rrf-id" placeholder="" readonly></td>
+                </tr>
+                <tr>
+                    <td class="header">Job Designation</td>
+                    <td><input type="text" id="position" placeholder="" readonly></td>
+                </tr>
+                <tr>
+                    <td class="header">Name of the Candidate</td>
+                    <td><input type="text" id="candidate-name" placeholder="" readonly></td>
+                </tr>
+                <tr>
+                    <td class="header">Date of Interview</td>
+                    <td><input type="text" id="interview-date" readonly></td>
+                </tr>
+                <tr>
+                    <td class="header">Interviewer Mail</td>
+                    <td><input type="text" id="interviewer-name" placeholder="" readonly></td>
+                </tr>
+                <tr>
+                    <td class="header">TAG Team Member</td>
+                    <td><input type="text" id="hr-email" placeholder="" readonly></td>
+                </tr>
+            </table>
         </div>
 
-        <!-- Rating Section -->
-        <div class="rating-section">
-            Rating: 1 (Poor) | 2 (Needs Improvement) | 3 (Good) | 4 (Very Good) | 5 (Outstanding)
-        </div>
-
-        <!-- Skills Assessment Section -->
-        <table class="skills-table">
+        <table>
             <tr>
-                <th>Skills To Be Assessed</th>
-                <th>Rating</th>
-                <th>Comments</th>
+                <td colspan="7"><strong>Top Skills for the Role</strong></td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td>Skills</td>
+                <td>Description</td>
+                <td>Deployment</td>
+                <td>Configuration</td>
+                <td>Troubleshooting</td>
+                <td>Justification</td>
+                <td>Improvements</td>
             </tr>
             <tr>
-                <td class="skills-title">Overall System Understanding *</td>
-                <td><input type="number" class="form-input" min="1" max="5" required></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+                <td class="header">Core Cloud Concepts</td>
+                <td>Be prepared to discuss IaaS, PaaS, SaaS, deployment models (public, private, hybrid), and the advantages and disadvantages of cloud</td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><textarea></textarea></td>
+                <td><textarea></textarea></td>
             </tr>
             <tr>
-                <td class="skills-title">Primary Skill *</td>
-                <td><input type="number" class="form-input" min="1" max="5" required></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+                <td class="header">Networking & Security</td>
+                <td>Expect questions on virtual networks, security groups, firewalls, endpoints and access control mechanisms within a cloud environment</td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><textarea></textarea></td>
+                <td><textarea></textarea></td>
             </tr>
             <tr>
-                <td class="skills-title">Secondary Skill</td>
-                <td><input type="number" class="form-input" min="1" max="5"></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments"></td>
+                <td class="header">Infrastructure Management</td>
+                <td>Candidate might be asked about resource provisioning (VMs, storage, Containerization), configuration management tools (Chef, Ansible), and CloudFormation</td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><textarea></textarea></td>
+                <td><textarea></textarea></td>
             </tr>
             <tr>
-                <td class="skills-title">Additional Skill</td>
-                <td><input type="number" class="form-input" min="1" max="5"></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments"></td>
+                <td class="header">Scalability & High Availability</td>
+                <td>Understanding of how to design and implement scalable and highly available infrastructure in the cloud</td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><textarea></textarea></td>
+                <td><textarea></textarea></td>
             </tr>
             <tr>
-                <td class="skills-title">Customer Communication *</td>
-                <td><input type="number" class="form-input" min="1" max="5" required></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+                <td class="header">Automation</td>
+                <td>Infrastructure as code (IaC) with Terraform or ARM(Azure) or CloudFormation (AWS)</td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><textarea></textarea></td>
+                <td><textarea></textarea></td>
             </tr>
             <tr>
-                <td class="skills-title">Approach/Attitude *</td>
-                <td><input type="number" class="form-input" min="1" max="5" required></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
-            </tr>
-            <tr>
-                <td class="skills-title">Communication Skills *</td>
-                <td><input type="number" class="form-input" min="1" max="5" required></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
-            </tr>
-            <tr>
-                <td class="skills-title">Continuous Learning *</td>
-                <td><input type="number" class="form-input" min="1" max="5" required></td>
-                <td><input type="text" class="comment-input" placeholder="Enter comments" required></td>
+                <td class="header">Observability</td>
+                <td>Monitoring, Logging & Alerting</td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><select class="dropdown">
+                    <option value="poor">Poor</option>
+                    <option value="average">Average</option>
+                    <option value="good">Good</option>
+                </select></td>
+                <td><textarea></textarea></td>
+                <td><textarea></textarea></td>
             </tr>
         </table>
 
@@ -430,10 +550,10 @@
 
         <!-- Result Section -->
         <div class="result-section">
-            <label for="result">Result:</label>
+            <label for="result">Shortlisted for next round</label>
             <select id="result" class="result-select">
-                <option value="">Select Result</option>
-                <option value="Recommended">Selected</option>
+                <option value="">Select</option>
+                <option value="Recommended">Shortlisted</option>
                 <option value="Rejected">Rejected</option>
             </select>
         </div>
@@ -490,7 +610,7 @@
 
         if (candidateEmail) {
             // Fetch candidate data from the server based on the email
-            fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+            fetch(`http://localhost:3000/api/getCandidateData?candidateEmail=${candidateEmail}`)
                 .then(response => response.json())
                 .then(data => {
                     // Check if the data is returned successfully
@@ -504,6 +624,8 @@
                         document.getElementById('interview-date').value = data.l_2_interviewdate;
                         document.getElementById('imocha-score').textContent = data.l_1_score;
                         document.getElementById('candidate-email').textContent = candidateEmail;
+                        document.getElementById('rrf-id').value = data.rrf_id;
+                        document.getElementById('hr-email').value = data.hr_email;
                     }
                 })
                 .catch(error => {
@@ -529,7 +651,7 @@
         }
 
         // Send the data to the backend for updating the database
-        fetch('https://demotag.vercel.app/api/updateCandidateFeedback', {
+        fetch('http://localhost:3000/api/updateCandidateFeedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
