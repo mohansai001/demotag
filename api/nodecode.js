@@ -10,22 +10,15 @@ const cron = require('node-cron');
 const xlsx = require('xlsx');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
-//  const multer = require('multer');
-const multer = require("multer"); // Used for handling file uploads
-const wordConverter = require("docx-pdf");
-const { exec } = require('child_process');
-const fs = require('fs');
-require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
- 
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
- 
 
 // CORS configuration
 const corsOptions = {
@@ -56,30 +49,7 @@ app.get('/api/github-token', (req, res) => {
     const githubToken = process.env.GITHUB_TOKEN; // Access the GitHub token from environment variables
     res.json({ token: githubToken });
 });
-
-//meeting link
-async function getAccessToken() {
-  const tenantId = '13085c86-4bcb-460a-a6f0-b373421c6323';
-  const clientId = 'ed0b1bf7-b012-4e13-a526-b696932c0673';
-  const clientSecret = '397821a4-1caf-4884-84c8-b6e6ad64e76e';
-  const tokenEndpoint = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
- 
-  try {
-    const response = await axios.post(tokenEndpoint, new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: clientId,
-      client_secret: clientSecret,
-      scope: 'https://graph.microsoft.com/.default',
-    }));
- 
-    return response.data.access_token;
-  } catch (error) {
-    console.error('Error fetching access token:', error.response?.data || error.message);
-    throw new Error('Failed to obtain access token');
-  }
-}
-
-//login check
+//login
 app.post("/api/check-admin", async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -93,13 +63,13 @@ app.post("/api/check-admin", async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Email not found in admin_table" });
+      return res.status(404).json({ error: "User not available" });
     }
 
     const { ec_mapping, status } = result.rows[0];
 
     if (status !== "Enable") {
-      return res.status(403).json({ error: "Account is disabled. Please contact support." });
+      return res.status(403).json({ error: "Account is disabled. Please contact admin." });
     }
 
     res.json({ ec_mapping });
@@ -109,50 +79,46 @@ app.post("/api/check-admin", async (req, res) => {
   }
 });
 
-
-
-
 app.post('/api/invite-candidate', async (req, res) => {
-  const { inviteId, email, name, sendEmail, callbackURL, redirectURL, disableMandatoryFields, hideInstruction, ccEmail } = req.body;
+    const { inviteId, email, name, sendEmail, callbackURL, redirectURL, disableMandatoryFields, hideInstruction } = req.body;
 
-  // Validate the inviteId
-  if (!inviteId) {
-      return res.status(400).json({ error: 'Missing inviteId in the request.' });
-  }
+    // Validate the inviteId
+    if (!inviteId) {
+        return res.status(400).json({ error: 'Missing inviteId in the request.' });
+    }
 
-  const targetUrl = `https://apiv3.imocha.io/v3/tests/${inviteId}/invite`; // Use the inviteId dynamically
+    const targetUrl = `https://apiv3.imocha.io/v3/tests/${inviteId}/invite`; // Use the inviteId dynamically
 
-  try {
-      const response = await fetch(targetUrl, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': IMOCHA_API_KEY,
-          },
-          body: JSON.stringify({
-              email,
-              name,
-              sendEmail,
-              callbackURL,
-              redirectURL,
-              disableMandatoryFields,
-              hideInstruction,
-              ccEmail // Include the ccEmail field in the request body
-          }),
-      });
+    try {
+        const response = await fetch(targetUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': IMOCHA_API_KEY,
+            },
+            body: JSON.stringify({
+                email,
+                name,
+                sendEmail,
+                callbackURL,
+                redirectURL,
+                disableMandatoryFields,
+                hideInstruction
+            }),
+        });
 
-      if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Error response from iMocha:', errorData);
-          return res.status(response.status).json({ error: 'Failed to send invite to iMocha' });
-      }
+        if (!response.ok) {
+            const errorData = await response.text();
+            console.error('Error response from iMocha:', errorData);
+            return res.status(response.status).json({ error: 'Failed to send invite to iMocha' });
+        }
 
-      const data = await response.json();
-      res.json(data); // Send back the iMocha API response to the frontend
-  } catch (error) {
-      console.error('Error inviting candidate:', error);
-      res.status(500).json({ error: 'An error occurred while sending the invite' });
-  }
+        const data = await response.json();
+        res.json(data); // Send back the iMocha API response to the frontend
+    } catch (error) {
+        console.error('Error inviting candidate:', error);
+        res.status(500).json({ error: 'An error occurred while sending the invite' });
+    }
 });
 
 app.post('/api/rrf-update', async (req, res) => {
@@ -187,6 +153,31 @@ app.post('/api/rrf-update', async (req, res) => {
   } catch (error) {
     console.error('Error processing RRF submission:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.post('/api/update-candidate-recruitment-phase', async (req, res) => {
+  const { id, recruitment_phase } = req.body;
+
+  try {
+      const query = `
+          UPDATE candidate_info
+          SET recruitment_phase = $1
+          WHERE id = $2
+          RETURNING *;
+      `;
+      const values = [recruitment_phase, id];
+
+      const result = await pool.query(query, values);
+
+      if (result.rows.length === 0) {
+          return res.status(404).json({ success: false, message: 'Candidate not found' });
+      }
+
+      res.status(200).json({ success: true, message: 'Recruitment phase updated', data: result.rows[0] });
+  } catch (error) {
+      console.error('Error updating recruitment phase:', error);
+      res.status(500).json({ success: false, message: 'Error updating recruitment phase' });
   }
 });
 
@@ -523,15 +514,10 @@ app.post('/api/add-prescreening-info', async (req, res) => {
 //send candidate details
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.office365.com",
-  port: 587,
-  secure: false,
+  service: 'gmail', // Use your email service (e.g., Gmail)
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  tls: {
-    ciphers: "SSLv3",
+    user: 'sapireddyvamsi@gmail.com', // Replace with your email
+    pass: 'urvuwnnnmdjwohxp',  // Replace with your email password or app-specific password
   },
 });
 
@@ -675,6 +661,8 @@ app.get('/api/site-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
+
+
 //App count
 app.get('/api/reactjs-resume-count', async (req, res) => {
   try {
@@ -690,8 +678,8 @@ app.get('/api/reactjs-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
-
-
+ 
+ 
 app.get('/api/snow-resume-count', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -720,8 +708,8 @@ app.get('/api/java-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
-
-
+ 
+ 
 app.get('/api/hadoop-resume-count', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -750,7 +738,7 @@ app.get('/api/.net-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
-
+ 
 //Data count
 app.get('/api/data-resume-count', async (req, res) => {
   try {
@@ -850,7 +838,6 @@ app.get('/api/data-Scientist-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
-
 
 
 // Prescreening count
@@ -989,10 +976,6 @@ app.get('/api/candidate-counts', async (req, res) => {
       res.status(500).send('Server error');
   }
 });
-
-
-
-
 
 
 
@@ -1397,7 +1380,7 @@ app.get('/api/get-shortlisted-candidates', async (req, res) => {
     WHERE 
       candidate_info.candidate_email = ir.candidate_email
       AND candidate_info.prescreening_status = 'Shortlisted'
-      AND candidate_info.recruitment_phase NOT IN ('L2 Scheduled', 'Shortlisted in L2', 'Rejected in L2', 'On Hold in L2');
+      AND candidate_info.recruitment_phase NOT IN ('L2 Scheduled', 'Shortlisted in L2', 'Rejected in L2', 'On Hold in L2', 'No iMocha Exam');
     
     `;
 
@@ -1407,7 +1390,6 @@ app.get('/api/get-shortlisted-candidates', async (req, res) => {
     const getQuery = `
       SELECT 
       	ci.rrf_id,
-        ci.hr_email,
         ci.candidate_name,
         ci.candidate_email,
         ci.prescreening_status,
@@ -1566,14 +1548,42 @@ app.post('/api/updateCandidateFeedback', async (req, res) => {
 // panel call
 app.get('/api/panel-candidates-info', async (req, res) => {
   try {
-    // Get the date parameter from the query string
-    const { l_2_interviewdate } = req.query;
+    const { l_2_interviewdate, userEmail } = req.query;
+
     const query = `
       SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, imocha_report, meeting_link, l_2_interviewtime
-      FROM candidate_info WHERE prescreening_status = 'Shortlisted' AND recruitment_phase = 'L2 Scheduled' AND l_2_interviewdate = $1;`;
- 
-    const result = await pool.query(query, [l_2_interviewdate]);
- 
+      FROM candidate_info
+      WHERE prescreening_status = 'Shortlisted'
+        AND recruitment_phase = 'L2 Scheduled'
+        AND l_2_interviewdate = $1
+        AND panel_name = $2;`;  // Add the condition to check for panel_name containing the user's email
+    
+    // Use the '%' wildcard to match any occurrence of the userEmail in the panel_name field
+    const result = await pool.query(query, [l_2_interviewdate, userEmail]);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching shortlisted candidates:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/api/hr-candidates-info', async (req, res) => {
+  try {
+    const { l_2_interviewdate, hr_email } = req.query;
+
+    // Updated SQL query to also check for hr_email
+    const query = `
+      SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, imocha_report, meeting_link, l_2_interviewtime
+      FROM candidate_info 
+      WHERE prescreening_status = 'Shortlisted' 
+        AND recruitment_phase = 'L2 Scheduled' 
+        AND l_2_interviewdate = $1
+        AND hr_email = $2;`;
+
+    // Pass both l_2_interviewdate and hr_email to the query
+    const result = await pool.query(query, [l_2_interviewdate, hr_email]);
+
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching shortlisted candidates:', error);
@@ -1638,7 +1648,6 @@ app.put('/api/update-status', async (req, res) => {
     res.status(500).json({ message: 'Failed to create Teams meeting' });
   }
 });
-//get by EC count
 app.get('/api/candidate-total-by-team', async (req, res) => {
   try {
     // Extract ECs from query parameters
@@ -1675,7 +1684,6 @@ app.get('/api/candidate-total-by-team', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 //hr names
 app.get('/api/hr-names', async (req, res) => {
@@ -1754,238 +1762,48 @@ app.get('/api/phase-counts', async (req, res) => {
   }
 });
 
-//meeting link call
-app.put('/api/update-status', async (req, res) => {
-  const { email, status, panel, dateTime } = req.body;
- 
-  try {
-    const timeZone = 'Asia/Kolkata';
-    const localDateTime = new Date(dateTime);
-    const adjustedDateTime = localDateTime.toISOString(); // Adjust to your timezone if needed
- 
-    const interviewDate = adjustedDateTime.split('T')[0];
-    const interviewTime = adjustedDateTime.split('T')[1].split('.')[0];
- 
-    // Fetch the access token
-    const accessToken = await getAccessToken();
- 
-    // Create Teams meeting via Microsoft Graph API
-    const meetingResponse = await axios.post(
-      'https://graph.microsoft.com/v1.0/me/onlineMeetings',
-      {
-        startDateTime: adjustedDateTime,
-        endDateTime: new Date(new Date(adjustedDateTime).getTime() + 3600000).toISOString(),
-        subject: `Interview for ${email}`,
-        participants: {
-          attendees: [
-            { emailAddress: { address: email }, type: 'required' },
-            { emailAddress: { address: panel }, type: 'required' },
-          ],
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
- 
-    if (!meetingResponse.data.joinUrl) {
-      throw new Error('Failed to create Teams meeting');
-    }
- 
-    const meetingLink = meetingResponse.data.joinUrl;
- 
-    const updateQuery = `
-      UPDATE candidate_info
-      SET
-          recruitment_phase = $1,
-          meeting_link = $2,
-          l_2_interviewdate = $3,
-          l_2_interviewtime = $4
-      WHERE
-          candidate_email = $5;
-    `;
- 
-    await pool.query(updateQuery, ['L2 Scheduled', meetingLink, interviewDate, interviewTime, email]);
- 
-    res.status(200).json({
-      message: 'Recruitment phase updated, interview date and time saved, and meeting link created successfully.',
-      meetingLink,
-    });
-  } catch (error) {
-    console.error('Error creating Teams meeting:', error.message);
-    res.status(500).json({ message: 'Failed to create Teams meeting', error: error.message });
-  }
-});
-
-//send prescreening mail
-// app.post('/api/send-hr-email', async (req, res) => {
-//   const {
-//     name,
-//     email,
-//     status,
-//     role,
-//     suitabilityPercentage,
-//     candidatePhoneNumber,
-//     resumeUrl,
-//     hrEmail,
-//     rrfId,
-//     accessToken // The AD access token provided from the client
-//   } = req.body;
-
-//   if (!name || !email || !status || !role || !suitabilityPercentage || !hrEmail || !accessToken) {
-//     return res.status(400).json({ error: 'Missing required fields or access token.' });
-//   }
-
-//   console.log("Access Token:", accessToken);
-
-//   try {
-//     const transporter = nodemailer.createTransport({
-//       host: "smtp.office365.com",
-//       port: 587,
-//       secure: false, // Use false for STARTTLS
-//       auth: {
-//         type: 'OAuth2',
-//         user: "mohansai.ande@valuemomentum.com", // Your sender email address
-//         clientId: process.env.OAUTH_CLIENT_ID,         // Your Azure AD application client ID
-//         clientSecret: process.env.OAUTH_CLIENT_SECRET,   // Your Azure AD application client secret
-//         accessToken: accessToken, // The access token from the client (now for SMTP.Send)
-//       },
-//       tls: {
-//         // Optional TLS settings can go here
-//       },
-//     });
-
-//     const emailSubject = `Candidate Pre-screening Result: ${name}`;
-//     const emailBody = `
-//       <h3>Candidate Pre-screening Details</h3>
-//       <p><strong>Name:</strong> ${name}</p>
-//       <p><strong>Email:</strong> ${email}</p>
-//       <p><strong>Status:</strong> ${status}</p>
-//       <p><strong>Role:</strong> ${role}</p>
-//       <p><strong>Suitability Score:</strong> ${suitabilityPercentage}% Matching With JD</p>
-//       <p><strong>Phone Number:</strong> ${candidatePhoneNumber}</p>
-//       <p><strong>Resume:</strong> <a href="${resumeUrl}">View Resume</a></p>
-//       <p><strong>RRF ID:</strong> ${rrfId}</p>
-//       <br />
-//       <p>Please take the necessary actions based on the pre-screening results.</p>
-//     `;
-
-//     const mailOptions = {
-//       from: "mohansai.ande@valuemomentum.com",
-//       to: hrEmail,
-//       subject: emailSubject,
-//       html: emailBody,
-//     };
-
-//     await transporter.sendMail(mailOptions);
-//     res.status(200).json({ message: 'Email sent successfully' });
-//   } catch (error) {
-//     console.error('Error sending email:', error);
-//     res.status(500).json({ error: 'Failed to send email' });
-//   }
-// });
-
-// word to pdf converion
-// Static file serving for uploaded files
-app.use(express.static("uploads"));
-
-// Middleware for parsing request bodies
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "uploads");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-
-const upload = multer({ storage: storage });
-
-// Serve the frontend file (optional)
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
-});
-
-// Endpoint for converting .docx to .pdf
-app.post("/docxtopdf", upload.single("word"), (req, res) => {
-    if (!req.file) {
-        return res.status(400).send("No file uploaded.");
-    }
-
-    const inputPath = req.file.path; // Path of the uploaded .docx file
-    const outputPath = path.join("uploads", `${Date.now()}_output.pdf`);
-
-    // Convert .docx to .pdf using wordConverter
-    wordConverter(inputPath, outputPath, function (err, result) {
-        if (err) {
-            console.error("Error during conversion:", err);
-            return res.status(500).send("Failed to convert file.");
-        }
-
-        // Send the converted PDF back to the client
-        res.download(outputPath, (err) => {
-            if (err) {
-                console.error("Error sending file:", err);
-            }
-
-            // Cleanup: Delete the temporary .pdf file after sending
-            fs.unlink(outputPath, (unlinkErr) => {
-                if (unlinkErr) {
-                    console.error("Error deleting file:", unlinkErr);
-                }
-            });
-        });
-    });
-});
-
 //admin details
 
 app.post('/api/add-admin', async (req, res) => {
-  const { vamid, name, email, ec_mapping } = req.body;
-
-  if (!vamid || !name || !email || !ec_mapping) {
+  const { vamid, name, email, ec_mapping, status } = req.body;
+ 
+  // Check for required fields including status
+  if (!vamid || !name || !email || !ec_mapping || !status) {
     return res.status(400).json({
       success: false,
       message: 'Missing required fields.',
     });
   }
-
+ 
   try {
     const query = `
-      INSERT INTO admin_table (vamid, name, email, ec_mapping)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO admin_table (vamid, name, email, ec_mapping, status)
+      VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (vamid) DO UPDATE
-      SET name = EXCLUDED.name, email = EXCLUDED.email, ec_mapping = EXCLUDED.ec_mapping;
+      SET name = EXCLUDED.name, email = EXCLUDED.email, ec_mapping = EXCLUDED.ec_mapping, status = EXCLUDED.status;
     `;
-    const values = [vamid, name, email, ec_mapping];
+    const values = [vamid, name, email, ec_mapping, status]; // Add status to values array
     await pool.query(query, values);
-
+ 
     return res.status(200).json({
       success: true,
-      message: 'Admin added/updated successfully!',
+      message: 'User added/updated successfully!',
     });
   } catch (error) {
-    console.error('Error adding admin:', error);
+    console.error('Error adding user:', error);
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while adding the admin.',
+      message: 'An error occurred while adding the user.',
     });
   }
 });
-
-
-
+ 
+ 
+ 
 app.get('/api/admin-details', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT vamid, email, name, ec_mapping
+      SELECT vamid, email, name, ec_mapping, status
       FROM admin_table
     `);
  
@@ -2005,7 +1823,8 @@ app.get('/api/admin-details', async (req, res) => {
         cloudEC: ecMapping.includes('Cloud EC'), // Check if Cloud EC exists in ec_mapping
         appEC: ecMapping.includes('App EC'),     // Check if App EC exists in ec_mapping
         dataEC: ecMapping.includes('Data EC'),   // Check if Data EC exists in ec_mapping
-        coreEC: ecMapping.includes('Core EC')    // Check if Core EC exists in ec_mapping
+        coreEC: ecMapping.includes('Core EC'),    // Check if Core EC exists in ec_mapping
+        status: row.status
       };
     });
  
@@ -2021,47 +1840,73 @@ app.post('/api/update-ec-mapping', async (req, res) => {
   const { selectedAdmins } = req.body;
  
   if (!selectedAdmins || selectedAdmins.length === 0) {
-      return res.status(400).json({ message: 'No admin selections provided' });
+    return res.status(400).json({ message: 'No admin selections provided' });
   }
  
   try {
-      // Iterate over each selected admin and update EC mappings
-      for (const admin of selectedAdmins) {
-          const { vamid, ec_mapping } = admin;
+    // Iterate over each selected admin and update EC mappings and status
+    for (const admin of selectedAdmins) {
+      const { vamid, ec_mapping, status } = admin;
  
-          if (!vamid || !ec_mapping) {
-              continue; // Skip this admin if there's missing data
-          }
- 
-          // Check if the record exists in the admin_table
-          const result = await pool.query('SELECT * FROM admin_table WHERE vamid = $1', [vamid]);
-         
-          if (result.rows.length === 0) {
-              // Insert a new record if no matching vamid is found
-              await pool.query(`
-                  INSERT INTO admin_table (vamid, ec_mapping)
-                  VALUES ($1, $2)
-              `, [vamid, ec_mapping]);
- 
-          } else {
-              // Update the existing record with the new EC mappings
-              await pool.query(`
-                  UPDATE admin_table
-                  SET ec_mapping = $1
-                  WHERE vamid = $2
-              `, [ec_mapping, vamid]);
-          }
+      if (!vamid || !ec_mapping || !status) {
+        continue; // Skip this admin if there's missing data
       }
  
-      return res.status(200).json({ success: true, message: 'EC mappings updated successfully!' });
+      // Check if the record exists in the admin_table
+      const result = await pool.query('SELECT * FROM admin_table WHERE vamid = $1', [vamid]);
+ 
+      if (result.rows.length === 0) {
+        // Insert a new record if no matching vamid is found
+        await pool.query(`
+          INSERT INTO admin_table (vamid, ec_mapping, status)
+          VALUES ($1, $2, $3)
+        `, [vamid, ec_mapping, status]);
+ 
+      } else {
+        // Update the existing record with the new EC mappings and status
+        await pool.query(`
+          UPDATE admin_table
+          SET ec_mapping = $1, status = $2
+          WHERE vamid = $3
+        `, [ec_mapping, status, vamid]);
+      }
+    }
+ 
+    return res.status(200).json({ success: true, message: 'EC mappings and status updated successfully!' });
   } catch (error) {
-      console.error('Error updating EC mappings:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+    console.error('Error updating EC mappings:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+app.get('/api/get-panel-emails', async (req, res) => {
+  try {
+    const { domain } = req.query;  // Get domain from query parameters
+    
+    if (!domain) {
+      return res.status(400).json({ message: 'Domain is required' });
+    }
+    
+    // Query the database for emails based on the domain
+    const result = await pool.query(`
+      SELECT email
+      FROM panel_details
+      WHERE account = $1
+    `, [domain]);
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No emails found for the selected domain' });
+    }
 
+    // Extract emails from the result
+    const emails = result.rows.map(row => row.email);
+
+    res.status(200).json(emails);
+  } catch (error) {
+    console.error('Error fetching panel emails:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 
