@@ -156,74 +156,100 @@ let globalHrEmail;
 let globalRrfId;		
 
 async function uploadResume() {
-var fileInput = document.getElementById('resume');
-var file = fileInput.files[0];
+    var fileInput = document.getElementById('resume');
+    var file = fileInput.files[0];
 
-// Get the HR email input
-var hrEmail = document.getElementById('hr-email').value;
-var rrfId = document.getElementById('RRF-ID').value;
+    // Get the HR email input
+    var hrEmail = document.getElementById('hr-email').value;
+    var rrfId = document.getElementById('RRF-ID').value;
 
-
-// Validate HR email
-if (!hrEmail || !validateEmail(hrEmail)) {
-displaySuccessPopup('Please enter a valid HR email.');
-return;
-}
-
-// Store the HR email in the global variable
-globalHrEmail = hrEmail;
-globalRrfId	= rrfId;
-
-
-// Get the selected cloud provider value
-var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
-var selectedProvider = cloudProvider ? cloudProvider.value : null;
-console.log('Selected Cloud Provider:', selectedProvider);
-
-if (file && file.type === "application/pdf") {
-var originalFileName = file.name;
-var timestamp = Date.now();
-var fileName = timestamp + "_" + originalFileName;
-var progressBar = document.querySelector('.progress-bar');
-progressBar.style.width = '0%'; // Reset progress bar
-
-// Start progress bar animation
-animateProgressBar(progressBar);
-
-try {
-    // Simulate upload delay (for demonstration purposes)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Upload the resume to GitHub
-    var githubUrl = await uploadToGitHub(fileName, file);
-
-    if (githubUrl) {
-        // Resume successfully uploaded
-        progressBar.style.width = '100%'; // Set progress bar to 100% on success
-        displaySuccessPopup('Resume uploaded successfully: ' + file.name);
-        closePopup();  // Assuming this closes another popup or message
-
-        document.querySelector('.role-selection-container').style.display = 'none';
-        document.querySelector('.container').style.display = 'block';
-
-        // Send the resume URL to ChatPDF API for evaluation
-        await evaluateResumeWithChatPDF(githubUrl);
-
-    } else {
-        // Resume already evaluated, reset the progress bar
-        displaySuccessPopup('Resume already evaluated.');
-        progressBar.style.width = '0%';
+    // Validate HR email
+    if (!hrEmail || !validateEmail(hrEmail)) {
+        displaySuccessPopup('Please enter a valid HR email.');
+        return;
     }
 
-} catch (error) {
-    console.error('Error uploading file: ', error);
-    progressBar.style.width = '0%'; // Reset progress bar on failure
-    displaySuccessPopup('Failed to upload resume.');
+    // Store the HR email in the global variable
+    globalHrEmail = hrEmail;
+    globalRrfId = rrfId;
+
+    // Get the selected cloud provider value
+    var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
+    var selectedProvider = cloudProvider ? cloudProvider.value : null;
+    console.log('Selected Cloud Provider:', selectedProvider);
+
+    if (file) {
+        var progressBar = document.querySelector('.progress-bar');
+        progressBar.style.width = '0%'; // Reset progress bar
+
+        // Start progress bar animation
+        animateProgressBar(progressBar);
+
+        try {
+            let processedFile = file;
+
+            // Check if the file is a .docx file
+            if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                displaySuccessPopup('Converting DOCX to PDF, please wait...');
+                
+                // Prepare the file for upload to the conversion endpoint
+                let formData = new FormData();
+                formData.append("word", file);
+
+                // Send the file to the /docxtopdf endpoint for conversion
+                const response = await fetch("https://demotag.vercel.app/docxtopdf", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    processedFile = new File([blob], file.name.replace(".docx", ".pdf"), { type: "application/pdf" });
+                    displaySuccessPopup('DOCX file successfully converted to PDF.');
+                } else {
+                    throw new Error("Error converting DOCX to PDF.");
+                }
+            } else if (file.type !== "application/pdf") {
+                throw new Error("Unsupported file type. Please upload a PDF or DOCX file.");
+            }
+
+            // Simulate upload delay (for demonstration purposes)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Upload the resume to GitHub
+            var originalFileName = processedFile.name;
+            var timestamp = Date.now();
+            var fileName = timestamp + "_" + originalFileName;
+            var githubUrl = await uploadToGitHub(fileName, processedFile);
+
+            if (githubUrl) {
+                // Resume successfully uploaded
+                progressBar.style.width = '100%'; // Set progress bar to 100% on success
+                displaySuccessPopup('Resume uploaded successfully: ' + processedFile.name);
+                closePopup(); // Assuming this closes another popup or message
+
+                document.querySelector('.role-selection-container').style.display = 'none';
+                document.querySelector('.container').style.display = 'block';
+
+                // Send the resume URL to ChatPDF API for evaluation
+                await evaluateResumeWithChatPDF(githubUrl);
+
+            } else {
+                // Resume already evaluated, reset the progress bar
+                displaySuccessPopup('Resume already evaluated.');
+                progressBar.style.width = '0%';
+            }
+
+        } catch (error) {
+            console.error('Error uploading file: ', error);
+            progressBar.style.width = '0%'; // Reset progress bar on failure
+            displaySuccessPopup('Failed to upload resume.');
+        }
+    } else {
+        displaySuccessPopup('Please upload a valid PDF or DOCX file.');
+    }
 }
-} else {
-displaySuccessPopup('Please upload a valid PDF file.');
-}
-}
+
 
 // Helper function to validate email
 function validateEmail(email) {
@@ -274,7 +300,7 @@ return re.test(email);
 
 
     async function uploadToGitHub(fileName, file) {
-    const githubToken = await getGithubToken(); // Fetch the GitHub token here
+   const githubToken = await getGithubToken(); // Fetch the GitHub token here
         if (!githubToken) {
             console.error('GitHub token is not available.');
             return null;
@@ -912,6 +938,7 @@ ${globalJobDescription}
         sendCandidateInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue);
         sendPrescreeningInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId);
         sendRRFToDB(globalRrfId, role, selectedValue, status = 'open');
+        sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue);
 
 
         // Create a unique container for inputs and button
@@ -1085,6 +1112,114 @@ ${globalJobDescription}
                 console.error('Error saving candidate information:', error);
             });
     }
+    const msalConfig = {
+        auth: {
+          clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
+          authority:
+            "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
+          redirectUri: "https://demotag.vercel.app", // Ensure this matches Azure AD's redirect URI
+        },
+      };
+ 
+      const msalInstance = new msal.PublicClientApplication(msalConfig);
+ 
+    async function sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl, globalHrEmail, globalRrfId, selectedValue) {
+        const loggedInUserEmail = localStorage.getItem("userEmail");
+   
+        if (!loggedInUserEmail) {
+            alert("User is not logged in. Please log in again.");
+            return;
+        }
+                   
+           try {
+            // Get the access token for sending email
+            const account = msalInstance.getAllAccounts()[0];
+            if (!account) {
+                throw new Error("No active account! Please login first.");
+            }
+   
+            const tokenRequest = {
+                scopes: ["Mail.Send"],
+                account: account
+            };
+   
+            // Try to get token silently first
+            let tokenResponse;
+            try {
+                tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
+            } catch (error) {
+                if (error instanceof msal.InteractionRequiredAuthError) {
+                    // If silent token acquisition fails, try popup
+                    tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
+                } else {
+                    throw error;
+                }
+            }
+   
+            // Prepare the email data
+            const emailData = {
+                message: {
+                    subject: `Candidate Pre-screening Result: ${candidateName}`,
+                    body: {
+                        contentType: "HTML",
+                        content: `
+                            <h3>Candidate Pre-screening Details</h3>
+                            <p><strong>Name:</strong> ${candidateName}</p>
+                            <p><strong>Email:</strong> ${candidateEmail}</p>
+                            <p><strong>Status:</strong> ${statusText}</p>
+                            <p><strong>Role:</strong> ${role}</p>
+                            <p><strong>Suitability Score:</strong> ${suitabilityPercentage}% Matching With JD</p>
+                            <p><strong>Phone Number:</strong> ${candidatePhoneNumber}</p>
+                            <p><strong>Resume:</strong> <a href="${resumeUrl}">View Resume</a></p>
+                            <p><strong>RRF ID:</strong> ${globalRrfId}</p>
+                            <br />
+                            <p>Please take the necessary actions based on the pre-screening results.</p>
+                        `
+                    },
+                    toRecipients: [
+                        {
+                            emailAddress: {
+                                address: globalHrEmail
+                            }
+                        }
+                    ]
+                }
+            };
+   
+            // Send the email using Microsoft Graph API directly
+            const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${tokenResponse.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailData)
+            });
+   
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error ? errorData.error.message : 'Failed to send email');
+            }
+   
+            console.log('Email sent successfully');
+            alert('Email sent successfully!');
+   
+        } catch (error) {
+            console.error('Error:', error);
+            alert(`Failed to send email: ${error.message}`);
+           
+            // If there's a permission error, let the user know they need admin consent
+            if (error.message?.includes('permission')) {
+                alert('This app needs permission to send emails. Please contact your administrator to grant the necessary permissions.');
+            }
+        }
+    }
+
+
+    
+    // Call the function when needed (e.g., on button click)
+    // document.getElementById('sendEmailButton').addEventListener('click', sendCandidateDetailsToHR);
+    
 
     function sendRRFToDB(globalRrfId, role, selectedValue, status = 'open') {
         fetch('https://demotag.vercel.app/api/rrf-update', {
