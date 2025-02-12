@@ -1380,7 +1380,7 @@ app.get('/api/get-shortlisted-candidates', async (req, res) => {
     WHERE 
       candidate_info.candidate_email = ir.candidate_email
       AND candidate_info.prescreening_status = 'Shortlisted'
-      AND candidate_info.recruitment_phase NOT IN ('L2 Scheduled', 'Shortlisted in L2', 'Rejected in L2', 'On Hold in L2');
+      AND candidate_info.recruitment_phase NOT IN ('L2 Scheduled', 'Shortlisted in L2', 'Rejected in L2', 'On Hold in L2', 'No iMocha Exam');
     
     `;
 
