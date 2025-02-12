@@ -1426,6 +1426,52 @@ app.get('/api/get-shortlisted-candidates', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+app.get('/api/get-email-status', async (req, res) => {
+  const candidateEmail = req.query.candidate_email;
+  if (!candidateEmail) {
+    return res.status(400).json({ message: 'candidate_email query parameter is required.' });
+  }
+
+  try {
+    const queryText = 'SELECT email_status FROM candidate_info WHERE candidate_email = $1';
+    const result = await pool.query(queryText, [candidateEmail]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Candidate not found.' });
+    }
+
+    // result.rows[0].email_status might be null or 'emailsent'
+    res.json({ status: result.rows[0].email_status });
+  } catch (err) {
+    console.error('Error querying database:', err);
+    res.status(500).json({ message: 'Database error.' });
+  }
+});
+
+// API endpoint to update the email status for a candidate.
+// Expects a JSON body with candidate_email and status.
+app.post('/api/update-email-status', async (req, res) => {
+  const { candidate_email, status } = req.body;
+  if (!candidate_email || !status) {
+    return res.status(400).json({ message: 'candidate_email and status are required.' });
+  }
+
+  try {
+    const queryText = 'UPDATE candidate_info SET email_status = $1 WHERE candidate_email = $2 RETURNING *';
+    const result = await pool.query(queryText, [status, candidate_email]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Candidate not found.' });
+    }
+
+    res.json({ message: 'Email status updated successfully.', candidate: result.rows[0] });
+  } catch (err) {
+    console.error('Error updating email status:', err);
+    res.status(500).json({ message: 'Database error.' });
+  }
+});
+
 //get form data
 app.get('/api/getCandidateData', async (req, res) => {
   try {
