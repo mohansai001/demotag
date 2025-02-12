@@ -232,3 +232,23 @@ function fetchPanelEmails(domain) {
           console.error('Error fetching panel emails:', error);
       });
 }
+
+document.getElementById('dateRangeForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+
+  try {
+    const response = await fetch('http://localhost:3000/api/callTestAttempts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ startDate, endDate }),
+    });
+
+    const data = await response.json();
+    console.log('Completed test attempts:', data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
