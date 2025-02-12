@@ -232,6 +232,27 @@ async function updateEmailStatus(candidateEmail, status) {
 }
 
 
+// Example: Assume you have fetched candidate details from your API.
+// Here is a sample candidate array (replace with your actual data from the API):
+
+
+// Attach an event listener to a button to send emails for all candidates with completed iMocha.
+// document.getElementById("sendEmailsBtn").addEventListener("click", async () => {
+//   try {
+//     // Here you could also fetch candidate details from your backend
+//     // For example:
+//     // const response = await fetch('https://demotag.vercel.app/api/get-shortlisted-candidates');
+//     // const data = await response.json();
+//     // const candidates = data.candidates;
+
+//     // For now, we use the sampleCandidates array:
+//     await sendEmailsForCompletedCandidates(sampleCandidates);
+//   } catch (error) {
+//     console.error("Error sending emails:", error);
+//     alert("Error sending emails: " + error.message);
+//   }
+// });
+
 // Call fetch function when the page loads
 document.addEventListener('DOMContentLoaded', fetchCandidatesInfo);
 // Function to filter candidates based on search and status
@@ -394,6 +415,7 @@ function fetchPanelEmails(domain) {
           console.error('Error fetching panel emails:', error);
       });
 }
+
 
 document.getElementById('dateRangeForm').addEventListener('submit', async (event) => {
   event.preventDefault();
