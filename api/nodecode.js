@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 
 // CORS configuration
 const corsOptions = {
-  //origin: 'https://demotag.vercel.app', // Your Vercel frontend domain
+  origin: 'https://demotag.vercel.app', // Your Vercel frontend domain
   methods: 'GET, POST, PUT, OPTIONS', // Allow specific HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
   credentials: true // Enable cookies/sessions if needed
