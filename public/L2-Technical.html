@@ -182,7 +182,7 @@
         }
 
         .form-container {
-            width: 90%;
+            width: 96%;
             margin: 0 auto;
             border: 1px solid #333;
             padding: 20px;
@@ -343,13 +343,13 @@
             color: black;
         }
         table td:nth-child(1), table th:nth-child(1) {
-            width: 10%;
+            width: 8%;
         }
         table td:nth-child(2), table th:nth-child(2) {
             width: 20%;
         }
         table td:nth-child(3), table th:nth-child(3), table td:nth-child(4), table th:nth-child(4), table td:nth-child(5), table th:nth-child(5){
-            width: 7%;
+            width: 6%;
         }
         table td:nth-child(6), table th:nth-child(6), table td:nth-child(7), table th:nth-child(7){
             width: 24%;
@@ -610,7 +610,7 @@
 
         if (candidateEmail) {
             // Fetch candidate data from the server based on the email
-            fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+            fetch(`http://localhost:3000/api/getCandidateData?candidateEmail=${candidateEmail}`)
                 .then(response => response.json())
                 .then(data => {
                     // Check if the data is returned successfully
@@ -651,7 +651,7 @@
         }
 
         // Send the data to the backend for updating the database
-        fetch('https://demotag.vercel.app/api/updateCandidateFeedback', {
+        fetch('http://localhost:3000/api/updateCandidateFeedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
