@@ -63,16 +63,16 @@ window.location.href = "ECselection.html";
                 fileName = `Job Description/${selectedLevel}_Data-BIVisualizationEngineer.txt`;
                 break;
             case 'Data Modeller':
-                fileName = `Job Description/${selectedLevel}_DataModeller.txt`;
+                fileName = `Job Description/DataModeller.txt`;
                 break;
             case 'Data Analyst':
-                fileName = `Job Description/${selectedLevel}_DataAnalyst.txt`;
+                fileName = `Job Description/DataAnalyst.txt`;
                 break;
             case 'Data Architect':
-                fileName = `Job Description/${selectedLevel}_DataArchitect.txt`;
+                fileName = `Job Description/DataArchitect.txt`;
                 break;
             case 'Data Scientist –AI/ML':
-                fileName = `Job Description/${selectedLevel}_DataScientist-AIML.txt`;
+                fileName = `Job Description/DataScientist-AIML.txt`;
                 break;
             default:
                 console.log("Role not found");
@@ -104,16 +104,15 @@ window.location.href = "ECselection.html";
         console.log("Selected role:", role);
         selectedRole = role;
     
-        // Get the selected level from the dropdown
-        var selectedLevel = document.getElementById(dropdownId).value;
-        console.log("Selected Level:", selectedLevel);
+        // Check if dropdownId is undefined
+        let selectedLevel = "";
+        if (dropdownId && document.getElementById(dropdownId)) {
+            selectedLevel = document.getElementById(dropdownId).value;
+            console.log("Selected Level:", selectedLevel);
+        }
     
-        // Validate if a level has been selected
-        if (!selectedLevel) {
-            // If no level is selected, show the validation popup
-            document.getElementById('cloudProviderPopup').style.display = 'block';
-        } else {
-            // Proceed with your logic if a level is selected
+        // If dropdownId is undefined or level is not selected, proceed without blocking
+        if (!dropdownId || selectedLevel) {
             openPopup();
     
             fetchJobDescription(role, selectedLevel).then(jobDescription => {
@@ -121,6 +120,9 @@ window.location.href = "ECselection.html";
             }).catch(error => {
                 console.error("Error fetching job description:", error);
             });
+        } else {
+            // Show validation popup only if dropdownId exists but no level is selected
+            document.getElementById('cloudProviderPopup').style.display = 'block';
         }
     }
     
@@ -272,7 +274,7 @@ return re.test(email);
 
 
     async function uploadToGitHub(fileName, file) {
-    const githubToken = await getGithubToken(); // Fetch the GitHub token here
+   const githubToken = await getGithubToken(); // Fetch the GitHub token here
         if (!githubToken) {
             console.error('GitHub token is not available.');
             return null;
