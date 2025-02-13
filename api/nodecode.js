@@ -745,7 +745,7 @@ app.get('/api/data-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data Engineer', 'Lead Data Engineer','Senior Data Engineer');
+      WHERE role IN ('AWS Data Engineer', 'Azure Data Engineer','Databricks Data Engineer','Hadoop Data Engineer','DataStage Data Engineer','IBM MDM Data Engineer','ETL Data Engineer','Oracle Data Engineer','IDMC Data Engineer','Marklogic Data Engineer','SQL Data Engineer','Snowflake Data Engineer','SSIS Data Engineer');
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -773,7 +773,7 @@ app.get('/api/data-bi-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data – BI Visualization Engineer', 'Lead Data – BI Visualization Engineer','Senior Data – BI Visualization Engineer');
+      WHERE role IN ('Power BI Data – BI Visualization Engineer', 'Tableau Data – BI Visualization Engineer','WebFOCUS Data – BI Visualization Engineer');
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -787,7 +787,7 @@ app.get('/api/data-modeller-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data Modeller', 'Lead Data Modeller','Senior Data Modeller');
+      WHERE role IN ('Data Modeller');
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -801,7 +801,7 @@ app.get('/api/data-analyst-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data Analyst', 'Lead Data Analyst','Senior Data Analyst');
+      WHERE role IN ('DataAnalyst');
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -838,7 +838,6 @@ app.get('/api/data-Scientist-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
-
 
 // Prescreening count
 // Route to get the count of rejected candidates in the prescreening phase
