@@ -274,7 +274,7 @@ return re.test(email);
 
 
     async function uploadToGitHub(fileName, file) {
-   const githubToken = await getGithubToken(); // Fetch the GitHub token here
+    const githubToken = await getGithubToken(); // Fetch the GitHub token here
         if (!githubToken) {
             console.error('GitHub token is not available.');
             return null;
