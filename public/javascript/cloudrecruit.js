@@ -938,7 +938,7 @@ ${globalJobDescription}
         sendCandidateInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue);
         sendPrescreeningInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId);
         sendRRFToDB(globalRrfId, role, selectedValue, status = 'open');
-        sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue);
+        sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue,finalSummary);
 
 
         // Create a unique container for inputs and button
@@ -1123,7 +1123,7 @@ ${globalJobDescription}
  
       const msalInstance = new msal.PublicClientApplication(msalConfig);
  
-    async function sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl, globalHrEmail, globalRrfId, selectedValue) {
+    async function sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl, globalHrEmail, globalRrfId, selectedValue,finalSummary) {
         const loggedInUserEmail = localStorage.getItem("userEmail");
    
         if (!loggedInUserEmail) {
@@ -1159,7 +1159,7 @@ ${globalJobDescription}
             // Prepare the email data
             const emailData = {
                 message: {
-                    subject: `Candidate Pre-screening Result: ${candidateName}`,
+                   subject: `Prescreening Result: RRFID-${globalRrfId} - ${candidateName} for ${role} Role`,
                     body: {
                         contentType: "HTML",
                         content: `
@@ -1171,7 +1171,7 @@ ${globalJobDescription}
                             <p><strong>Suitability Score:</strong> ${suitabilityPercentage}% Matching With JD</p>
                             <p><strong>Phone Number:</strong> ${candidatePhoneNumber}</p>
                             <p><strong>Resume:</strong> <a href="${resumeUrl}">View Resume</a></p>
-                            <p><strong>RRF ID:</strong> ${globalRrfId}</p>
+                            <p><strong>Result:</strong> ${selectedValue}</p>
                             <br />
                             <p>Please take the necessary actions based on the pre-screening results.</p>
                         `
