@@ -911,16 +911,7 @@ app.get('/api/shortlisted-l1-count', async (req, res) => {
 
 // Route to fetch candidate data
 
-app.get('/api/candidates', async (req, res) => {
-    try {
-        // Replace the column names with the ones relevant to your database schema
-        const result = await pool.query('SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score,date FROM candidate_info');
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        res.status(500).send('Server error');
-    }
-});
+
 app.get('/api/getcandidates', async (req, res) => {
     try {
         // Replace the column names with the ones relevant to your database schema
@@ -1202,33 +1193,77 @@ app.get('/api/fetch-results', async (req, res) => {
   }
 });
 
+app.get('/api/candidates', async (req, res) => {
+  try {
+      // Retrieve eng_center from the URL query parameters
+      const engCenter = req.query.eng_center;
+
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info';
+      const params = [];
+
+      // If an eng_center value is provided, add a WHERE clause
+      if (engCenter) {
+          query += ' WHERE eng_center = $1';
+          params.push(engCenter);
+      }
+
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).send('Server error');
+  }
+});
+
 
 //Shortlisted data
 app.get('/api/candidates/shortlisted', async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score,date FROM candidate_info WHERE prescreening_status = $1',
-            ['Shortlisted'] // Filter for shortlisted candidates
-        );
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching shortlisted candidates:', error);
-        res.status(500).send('Server error');
-    }
+  try {
+      // Retrieve eng_center from the URL query parameters
+      const engCenter = req.query.eng_center;
+
+      // Base query filtering for 'Shortlisted' status
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1';
+      const params = ['Shortlisted'];
+
+      // If eng_center is provided, add an additional filter condition
+      if (engCenter) {
+          query += ' AND eng_center = $2';
+          params.push(engCenter);
+      }
+
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching shortlisted candidates:', error);
+      res.status(500).send('Server error');
+  }
 });
+
 //Rejected data
 app.get('/api/candidates/rejected', async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score,date FROM candidate_info WHERE prescreening_status = $1',
-            ['Rejected'] // Filter for rejected candidates
-        );
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching rejected candidates:', error);
-        res.status(500).send('Server error');
-    }
+  try {
+      // Retrieve eng_center from the URL query parameters
+      const engCenter = req.query.eng_center;
+
+      // Base query filtering for 'Rejected' status
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1';
+      const params = ['Rejected'];
+
+      // If eng_center is provided, add an additional filter condition
+      if (engCenter) {
+          query += ' AND eng_center = $2';
+          params.push(engCenter);
+      }
+
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching rejected candidates:', error);
+      res.status(500).send('Server error');
+  }
 });
+
 
 // API endpoint to get the prescreening count
 app.get('/api/prescreening-count', async (req, res) => {
