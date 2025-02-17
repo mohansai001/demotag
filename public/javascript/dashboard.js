@@ -1076,7 +1076,7 @@ async function updateChartAndMetrics() {
 
 // Function to open the popup and fetch data
 document.getElementById("card").addEventListener("click", function() {
-    fetchCandidates(); // Call this function if needed for additional candidate data
+    fetchCandidates(ec_mapping); // Call this function if needed for additional candidate data
     document.getElementById("popup").style.display = "flex";
     updateChartAndMetrics(); // Update metrics and chart when the popup opens
 });
@@ -1087,14 +1087,34 @@ updateChartAndMetrics();
 
 
 // Your function to fetch candidates data
-async function fetchCandidates() {
+function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    console.log("Query Params:", params.toString()); // Debugging log
+    return params.get(name) || ''; 
+}
+
+// Extract `ec_mapping`
+const ec_mapping = getQueryParam('ec_mapping');
+console.log("Extracted ec_mapping:", ec_mapping); 
+
+// Fetch candidates using extracted `ec_mapping`
+fetchCandidates(ec_mapping);
+
+async function fetchCandidates(ec_mapping = '') {
     const headerSpinner = document.getElementById("headerSpinner");
 
     try {
-        // Show the spinner
         headerSpinner.style.display = "table-header-group";
 
-        const response = await fetch('https://demotag.vercel.app/api/candidates');
+        // Build API URL with eng_center query parameter
+        let url = 'https://demotag.vercel.app/api/candidates';
+        if (ec_mapping) {
+            url += `?eng_center=${encodeURIComponent(ec_mapping)}`;
+        }
+
+        console.log("Fetching candidates from:", url); // Debugging log
+
+        const response = await fetch(url);
         const data = await response.json();
 
         const tableBody = document.querySelector('#applicationsTable tbody');
@@ -1103,25 +1123,21 @@ async function fetchCandidates() {
         data.forEach(candidate => {
             const row = document.createElement('tr');
             row.innerHTML = `
-            <td>${candidate.rrf_id}</td>
+                <td>${candidate.rrf_id}</td>
                 <td>${candidate.candidate_name}</td>
                 <td>${candidate.candidate_email}</td>
                 <td>${candidate.prescreening_status}</td>
-              
             `;
             tableBody.appendChild(row);
         });
 
-        // Attach filters after data is loaded
         attachFilters();
     } catch (error) {
         console.error('Error fetching candidate data:', error);
     } finally {
-        // Hide the spinner
         headerSpinner.style.display = "none";
     }
 }
-
 // Attach filtering functionality to all columns
 function attachFilters() {
   document.getElementById('rrfFilter').addEventListener('input', function () {
