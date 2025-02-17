@@ -1171,7 +1171,7 @@ ${globalJobDescription}
                             <p><strong>Suitability Score:</strong> ${suitabilityPercentage}% Matching With JD</p>
                             <p><strong>Phone Number:</strong> ${candidatePhoneNumber}</p>
                             <p><strong>Resume:</strong> <a href="${resumeUrl}">View Resume</a></p>
-                            <p><strong>Result:</strong> ${selectedValue}</p>
+                            <p><strong>Result:</strong> ${finalSummary}</p>
                             <br />
                             <p>Please take the necessary actions based on the pre-screening results.</p>
                         `
