@@ -1196,19 +1196,24 @@ function closePopup() {
 }
 // Function to open the popup for Shortlisted candidates and fetch data from the backend
 document.getElementById("shortlistedCard").addEventListener("click", function() {
-    fetchShortlistedCandidates();
+    fetchShortlistedCandidates(ec_mapping);
     document.getElementById("shortlistedPopup").style.display = "flex";
 });
 
 // Function to fetch shortlisted candidates' data
-async function fetchShortlistedCandidates() {
+async function fetchShortlistedCandidates(ec_mapping = '') {
     const shortlistedSpinner = document.getElementById("shortlistedSpinner");
 
     try {
         // Show the spinner
         shortlistedSpinner.style.display = "table-header-group";
 
-        const response = await fetch('https://demotag.vercel.app/api/candidates/shortlisted');
+        let url = 'https://demotag.vercel.app/api/candidates/shortlisted';
+        if (ec_mapping) {
+            url += `?eng_center=${encodeURIComponent(ec_mapping)}`;
+        }
+
+        const response = await fetch(url);
         const data = await response.json();
 
         const tableBody = document.querySelector('#shortlistedTable tbody');
@@ -1217,25 +1222,21 @@ async function fetchShortlistedCandidates() {
         data.forEach(candidate => {
             const row = document.createElement('tr');
             row.innerHTML = `
-            <td>${candidate.rrf_id}</td>
+                <td>${candidate.rrf_id}</td>
                 <td>${candidate.candidate_name}</td>
                 <td>${candidate.candidate_email}</td>
                 <td>${candidate.prescreening_status}</td>
-             
             `;
             tableBody.appendChild(row);
         });
 
-        // Attach filters after data is loaded
         attachFiltersToShortlistedTable();
     } catch (error) {
         console.error('Error fetching shortlisted candidate data:', error);
     } finally {
-        // Hide the spinner
         shortlistedSpinner.style.display = "none";
     }
 }
-
 
 // Attach filtering functionality to shortlisted candidates
 function attachFiltersToShortlistedTable() {
@@ -1296,19 +1297,24 @@ function closeShortlistedPopup() {
 }
 // Function to open the popup for Rejected candidates and fetch data from the backend
 document.getElementById("rejectedCard").addEventListener("click", function() {
-    fetchRejectedCandidates();
+    fetchRejectedCandidates(ec_mapping);
     document.getElementById("rejectedPopup").style.display = "flex";
 });
 
 // Function to fetch rejected candidates' data
-async function fetchRejectedCandidates() {
+async function fetchRejectedCandidates(ec_mapping = '') {
     const rejectedSpinner = document.getElementById("rejectedSpinner");
 
     try {
         // Show the spinner
         rejectedSpinner.style.display = "table-header-group";
 
-        const response = await fetch('https://demotag.vercel.app/api/candidates/rejected');
+        let url = 'https://demotag.vercel.app/api/candidates/rejected';
+        if (ec_mapping) {
+            url += `?eng_center=${encodeURIComponent(ec_mapping)}`;
+        }
+
+        const response = await fetch(url);
         const data = await response.json();
 
         const tableBody = document.querySelector('#rejectedTable tbody');
@@ -1317,25 +1323,21 @@ async function fetchRejectedCandidates() {
         data.forEach(candidate => {
             const row = document.createElement('tr');
             row.innerHTML = `
-            <td>${candidate.rrf_id}</td>
+                <td>${candidate.rrf_id}</td>
                 <td>${candidate.candidate_name}</td>
                 <td>${candidate.candidate_email}</td>
                 <td>${candidate.prescreening_status}</td>
-            
             `;
             tableBody.appendChild(row);
         });
 
-        // Attach filters after data is loaded
         attachFiltersToRejectedTable();
     } catch (error) {
         console.error('Error fetching rejected candidate data:', error);
     } finally {
-        // Hide the spinner
         rejectedSpinner.style.display = "none";
     }
 }
-
 // Attach filtering functionality to rejected candidates
 function attachFiltersToRejectedTable() {
   document.getElementById('rrfFilter').addEventListener('input', function () {
