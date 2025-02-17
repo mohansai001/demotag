@@ -123,7 +123,8 @@ async function sendEmailForCandidate(candidate) {
   // Construct the email message payload for Graph API
   const emailData = {
     message: {
-      subject: `iMocha Completed for ${candidate.candidate_name}`,
+     subject: `iMocha Assessment Completed: RRFID-${candidate.rrf_id} | Role: ${candidate.role} | Candidate: ${candidate.candidate_name}`
+,
       body: {
         contentType: "HTML",
         content: `
