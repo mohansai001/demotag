@@ -669,6 +669,64 @@ async function fetchsiteCount() {
 }
 
 
+//data count
+async function fetchdataengineerCount() {
+    try {
+        const response = await fetch('https://demotag.vercel.app/api/data-resume-count');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        console.log('Fetched data for Site:', data);
+        // document.getElementById('site-count').innerText = data.count || 'No data';
+        return data.count || 0;
+    } catch (error) {
+        console.error('Error fetching Site count:', error);
+        document.getElementById('site-count').innerText = 'Error';
+        return 0;
+    }
+}
+async function fetchdatabiCount() {
+    try {
+        const response = await fetch('https://demotag.vercel.app/api/data-bi-resume-count');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        console.log('Fetched data for Site:', data);
+        // document.getElementById('site-count').innerText = data.count || 'No data';
+        return data.count || 0;
+    } catch (error) {
+        console.error('Error fetching Site count:', error);
+        document.getElementById('site-count').innerText = 'Error';
+        return 0;
+    }
+}
+async function fetchdatamodellerCount() {
+    try {
+        const response = await fetch('https://demotag.vercel.app/api/data-modeller-resume-count');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        console.log('Fetched data for Site:', data);
+        // document.getElementById('site-count').innerText = data.count || 'No data';
+        return data.count || 0;
+    } catch (error) {
+        console.error('Error fetching Site count:', error);
+        document.getElementById('site-count').innerText = 'Error';
+        return 0;
+    }
+}
+async function fetchdataanalystCount() {
+    try {
+        const response = await fetch('https://demotag.vercel.app/api/data-analyst-resume-count');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        console.log('Fetched data for Site:', data);
+        // document.getElementById('site-count').innerText = data.count || 'No data';
+        return data.count || 0;
+    } catch (error) {
+        console.error('Error fetching Site count:', error);
+        document.getElementById('site-count').innerText = 'Error';
+        return 0;
+    }
+}
+
 
 // Function to update the chart data
 function updateChartData(devOpsCount, platformCount, cloudOpsCount, siteCount) {
@@ -682,18 +740,27 @@ function updateBarChartData(devOpsCount, platformCount, cloudOpsCount, siteCount
     roleChart.update(); // Update the chart display
 }
 
-	async function updateApplicantCounts() {
+		async function updateApplicantCounts() {
     try {
         const devOpsCount = await fetchDevOpsCount();
         const platformCount = await fetchplatformCount();
         const cloudOpsCount = await fetchcloudopsCount();
         const siteCount = await fetchsiteCount();
-
+        const dataEngineer= await fetchdataengineerCount();
+        const dataBIVisualizationCount =await fetchdatabiCount();
+        const dataAnalystCount =await fetchdataanalystCount();
+        const dataModellerCount =await fetchdatamodellerCount();
+;
         // Update the HTML elements with fetched counts
         document.getElementById('devops-applicants').innerText = `${devOpsCount} Applicants`;
         document.getElementById('platform-applicants').innerText = `${platformCount} Applicants`;
         document.getElementById('cloudops-applicants').innerText = `${cloudOpsCount} Applicants`;
         document.getElementById('site-applicants').innerText = `${siteCount} Applicants`;
+        document.getElementById('data-engineer-applicants').innerText=`${dataEngineer}`;
+        document.getElementById('bi-visualization-applicants').innerText=`${dataBIVisualizationCount}`;
+        document.getElementById('data-analyst-applicants').innerText=`${dataAnalystCount}`;
+        document.getElementById('data-modeller-applicants').innerText=`${dataModellerCount}`;
+
     } catch (error) {
         console.error('Error updating applicant counts:', error);
     }
@@ -772,6 +839,10 @@ async function fetchgetCandidates() {
         await fetchplatformCount();
         await fetchcloudopsCount();
         await fetchsiteCount();
+	await fetchdataanalystCount();
+        await fetchdatabiCount();
+        await fetchdataengineerCount();
+        await fetchdatamodellerCount();
         await fetchAllCountsAndUpdateChart();
 	 await  fetchgetCandidates();  
      await fetchPrescreeningCount();
@@ -1644,6 +1715,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add click event listener to the close button inside the popup
     document.querySelector('#popup span').addEventListener('click', closePopup);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ecMapping = urlParams.get("ec_mapping");
+
+    console.log("EC Mapping Value:", ecMapping); // Debugging
+
+    // Define role groups for different EC mappings
+    const roleGroups = {
+      "Data EC": [
+        "data-engineer-applicants",
+        "bi-visualization-applicants",
+        "data-analyst-applicants",
+        "data-modeller-applicants"
+      ],
+      "Cloud EC": [
+        "cloudops-applicants",
+        "site-applicants",
+        "platform-applicants",
+        "devops-applicants"
+      ]
+    };
+
+    // Get all job cards
+    const jobCards = document.querySelectorAll(".cardss");
+
+    // Check if ecMapping exists in roleGroups
+    if (roleGroups[ecMapping]) {
+      jobCards.forEach(card => {
+        const applicantsDiv = card.querySelector(".applicants");
+        if (!roleGroups[ecMapping].includes(applicantsDiv.id)) {
+          card.style.display = "none"; // Hide non-matching cards
+        }
+      });
+    }
+  });
 
 
 
