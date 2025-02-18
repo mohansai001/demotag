@@ -1578,6 +1578,104 @@ app.post('/api/updateCandidateFeedback', async (req, res) => {
   }
 });
 
+app.post('/api/add-feedback', async (req, res) => {
+  const {
+      rrf_id, position, candidate_name, interview_date, interviewer_name,
+      hr_email, candidate_email, core_cloud_concepts_deployment, core_cloud_concepts_configuration,
+      core_cloud_concepts_troubleshooting, core_cloud_concepts_justification,
+      core_cloud_concepts_improvements, networking_security_deployment, networking_security_configuration,
+      networking_security_troubleshooting, networking_security_justification,
+      networking_security_improvements, infrastructure_management_deployment, infrastructure_management_configuration,
+      infrastructure_management_troubleshooting, infrastructure_management_justification,
+      infrastructure_management_improvements, scalability_high_avail_deployment, scalability_high_avail_configuration,
+      scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+      scalability_high_avail_improvements, automation_deployment, automation_configuration, automation_troubleshooting,
+      automation_justification, automation_improvements, observability_deployment, observability_configuration, observability_troubleshooting,
+      observability_justification, observability_improvements, detailed_feedback, result
+  } = req.body;
+
+  // Check for required fields
+  if (!rrf_id || !position || !candidate_name || !interview_date || !interviewer_name || !hr_email || !candidate_email) {
+      return res.status(400).json({
+          success: false,
+          message: 'Missing required fields.',
+      });
+  }
+
+  try {
+      const query = `
+          INSERT INTO feedback_table (
+              rrf_id, position, candidate_name, interview_date, interviewer_name,
+              hr_email, candidate_email,
+
+              core_cloud_concepts_deployment, core_cloud_concepts_configuration,
+              core_cloud_concepts_troubleshooting, core_cloud_concepts_justification,
+              core_cloud_concepts_improvements,
+
+              networking_security_deployment, networking_security_configuration,
+              networking_security_troubleshooting, networking_security_justification,
+              networking_security_improvements,
+
+              infrastructure_management_deployment, infrastructure_management_configuration,
+              infrastructure_management_troubleshooting, infrastructure_management_justification,
+              infrastructure_management_improvements,
+
+              scalability_high_avail_deployment, scalability_high_avail_configuration,
+              scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+              scalability_high_avail_improvements,
+
+              automation_deployment, automation_configuration, automation_troubleshooting,
+              automation_justification, automation_improvements,
+
+              observability_deployment, observability_configuration, observability_troubleshooting,
+              observability_justification, observability_improvements,
+
+              detailed_feedback, result
+          ) VALUES (
+              $1, $2, $3, $4, $5, $6, $7,
+              $8, $9, $10, $11, $12,
+              $13, $14, $15, $16, $17,
+              $18, $19, $20, $21, $22,
+              $23, $24, $25, $26, $27,
+              $28, $29, $30, $31, $32,
+              $33, $34, $35, $36, $37,
+              $38, $39
+          )
+      `;
+      
+      const values = [
+          rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email, candidate_email,
+          core_cloud_concepts_deployment, core_cloud_concepts_configuration, core_cloud_concepts_troubleshooting,
+          core_cloud_concepts_justification, core_cloud_concepts_improvements,
+          networking_security_deployment, networking_security_configuration, networking_security_troubleshooting,
+          networking_security_justification, networking_security_improvements,
+          infrastructure_management_deployment, infrastructure_management_configuration,
+          infrastructure_management_troubleshooting, infrastructure_management_justification,
+          infrastructure_management_improvements,
+          scalability_high_avail_deployment, scalability_high_avail_configuration,
+          scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+          scalability_high_avail_improvements,
+          automation_deployment, automation_configuration, automation_troubleshooting, automation_justification,
+          automation_improvements,
+          observability_deployment, observability_configuration, observability_troubleshooting,
+          observability_justification, observability_improvements,
+          detailed_feedback, result
+      ];
+
+      await pool.query(query, values);
+
+      return res.status(200).json({
+          success: true,
+          message: 'Feedback submitted successfully!',
+      });
+  } catch (error) {
+      console.error('Error submitting feedback:', error);
+      return res.status(500).json({
+          success: false,
+          message: 'An error occurred while submitting feedback.',
+      });
+  }
+});
 
 
 // panel call
