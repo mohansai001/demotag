@@ -1813,9 +1813,9 @@ app.get('/api/candidate-total-by-team', async (req, res) => {
     // Query to fetch the count of candidates for the specified ECs
     const query = `
       SELECT eng_center, COUNT(*) AS total_count
-      FROM candidate_info
-      WHERE eng_center = ANY($1)
-      GROUP BY eng_center
+FROM candidate_info
+WHERE eng_center = ANY($1) AND visible = TRUE
+GROUP BY eng_center;
     `;
 
     // Execute the query with the EC list
