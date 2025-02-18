@@ -16,7 +16,6 @@
             background: linear-gradient(120deg, #e6e6fa, #daf7a6);
             color: #e0e0e0;
             height: 100%;
-
         }
 
         :root {
@@ -76,14 +75,24 @@
 
         input[type="text"],
         input[type="number"],
-        select,
-        textarea {
+        select {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
         }
 
         input[type="text"]:focus,
@@ -330,29 +339,44 @@
             color: black;
             font-weight: bold;
         }
+
+        .details {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            width: 13% !important;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
 
+        tr {
+            height: 100%; /* You can adjust this value as needed */
+        }
         td, th {
-            border: 0.5px solid #b9b8b8;
+            border: 0.5px solid rgb(136, 136, 136);
             padding: 4px;
             text-align: left;
             color: black;
+            height: 100%;
         }
         table td:nth-child(1), table th:nth-child(1) {
             width: 8%;
         }
         table td:nth-child(2), table th:nth-child(2) {
-            width: 20%;
+            width: 15%;
         }
-        table td:nth-child(3), table th:nth-child(3), table td:nth-child(4), table th:nth-child(4), table td:nth-child(5), table th:nth-child(5){
+        table td:nth-child(3), table th:nth-child(3){
+            width: 4%;
+        }
+        table td:nth-child(4), table th:nth-child(4), table td:nth-child(5), table th:nth-child(5), table td:nth-child(6), table th:nth-child(6){
             width: 6%;
         }
-        table td:nth-child(6), table th:nth-child(6), table td:nth-child(7), table th:nth-child(7){
-            width: 24%;
+        table td:nth-child(7), table th:nth-child(7), table td:nth-child(8), table th:nth-child(8){
+            width: 23%;
         }
 
     </style>
@@ -371,42 +395,40 @@
         <br>
         <!-- Header Section -->
 
-        <div>
+        <div style="max-width: 50%;">
             <table>
                 <tr>
-                    <td class="header">RRF Code</td>
+                    <td class="details">RRF ID</td>
                     <td><input type="text" id="rrf-id" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header">Job Designation</td>
+                    <td class="details">Job Designation</td>
                     <td><input type="text" id="position" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header">Name of the Candidate</td>
+                    <td class="details">Name of the Candidate</td>
                     <td><input type="text" id="candidate-name" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header">Date of Interview</td>
+                    <td class="details">Date of Interview</td>
                     <td><input type="text" id="interview-date" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header">Interviewer Mail</td>
+                    <td class="details">Interviewer Mail</td>
                     <td><input type="text" id="interviewer-name" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header">TAG Team Member</td>
+                    <td class="details">TAG Team Member</td>
                     <td><input type="text" id="hr-email" placeholder="" readonly></td>
                 </tr>
             </table>
         </div>
 
         <table>
-            <tr>
-                <td colspan="7"><strong>Top Skills for the Role</strong></td>
-            </tr>
-            <tr style="font-weight: bold;">
+            <tr style="font-weight: bold;background-color: rgb(187, 187, 187);">
                 <td>Skills</td>
                 <td>Description</td>
+                <td>Top Skills</td>
                 <td>Deployment</td>
                 <td>Configuration</td>
                 <td>Troubleshooting</td>
@@ -416,128 +438,170 @@
             <tr>
                 <td class="header">Core Cloud Concepts</td>
                 <td>Be prepared to discuss IaaS, PaaS, SaaS, deployment models (public, private, hybrid), and the advantages and disadvantages of cloud</td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><textarea></textarea></td>
-                <td><textarea></textarea></td>
+                <td>Yes</td>
+                <td>
+                    <select id="core-cloud-concepts-deployment" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="core-cloud-concepts-configuration" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="core-cloud-concepts-troubleshooting" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td><textarea id="core-cloud-concepts-justification" required></textarea></td>
+                <td><textarea id="core-cloud-concepts-improvements" required></textarea></td>
             </tr>
             <tr>
                 <td class="header">Networking & Security</td>
-                <td>Expect questions on virtual networks, security groups, firewalls, endpoints and access control mechanisms within a cloud environment</td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><textarea></textarea></td>
-                <td><textarea></textarea></td>
+                <td>Expect questions on virtual networks, security groups, firewalls, endpoints and access control mechanisms within a cloud environment.</td>
+                <td>No</td>
+                <td>
+                    <select id="networking-security-deployment" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="networking-security-configuration" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="networking-security-troubleshooting" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td><textarea id="networking-security-justification" required></textarea></td>
+                <td><textarea id="networking-security-improvements" required></textarea></td>
             </tr>
             <tr>
                 <td class="header">Infrastructure Management</td>
-                <td>Candidate might be asked about resource provisioning (VMs, storage, Containerization), configuration management tools (Chef, Ansible), and CloudFormation</td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><textarea></textarea></td>
-                <td><textarea></textarea></td>
+                <td>Candidate might be asked about resource provisioning (VMs, storage, Containerization), configuration management tools (Chef, Ansible), and CloudFormation.</td>
+                <td>No</td>
+                <td>
+                    <select id="infrastructure-management-deployment" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="infrastructure-management-configuration" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="infrastructure-management-troubleshooting" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td><textarea id="infrastructure-management-justification" required></textarea></td>
+                <td><textarea id="infrastructure-management-improvements" required></textarea></td>
             </tr>
             <tr>
                 <td class="header">Scalability & High Availability</td>
-                <td>Understanding of how to design and implement scalable and highly available infrastructure in the cloud</td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><textarea></textarea></td>
-                <td><textarea></textarea></td>
+                <td>Understanding of how to design and implement scalable and highly available infrastructure in the cloud.</td>
+                <td>No</td>
+                <td>
+                    <select id="scalability-high-avail-deployment" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="scalability-high-avail-configuration" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="scalability-high-avail-troubleshooting" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td><textarea id="scalability-high-avail-justification" required></textarea></td>
+                <td><textarea id="scalability-high-avail-improvements" required></textarea></td>
             </tr>
             <tr>
                 <td class="header">Automation</td>
                 <td>Infrastructure as code (IaC) with Terraform or ARM(Azure) or CloudFormation (AWS)</td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><textarea></textarea></td>
-                <td><textarea></textarea></td>
+                <td>No</td>
+                <td>
+                    <select id="automation-deployment" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="automation-configuration" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="automation-troubleshooting" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td><textarea id="automation-justification" required></textarea></td>
+                <td><textarea id="automation-improvements" required></textarea></td>
             </tr>
             <tr>
                 <td class="header">Observability</td>
-                <td>Monitoring, Logging & Alerting</td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><select class="dropdown">
-                    <option value="poor">Poor</option>
-                    <option value="average">Average</option>
-                    <option value="good">Good</option>
-                </select></td>
-                <td><textarea></textarea></td>
-                <td><textarea></textarea></td>
+                <td>Discuss observability tools and techniques for monitoring and debugging cloud systems.</td>
+                <td>No</td>
+                <td>
+                    <select id="observability-deployment" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="observability-configuration" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="observability-troubleshooting" class="dropdown" required>
+                        <option value="poor">Poor</option>
+                        <option value="average">Average</option>
+                        <option value="good">Good</option>
+                    </select>
+                </td>
+                <td><textarea id="observability-justification" required></textarea></td>
+                <td><textarea id="observability-improvements" required></textarea></td>
             </tr>
         </table>
 
@@ -551,7 +615,7 @@
         <!-- Result Section -->
         <div class="result-section">
             <label for="result">Shortlisted for next round</label>
-            <select id="result" class="result-select">
+            <select id="result" class="result-select" required>
                 <option value="">Select</option>
                 <option value="Recommended">Shortlisted</option>
                 <option value="Rejected">Rejected</option>
@@ -676,7 +740,92 @@
             showToast('An error occurred while submitting the feedback.', 'error');
         });
     });
-    
+
+
+    document.getElementById('submit-button').addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // Collect all dropdown and textarea values
+        const formData = {
+            rrf_id: document.getElementById('rrf-id').value,
+            position: document.getElementById('position').value,
+            candidate_name: document.getElementById('candidate-name').value,
+            interview_date: document.getElementById('interview-date').value,
+            interviewer_name: document.getElementById('interviewer-name').value,
+            hr_email: document.getElementById('hr-email').value,
+            candidate_email: document.getElementById('candidate-email').textContent,
+
+            // Core Cloud Concepts
+            core_cloud_concepts_deployment: document.getElementById('core-cloud-concepts-deployment').value,
+            core_cloud_concepts_configuration: document.getElementById('core-cloud-concepts-configuration').value,
+            core_cloud_concepts_troubleshooting: document.getElementById('core-cloud-concepts-troubleshooting').value,
+            core_cloud_concepts_justification: document.getElementById('core-cloud-concepts-justification').value,
+            core_cloud_concepts_improvements: document.getElementById('core-cloud-concepts-improvements').value,
+
+            // Networking & Security
+            networking_security_deployment: document.getElementById('networking-security-deployment').value,
+            networking_security_configuration: document.getElementById('networking-security-configuration').value,
+            networking_security_troubleshooting: document.getElementById('networking-security-troubleshooting').value,
+            networking_security_justification: document.getElementById('networking-security-justification').value,
+            networking_security_improvements: document.getElementById('networking-security-improvements').value,
+
+            // Infrastructure Management
+            infrastructure_management_deployment: document.getElementById('infrastructure-management-deployment').value,
+            infrastructure_management_configuration: document.getElementById('infrastructure-management-configuration').value,
+            infrastructure_management_troubleshooting: document.getElementById('infrastructure-management-troubleshooting').value,
+            infrastructure_management_justification: document.getElementById('infrastructure-management-justification').value,
+            infrastructure_management_improvements: document.getElementById('infrastructure-management-improvements').value,
+
+            // Scalability & High Availability
+            scalability_high_avail_deployment: document.getElementById('scalability-high-avail-deployment').value,
+            scalability_high_avail_configuration: document.getElementById('scalability-high-avail-configuration').value,
+            scalability_high_avail_troubleshooting: document.getElementById('scalability-high-avail-troubleshooting').value,
+            scalability_high_avail_justification: document.getElementById('scalability-high-avail-justification').value,
+            scalability_high_avail_improvements: document.getElementById('scalability-high-avail-improvements').value,
+
+            // Automation
+            automation_deployment: document.getElementById('automation-deployment').value,
+            automation_configuration: document.getElementById('automation-configuration').value,
+            automation_troubleshooting: document.getElementById('automation-troubleshooting').value,
+            automation_justification: document.getElementById('automation-justification').value,
+            automation_improvements: document.getElementById('automation-improvements').value,
+
+            // Observability
+            observability_deployment: document.getElementById('observability-deployment').value,
+            observability_configuration: document.getElementById('observability-configuration').value,
+            observability_troubleshooting: document.getElementById('observability-troubleshooting').value,
+            observability_justification: document.getElementById('observability-justification').value,
+            observability_improvements: document.getElementById('observability-improvements').value,
+
+            // Additional fields for Detailed Feedback and Result
+            detailed_feedback: document.getElementById('detailed-feedback').value,
+            result: document.getElementById('result').value
+        };
+
+        // Send data to backend
+        fetch('http://localhost:3000/api/add-feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Feedback submitted successfully!');
+            } else {
+                alert('Error submitting feedback');
+                showToast('Error submitting feedback form', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred while submitting the feedback', 'error');
+        });
+    });
+
+
     </script>
 </body>
 
