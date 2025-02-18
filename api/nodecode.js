@@ -606,7 +606,8 @@ app.get('/api/devops-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Azure DevOps Engineer', 'Lead Azure DevOps Engineer','Senior Azure DevOps Engineer','Junior AWS DevOps Engineer','Senior AWS Cloudops Engineer','Lead AWS DevOps Engineer');
+      WHERE role IN ('Junior Azure DevOps Engineer', 'Lead Azure DevOps Engineer','Senior Azure DevOps Engineer','Junior AWS DevOps Engineer','Senior AWS Cloudops Engineer','Lead AWS DevOps Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -622,7 +623,8 @@ app.get('/api/platform-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Azure Platform Engineer', 'Lead Azure Platform Engineer','Senior Azure Platform Engineer','Junior AWS Platform Engineer','Senior AWS Platform Engineer','Lead AWS Platform Engineer');
+      WHERE role IN ('Junior Azure Platform Engineer', 'Lead Azure Platform Engineer','Senior Azure Platform Engineer','Junior AWS Platform Engineer','Senior AWS Platform Engineer','Lead AWS Platform Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -637,7 +639,8 @@ app.get('/api/cloudops-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Azure Cloudops Engineer', 'Lead Azure Cloudops Engineer','Senior Azure Cloudops Engineer','Junior AWS Cloudops Engineer','Senior AWS Cloudops Engineer','Lead AWS Cloudops Engineer');
+      WHERE role IN ('Junior Azure Cloudops Engineer', 'Lead Azure Cloudops Engineer','Senior Azure Cloudops Engineer','Junior AWS Cloudops Engineer','Senior AWS Cloudops Engineer','Lead AWS Cloudops Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -652,7 +655,8 @@ app.get('/api/site-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Azure Site Reliability Engineer', 'Lead Azure Site Reliability Engineer','Senior Azure Site Reliability Engineer','Junior AWS Site Reliability Engineer','Senior AWS Site Reliability Engineer','Lead AWS Site Reliability Engineer');
+      WHERE role IN ('Junior Azure Site Reliability Engineer', 'Lead Azure Site Reliability Engineer','Senior Azure Site Reliability Engineer','Junior AWS Site Reliability Engineer','Senior AWS Site Reliability Engineer','Lead AWS Site Reliability Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -669,7 +673,8 @@ app.get('/api/reactjs-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior ReactJS Developer', 'Lead ReactJS Developer','Senior ReactJS Developer');
+      WHERE role IN ('Junior ReactJS Developer', 'Lead ReactJS Developer','Senior ReactJS Developer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -685,7 +690,8 @@ app.get('/api/snow-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Snowflake Developer', 'Lead Snowflake Developer','Senior Snowflake Developer');
+      WHERE role IN ('Junior Snowflake Developer', 'Lead Snowflake Developer','Senior Snowflake Developer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -699,7 +705,8 @@ app.get('/api/java-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Java Fullstack Developer', 'Lead Java Fullstack Developer','Senior Java Fullstack Developer');
+      WHERE role IN ('Junior Java Fullstack Developer', 'Lead Java Fullstack Developer','Senior Java Fullstack Developer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -715,7 +722,8 @@ app.get('/api/hadoop-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Hadoop Data Engineer', 'Lead Hadoop Data Engineer','Senior Hadoop Data Engineer');
+      WHERE role IN ('Junior Hadoop Data Engineer', 'Lead Hadoop Data Engineer','Senior Hadoop Data Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -729,7 +737,8 @@ app.get('/api/.net-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior WF-NET & ASP.NET Core Developer', 'Lead WF-NET & ASP.NET Core Developer','Senior WF-NET & ASP.NET Core Developer');
+      WHERE role IN ('Junior WF-NET & ASP.NET Core Developer', 'Lead WF-NET & ASP.NET Core Developer','Senior WF-NET & ASP.NET Core Developer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -745,7 +754,8 @@ app.get('/api/data-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('AWS Data Engineer', 'Azure Data Engineer','Databricks Data Engineer','Hadoop Data Engineer','DataStage Data Engineer','IBM MDM Data Engineer','ETL Data Engineer','Oracle Data Engineer','IDMC Data Engineer','Marklogic Data Engineer','SQL Data Engineer','Snowflake Data Engineer','SSIS Data Engineer');
+      WHERE role IN ('AWS Data Engineer', 'Azure Data Engineer','Databricks Data Engineer','Hadoop Data Engineer','DataStage Data Engineer','IBM MDM Data Engineer','ETL Data Engineer','Oracle Data Engineer','IDMC Data Engineer','Marklogic Data Engineer','SQL Data Engineer','Snowflake Data Engineer','SSIS Data Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -759,7 +769,8 @@ app.get('/api/data-ops-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data-Ops Engineer', 'Lead Data-Ops Engineer','Senior Data-Ops Engineer');
+      WHERE role IN ('Junior Data-Ops Engineer', 'Lead Data-Ops Engineer','Senior Data-Ops Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -773,7 +784,8 @@ app.get('/api/data-bi-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Power BI Data – BI Visualization Engineer', 'Tableau Data – BI Visualization Engineer','WebFOCUS Data – BI Visualization Engineer');
+      WHERE role IN ('Power BI Data – BI Visualization Engineer', 'Tableau Data – BI Visualization Engineer','WebFOCUS Data – BI Visualization Engineer')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -787,7 +799,8 @@ app.get('/api/data-modeller-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Data Modeller');
+      WHERE role IN ('Data Modeller')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -801,7 +814,8 @@ app.get('/api/data-analyst-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN (' Data Analyst');
+      WHERE role IN (' Data Analyst')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -815,7 +829,8 @@ app.get('/api/data-architect-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data Architect', 'Lead Data Architect','Senior Data Architect');
+      WHERE role IN ('Junior Data Architect', 'Lead Data Architect','Senior Data Architect')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -829,7 +844,8 @@ app.get('/api/data-Scientist-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data Scientist –AI/ML', 'Lead Data Scientist –AI/ML','Senior Data Scientist –AI/ML');
+      WHERE role IN ('Junior Data Scientist –AI/ML', 'Lead Data Scientist –AI/ML','Senior Data Scientist –AI/ML')
+      AND visible = TRUE;
     `);
     const count = result.rows[0].count;
     res.json({ count });
@@ -939,19 +955,19 @@ app.get('/api/candidate-counts', async (req, res) => {
 
       // Query to get the total count for multiple eng_center values
       const totalResult = await pool.query(
-          `SELECT COUNT(*) AS total_count FROM candidate_info WHERE eng_center IN (${placeholders})`,
+          `SELECT COUNT(*) AS total_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND visible = TRUE`,
           engCentersArray
       );
 
       // Query to get the count of shortlisted candidates
       const shortlistedResult = await pool.query(
-          `SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Shortlisted'`,
+          `SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Shortlisted' AND visible = TRUE`,
           engCentersArray
       );
 
       // Query to get the count of rejected candidates
       const rejectedResult = await pool.query(
-          `SELECT COUNT(*) AS rejected_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Rejected'`,
+          `SELECT COUNT(*) AS rejected_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Rejected' AND visible = TRUE`,
           engCentersArray
       );
 
@@ -2038,6 +2054,68 @@ app.get('/api/get-panel-emails', async (req, res) => {
   } catch (error) {
     console.error('Error fetching panel emails:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+async function addVisibilityColumn() {
+  try {
+    await pool.query(`ALTER TABLE candidate_info ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
+    console.log("Visibility column added successfully.");
+  } catch (error) {
+    console.error("Error adding visibility column:", error);
+  }
+}
+addVisibilityColumn();
+
+// Function to get the correct date range
+function getDateRange(filterType) {
+  const currentDate = new Date();
+  let startDate, endDate;
+
+  if (filterType === 'last_week') {
+    startDate = new Date(currentDate);
+    startDate.setDate(currentDate.getDate() - 7); // Last 7 days including today
+    endDate = currentDate;
+  } else if (filterType === 'last_month') {
+    const previousMonth = currentDate.getMonth() - 1;
+    startDate = new Date(currentDate.getFullYear(), previousMonth, 1); // Start of last month
+    endDate = new Date(currentDate.getFullYear(), previousMonth + 1, 0); // End of last month
+  } else {
+    return null; // Overall case
+  }
+
+  return { 
+    startDate: startDate.toISOString().split('T')[0], 
+    endDate: endDate.toISOString().split('T')[0] 
+  };
+}
+
+// API to update visibility in the database
+app.post('/api/update-visibility', async (req, res) => {
+  const { filterType } = req.body;
+
+  if (!filterType) {
+    return res.status(400).json({ error: 'Filter type is required.' });
+  }
+
+  try {
+    await pool.query(`UPDATE candidate_info SET visible = FALSE;`); // Hide all records first
+
+    const dateRange = getDateRange(filterType);
+
+    if (dateRange) {
+      await pool.query(
+        `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
+        [dateRange.startDate, dateRange.endDate]
+      );
+    } else {
+      await pool.query(`UPDATE candidate_info SET visible = TRUE;`); // Show all for "Overall"
+    }
+
+    res.status(200).json({ message: `Records updated for filter: ${filterType}` });
+  } catch (error) {
+    console.error('Error updating visibility:', error);
+    res.status(500).json({ error: 'Failed to update visibility.' });
   }
 });
 
