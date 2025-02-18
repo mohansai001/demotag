@@ -801,7 +801,7 @@ app.get('/api/data-analyst-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('DataAnalyst');
+      WHERE role IN ('Data Analyst');
     `);
     const count = result.rows[0].count;
     res.json({ count });
