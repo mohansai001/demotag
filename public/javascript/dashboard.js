@@ -1735,6 +1735,13 @@ document.addEventListener("DOMContentLoaded", function () {
         "site-applicants",
         "platform-applicants",
         "devops-applicants"
+      ],
+	     "App EC":[
+        "cloud-native-backend-applicants",
+        "cloud-native-frontend-applicants",
+        "lcnc-platform-engineer-applicants",
+        "integration-engineer-applicants"
+
       ]
     };
 
