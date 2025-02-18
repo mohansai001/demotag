@@ -728,7 +728,7 @@ ${globalJobDescription}
 
         const nameKeyword = "Full Name:";
         let candidateName = '';
-        let role = (globalSelectedLevel || "Unknown Level") + " " +
+        let role = (globalSelectedLevel) + " " +
          
             (selectedRole || "Unknown Role");
         let candidateEmail = '';  // To store the candidate's email for the invitation
