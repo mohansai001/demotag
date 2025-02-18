@@ -1759,6 +1759,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+async function updateFilter() {
+    const filterType = document.getElementById('filterSelect').value;
+
+    await fetch('https://demotag.vercel.app/api/update-visibility', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filterType })
+    });
+
+    // Reload the page after updating the visibility
+    window.location.reload();
+}
+
+
 
 
 
