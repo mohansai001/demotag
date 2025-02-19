@@ -9,7 +9,7 @@ window.location.href = "ECselection.html";
 }
     async function loadCandidateCounts() {
         try {
-            const response = await fetch('https://demotag.vercel.app/api/candidate-counts');
+            const response = await fetch('http://localhost:3000/api/candidate-counts');
             const data = await response.json();
 
             // Update the counts on the page
@@ -42,33 +42,29 @@ window.location.href = "ECselection.html";
     });
 
     let selectedRole = '';
-    // let selectedCloudProvider = '';
+    let selectedCloudProvider = '';
     let globalSelectedLevel = '';
 
-    function fetchJobDescription(role, selectedLevel) {
+    function fetchJobDescription(role, cloudProvider, selectedLevel) {
         globalSelectedLevel = selectedLevel;
         console.log("Selected role:", role);
-        // console.log("Cloud Provider:", cloudProvider);
+        console.log("Cloud Provider:", cloudProvider);
         console.log("selected level:", selectedLevel);
 
         let fileName = '';
         switch (role) {
-            case 'ReactJS Developer':
-                fileName = `Job Description/${selectedLevel}_ReactJSDeveloper.txt`;
+            case 'Cloud Native Application Engineer - Backend':
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_DevOpsEngineer.txt`;
                 break;
-            case 'Snowflake Developer':
-                fileName = `Job Description/${selectedLevel}_SnowflakeDeveloper.txt`;
+            case 'Cloud Native Application Engineer - Front End':
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_PlatformEngineer.txt`;
                 break;
-           case 'Java Fullstack Developer':
-                fileName = `Job Description/${selectedLevel}_JavaFullstackDeveloper.txt`;
+            case 'LCNC Platform Engineer':
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_CloudOpsEngineer.txt`;
                 break;
-            case 'Hadoop Data Engineer':
-                fileName = `Job Description/${selectedLevel}_HadoopDataEngineer.txt`;
+            case 'Integration Engineer':
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_SiteReliabilityEngineer.txt`;
                 break;
-            case 'WF-NET & ASP.NET Core Developer':
-                fileName = `Job Description/${selectedLevel}_WF-NET&ASP.NETCoreDeveloper.txt`;
-                break;
-          
             default:
                 console.log("Role not found");
                 return Promise.reject("Role not found");
@@ -98,31 +94,42 @@ window.location.href = "ECselection.html";
     function selectRoleAndOpenPopup(role, dropdownId) {
         console.log("Selected role:", role);
         selectedRole = role;
-    
-        // Get the selected level from the dropdown
-        var selectedLevel = document.getElementById(dropdownId).value;
-        console.log("Selected Level:", selectedLevel);
-    
-        // Validate if a level has been selected
-        if (!selectedLevel) {
-            // If no level is selected, show the validation popup
+
+        // Get the selected cloud provider value
+        var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
+        if (!cloudProvider) {
+            // Show the custom popup if no cloud provider is selected
             document.getElementById('cloudProviderPopup').style.display = 'block';
-        } else {
-            // Proceed with your logic if a level is selected
-            openPopup();
-    
-            fetchJobDescription(role, selectedLevel).then(jobDescription => {
-                console.log("Job description fetched:", jobDescription);
-            }).catch(error => {
-                console.error("Error fetching job description:", error);
-            });
+            return; // Stop further execution
         }
+        selectedCloudProvider = cloudProvider ? cloudProvider.value : null;
+
+        // Log the selected cloud provider
+        console.log("Selected Cloud Provider:", selectedCloudProvider);
+
+        // Get the selected level from the specific dropdown using its id
+        var selectedLevel = document.getElementById(dropdownId).value;
+        console.log("Selected Level:", selectedLevel); // Log the selected dropdown value
+
+        openPopup();  // Open the popup after setting the role and provider
+
+        // Fetch job description after the popup is opened
+        fetchJobDescription(role, selectedCloudProvider, selectedLevel).then(jobDescription => {
+            console.log("Job description fetched:", jobDescription);
+        }).catch(error => {
+            console.error("Error fetching job description:", error);
+        });
     }
-    
-    // Function to close the validation popup
+
     function closeCloudProviderPopup() {
         document.getElementById('cloudProviderPopup').style.display = 'none';
     }
+
+
+
+
+
+
 
 
     function openPopup() {
@@ -149,74 +156,100 @@ let globalHrEmail;
 let globalRrfId;		
 
 async function uploadResume() {
-var fileInput = document.getElementById('resume');
-var file = fileInput.files[0];
+    var fileInput = document.getElementById('resume');
+    var file = fileInput.files[0];
 
-// Get the HR email input
-var hrEmail = document.getElementById('hr-email').value;
-var rrfId = document.getElementById('RRF-ID').value;
+    // Get the HR email input
+    var hrEmail = document.getElementById('hr-email').value;
+    var rrfId = document.getElementById('RRF-ID').value;
 
-
-// Validate HR email
-if (!hrEmail || !validateEmail(hrEmail)) {
-displaySuccessPopup('Please enter a valid HR email.');
-return;
-}
-
-// Store the HR email in the global variable
-globalHrEmail = hrEmail;
-globalRrfId	= rrfId;
-
-
-// Get the selected cloud provider value
-// var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
-// var selectedProvider = cloudProvider ? cloudProvider.value : null;
-// console.log('Selected Cloud Provider:', selectedProvider);
-
-if (file && file.type === "application/pdf") {
-var originalFileName = file.name;
-var timestamp = Date.now();
-var fileName = timestamp + "_" + originalFileName;
-var progressBar = document.querySelector('.progress-bar');
-progressBar.style.width = '0%'; // Reset progress bar
-
-// Start progress bar animation
-animateProgressBar(progressBar);
-
-try {
-    // Simulate upload delay (for demonstration purposes)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Upload the resume to GitHub
-    var githubUrl = await uploadToGitHub(fileName, file);
-
-    if (githubUrl) {
-        // Resume successfully uploaded
-        progressBar.style.width = '100%'; // Set progress bar to 100% on success
-        displaySuccessPopup('Resume uploaded successfully: ' + file.name);
-        closePopup();  // Assuming this closes another popup or message
-
-        document.querySelector('.role-selection-container').style.display = 'none';
-        document.querySelector('.container').style.display = 'block';
-
-        // Send the resume URL to ChatPDF API for evaluation
-        await evaluateResumeWithChatPDF(githubUrl);
-
-    } else {
-        // Resume already evaluated, reset the progress bar
-        displaySuccessPopup('Resume already evaluated.');
-        progressBar.style.width = '0%';
+    // Validate HR email
+    if (!hrEmail || !validateEmail(hrEmail)) {
+        displaySuccessPopup('Please enter a valid HR email.');
+        return;
     }
 
-} catch (error) {
-    console.error('Error uploading file: ', error);
-    progressBar.style.width = '0%'; // Reset progress bar on failure
-    displaySuccessPopup('Failed to upload resume.');
+    // Store the HR email in the global variable
+    globalHrEmail = hrEmail;
+    globalRrfId = rrfId;
+
+    // Get the selected cloud provider value
+    var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
+    var selectedProvider = cloudProvider ? cloudProvider.value : null;
+    console.log('Selected Cloud Provider:', selectedProvider);
+
+    if (file) {
+        var progressBar = document.querySelector('.progress-bar');
+        progressBar.style.width = '0%'; // Reset progress bar
+
+        // Start progress bar animation
+        animateProgressBar(progressBar);
+
+        try {
+            let processedFile = file;
+
+            // Check if the file is a .docx file
+            if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                displaySuccessPopup('Converting DOCX to PDF, please wait...');
+                
+                // Prepare the file for upload to the conversion endpoint
+                let formData = new FormData();
+                formData.append("word", file);
+
+                // Send the file to the /docxtopdf endpoint for conversion
+                const response = await fetch("http://localhost:3000/docxtopdf", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    processedFile = new File([blob], file.name.replace(".docx", ".pdf"), { type: "application/pdf" });
+                    displaySuccessPopup('DOCX file successfully converted to PDF.');
+                } else {
+                    throw new Error("Error converting DOCX to PDF.");
+                }
+            } else if (file.type !== "application/pdf") {
+                throw new Error("Unsupported file type. Please upload a PDF or DOCX file.");
+            }
+
+            // Simulate upload delay (for demonstration purposes)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Upload the resume to GitHub
+            var originalFileName = processedFile.name;
+            var timestamp = Date.now();
+            var fileName = timestamp + "_" + originalFileName;
+            var githubUrl = await uploadToGitHub(fileName, processedFile);
+
+            if (githubUrl) {
+                // Resume successfully uploaded
+                progressBar.style.width = '100%'; // Set progress bar to 100% on success
+                displaySuccessPopup('Resume uploaded successfully: ' + processedFile.name);
+                closePopup(); // Assuming this closes another popup or message
+
+                document.querySelector('.role-selection-container').style.display = 'none';
+                document.querySelector('.container').style.display = 'block';
+
+                // Send the resume URL to ChatPDF API for evaluation
+                await evaluateResumeWithChatPDF(githubUrl);
+
+            } else {
+                // Resume already evaluated, reset the progress bar
+                displaySuccessPopup('Resume already evaluated.');
+                progressBar.style.width = '0%';
+            }
+
+        } catch (error) {
+            console.error('Error uploading file: ', error);
+            progressBar.style.width = '0%'; // Reset progress bar on failure
+            displaySuccessPopup('Failed to upload resume.');
+        }
+    } else {
+        displaySuccessPopup('Please upload a valid PDF or DOCX file.');
+    }
 }
-} else {
-displaySuccessPopup('Please upload a valid PDF file.');
-}
-}
+
 
 // Helper function to validate email
 function validateEmail(email) {
@@ -253,7 +286,7 @@ return re.test(email);
     }
     async function getGithubToken() {
         try {
-            const response = await fetch('https://demotag.vercel.app/api/github-token');
+            const response = await fetch('http://localhost:3000/api/github-token');
             if (!response.ok) throw new Error('Network response was not ok');
 
             const data = await response.json();
@@ -267,7 +300,7 @@ return re.test(email);
 
 
     async function uploadToGitHub(fileName, file) {
-        const githubToken = await getGithubToken(); // Fetch the GitHub token here
+const githubToken = await getGithubToken();// Fetch the GitHub token here
         if (!githubToken) {
             console.error('GitHub token is not available.');
             return null;
@@ -386,7 +419,7 @@ return re.test(email);
     // Function to send resume count to the database
     async function sendCountToDatabase(count) {
         try {
-            const response = await fetch('https://demotag.vercel.app/send-resumes-count', {
+            const response = await fetch('http://localhost:3000/send-resumes-count', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -572,7 +605,7 @@ ${globalJobDescription}
     }
     // Global variable to store the selected role
 
-    function downloadContentAsFile(content, candidateName, selectedRole, globalSelectedLevel, statusText) {
+    function downloadContentAsFile(content, candidateName, selectedRole, globalSelectedLevel, selectedCloudProvider, statusText) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const margin = 15;
@@ -612,7 +645,7 @@ ${globalJobDescription}
         // Add the role title
         doc.setFontSize(16);
         doc.setTextColor(51, 51, 51);
-        doc.text(`Role: ${globalSelectedLevel}_${selectedRole.trim()}`, margin, yPosition);
+        doc.text(`Role: ${globalSelectedLevel}_${selectedCloudProvider}_${selectedRole.trim()}`, margin, yPosition);
         yPosition += 15;
 
         // Only include specific sections
@@ -701,7 +734,7 @@ ${globalJobDescription}
 
         // Save the PDF with the file name
         const currentDate = new Date().toISOString().split('T')[0];
-        const fileName = `${candidateName.trim()}_${globalSelectedLevel}_${selectedRole.trim()}_${currentDate}.pdf`;
+        const fileName = `${candidateName.trim()}_${globalSelectedLevel}_${selectedCloudProvider}_${selectedRole.trim()}_${currentDate}.pdf`;
         doc.save(fileName);
     }
 
@@ -722,11 +755,11 @@ ${globalJobDescription}
         const nameKeyword = "Full Name:";
         let candidateName = '';
         let role = (globalSelectedLevel || "Unknown Level") + " " +
-         
+            (selectedCloudProvider || "Unknown Provider") + " " +
             (selectedRole || "Unknown Role");
         let candidateEmail = '';  // To store the candidate's email for the invitation
         let candidateStatus = '';  // To store the candidate status (Shortlisted or Rejected)
-       // let cloudProvider = selectedCloudProvider || "Unknown provider";
+        let cloudProvider = selectedCloudProvider || "Unknown provider";
         let candidatePhoneNumber = '';
 
         // Extract the candidate name for UI display
@@ -863,7 +896,7 @@ ${globalJobDescription}
                     const updateField = statusText === "Rejected" ? "rejected" : "shortlisted";
 
                     // API call to update the relevant column in resume_counts
-                    fetch('https://demotag.vercel.app/update-resume-count', {
+                    fetch('http://localhost:3000/update-resume-count', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -937,7 +970,7 @@ ${globalJobDescription}
         const downloadButton = document.createElement('button');
         downloadButton.classList.add('download-btn');
         downloadButton.innerHTML = '<i class="fas fa-download"></i> Download Feedback';
-        downloadButton.onclick = () => downloadContentAsFile(textContent, candidateName, selectedRole, globalSelectedLevel);
+        downloadButton.onclick = () => downloadContentAsFile(textContent, candidateName, selectedRole, globalSelectedLevel, selectedCloudProvider);
         container.appendChild(downloadButton);
         const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
 
@@ -1006,7 +1039,7 @@ ${globalJobDescription}
         // The resume_score column will now store the suitability percentage
         const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
-        fetch('https://demotag.vercel.app/api/add-candidate-info', {
+        fetch('http://localhost:3000/api/add-candidate-info', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1052,7 +1085,7 @@ ${globalJobDescription}
         // The resume_score column will now store the suitability percentage
         const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
-        fetch('https://demotag.vercel.app/api/add-prescreening-info', {
+        fetch('http://localhost:3000/api/add-prescreening-info', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1093,7 +1126,7 @@ ${globalJobDescription}
             rrfId: globalRrfId,
         };
     
-        fetch('https://demotag.vercel.app/api/send-hr-email', {
+        fetch('http://localhost:3000/api/send-hr-email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1121,7 +1154,7 @@ ${globalJobDescription}
     
 
     function sendRRFToDB(globalRrfId, role, selectedValue, status = 'open') {
-        fetch('https://demotag.vercel.app/api/rrf-update', {
+        fetch('http://localhost:3000/api/rrf-update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1195,7 +1228,7 @@ ${globalJobDescription}
     }
     async function fetchCandidates() {
         try {
-            const response = await fetch('https://demotag.vercel.app/api/candidates');
+            const response = await fetch('http://localhost:3000/api/candidates');
             const data = await response.json();
 
             const tableBody = document.querySelector('#candidateTable tbody');
