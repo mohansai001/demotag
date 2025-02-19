@@ -1392,6 +1392,31 @@
     width: fit-content;
     margin-left: 0;
   }
+    .filter-container {
+    position: relative;
+    top: 6px;
+    right: -842px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 931;
+    width: 388px; /* Ensures it stays above other elements */
+}
+
+.filter-container h2 {
+    font-size: 14px;
+    margin: 0;
+}
+
+.filter-container select,
+.filter-container button {
+    padding: 5px;
+    font-size: 14px;
+}
 </style>
 
 <body>
@@ -1429,13 +1454,15 @@
     </div>
   </div>
 
-   <h2>Filter Candidates by Date</h2>
+ <div class="filter-container">
+    <h2>Filter Candidates by Date</h2>
     <select id="filterSelect">
         <option value="overall">Overall</option>
         <option value="last_week">Last Week</option>
         <option value="last_month">Last Month</option>
     </select>
     <button onclick="updateFilter()">Apply Filter</button>
+</div>
 
 
   <div class="partition">
