@@ -1693,6 +1693,59 @@ app.post('/api/add-feedback', async (req, res) => {
   }
 });
 
+app.post('/api/ecusecasesubmitform', async (req, res) => {
+  const data = req.body;
+
+  // Check if required data is provided
+  if (!data || !data.candidateEmail || !data.imochaScore || !data.rrfId || !data.position || !data.candidateName || !data.interviewDate || !data.interviewerName || !data.hrEmail) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  const query = `
+    INSERT INTO ecusecasefeedback (
+      candidate_email, imocha_score, rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email,
+      usecase_understanding_score_1, usecase_understanding_score_2, usecase_understanding_score_3, usecase_understanding_score_4,
+      usecase_understanding_rating, usecase_understanding_justification, usecase_understanding_improvements,
+      technical_design_score_1, technical_design_score_2, technical_design_score_3, technical_design_rating,
+      technical_design_justification, technical_design_improvements,
+      solution_implementation_score_1, solution_implementation_score_2, solution_implementation_score_3, solution_implementation_rating,
+      solution_implementation_justification, solution_implementation_improvements,
+      troubleshooting_score_1, troubleshooting_score_2, troubleshooting_score_3, troubleshooting_rating,
+      troubleshooting_justification, troubleshooting_improvements,
+      walkthrough_score_1, walkthrough_score_2, walkthrough_score_3, walkthrough_score_4, walkthrough_rating,
+      walkthrough_justification, walkthrough_improvements,
+      detailed_feedback, result
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42)
+  `;
+
+  const values = [
+    data.candidateEmail, data.imochaScore, data.rrfId, data.position, data.candidateName, data.interviewDate, 
+    data.interviewerName, data.hrEmail,
+    data.usecaseUnderstandingScore1, data.usecaseUnderstandingScore2, data.usecaseUnderstandingScore3, data.usecaseUnderstandingScore4,
+    data.usecaseUnderstandingRating, data.usecaseUnderstandingJustification, data.usecaseUnderstandingImprovements,
+    data.technicalDesignScore1, data.technicalDesignScore2, data.technicalDesignScore3, data.technicalDesignRating,
+    data.technicalDesignJustification, data.technicalDesignImprovements,
+    data.solutionImplementationScore1, data.solutionImplementationScore2, data.solutionImplementationScore3, data.solutionImplementationRating,
+    data.solutionImplementationJustification, data.solutionImplementationImprovements,
+    data.troubleshootingScore1, data.troubleshootingScore2, data.troubleshootingScore3, data.troubleshootingRating,
+    data.troubleshootingJustification, data.troubleshootingImprovements,
+    data.walkthroughScore1, data.walkthroughScore2, data.walkthroughScore3, data.walkthroughScore4, data.walkthroughRating,
+    data.walkthroughJustification, data.walkthroughImprovements,
+    data.detailedFeedback, data.result
+  ];
+
+  try {
+    // Execute the query to insert feedback data into the database
+    await pool.query(query, values);
+    
+    // Return success response
+    return res.status(200).json({ success: true, message: 'Feedback submitted successfully' });
+  } catch (error) {
+    console.error('Error inserting feedback data:', error);
+    return res.status(500).json({ success: false, message: 'Error submitting feedback' });
+  }
+});
+
 
 // panel call
 app.get('/api/panel-candidates-info', async (req, res) => {
