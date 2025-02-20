@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Evaluation Form</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+            color: #000;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-container {
+            width: 96%;
+            margin: 0 auto;
+            border: 1px solid #333;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .candidate-container {
+            display: flex;
+            flex-direction: column;
+            flex: 2;
+            max-width: 60%;
+        }
+
+        .candidate-info {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+        }
+
+        .candidate-photo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .image-container {
+            width: 350px;
+            height: 350px;
+            border: 2px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #f8f8f8;
+            cursor: pointer;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Fit the image inside the box while maintaining aspect ratio */
+            display: block;
+            object-position: center; /* Keep image centered */
+        }
+
+        .upload-label {
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table, .experience-table, .yes-no {
+            border-radius: 5px;
+        }
+
+        th,
+        td {
+            border: 0.5px solid #888888;
+            padding: 8px;
+            text-align: left;
+            width: 33.33%;
+        }
+
+        th {
+            background-color: #bbbbbb;
+            color: black;
+        }
+
+        .yes-no {
+            background-color: #f0f0f0;
+        }
+
+        .pre-screening {
+            background-color: #bbbbbb;
+            color: black;
+        }
+
+        .shortlisted {
+            background-color: #90EE90;
+        }
+
+        .not-shortlisted {
+            background-color: #FFB6C1;
+        }
+
+        .experience-table th {
+            background-color: #bbbbbb;
+            color: black;
+        }
+
+        table.experience-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 0.5px solid #888888;
+            padding: 8px;
+            text-align: left;
+            width: 25%;
+        }
+
+        .centered-text {
+            text-align: center;
+        }
+
+        .feedback-section {
+            margin-top: 25px;
+        }
+
+        .feedback-section-text {
+            margin-top: 5px;
+        }
+
+        .feedback-section label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .feedback-section textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            min-height: 100px;
+            resize: vertical;
+            border-radius: 4px;
+            font-size: 1rem;
+            border: 1px solid #888888;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .result-section label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-select {
+            padding: 8px;
+            width: 100%;
+            max-width: 200px;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3sease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <div style="color: #000000">
+            <p style="margin-bottom: -5px;">Email: <span id="candidate-email"></span></p>
+        </div>
+        <br>
+
+        <div class="header">
+            <div class="candidate-container">
+                <div class="candidate-info">
+                    <table>
+                        <tr>
+                            <td>RRF ID</td>
+                            <td>To be filled by TAG team</td>
+                        </tr>
+                        <tr>
+                            <td>Job Designation</td>
+                            <td>To be filled by TAG team</td>
+                        </tr>
+                        <tr>
+                            <td>Name of the candidate</td>
+                            <td>To be filled by TAG team</td>
+                        </tr>
+                        <tr>
+                            <td>UAN Number</td>
+                            <td>To be filled by TAG team</td>
+                        </tr>
+                        <tr>
+                            <td>Date of Interview</td>
+                            <td>To be filled by TAG team</td>
+                        </tr>
+                        <tr>
+                            <td>TAG Team Member</td>
+                            <td>To be filled by TAG team</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="introduction-tables">
+                    <table>
+                        <tr>
+                            <td>Introduction of ValueMomentum</td>
+                            <td class="yes-no">Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>Introduction of Cloud/App Engineering</td>
+                            <td class="yes-no">Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>Introduction to Roles & Responsibilities</td>
+                            <td class="yes-no">Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>Did Candidate qualify using pre-screening Q's</td>
+                            <td class="yes-no">Yes/No</td>
+                        </tr>
+                    </table>
+
+                    <table>
+                        <tr>
+                            <th class="pre-screening">Pre-screening Q's</th>
+                            <th>Summary</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select>
+                                    <option value="shortlisted">Shortlisted</option>
+                                    <option value="not-shortlisted">Not Shortlisted</option>
+                                </select>
+                            </td>
+                            <td><input type="text"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="candidate-photo">
+                <input type="file" id="imageUpload" accept="image/*" style="display:none;">
+                <div class="image-container" id="imageContainer">
+                    <label for="imageUpload" id="uploadLabel" class="upload-label">Upload Candidate Passport Image</label>
+                    <img id="imagePreview" style="display:none;">
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="section">
+            
+            
+        </div>
+
+        <div class="section">
+            <table class="experience-table">
+                <tr>
+                    <th>Cloud Experience</th>
+                    <th>Number of years or Months</th>
+                    <th> Please ask did he/she worked on Well-Architected Framework</th>
+                    <th>Please ask did he/she worked on Zero-trust security</th>
+                </tr>
+                <tr>
+                    <td>Total Experience in Azure Cloud from overall experience?</td>
+                    <td>8.5</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Total Experience in AWS Cloud ?</td>
+                    <td>0</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>Migration Experience - Onpremise to Cloud</th>
+                    <th>Number of Projects handled</th>
+                </tr>
+                <tr>
+                    <td>As-Is Migration</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>PaaS migration to WebApp services</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>Database migration</td>
+                    <td>10</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>Pre-sales experience</th>
+                    <th>Number of Proposals</th>
+                    <th class="centered-text">If candidate says, worked on proposals. Please ask did he/she handle
+                        end-to-end proposals? Yes or no</th>
+                </tr>
+                <tr>
+                    <td>Proposals worked</td>
+                    <td>3</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>Efforts calculations Knowledge</td>
+                    <td>No</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>DevOps Experience</th>
+                    <th>Level of experience - Theory or Implementation</th>
+                    <th class="centered-text">If candidate says Implementation knowledge, Please ask how many projects
+                        of experience he/she has?</th>
+                </tr>
+                <tr>
+                    <td>Knowledge on DevOps Maturity Model</td>
+                    <td>only Theory  or Implementation knowledge:Both</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>DORA metrics</td>
+                    <td>No</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Build Release Solutioning</td>
+                    <td>only Theory  or Implementation knowledge:Both</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>Observability</th>
+                    <th>Level of experience</th>
+                    <th class="centered-text">If candidate says Implementation knowledge, Please ask how many projects of experience he/she has?</th>
+                </tr>
+                <tr>
+                    <td>Knowledge on Observability</td>
+                    <td>No</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>Containerization</th>
+                    <th>Level of experience</th>
+                    <th class="centered-text">If candidate say Implementation knowledge, Please ask How many projects experience he/she do have?</th>
+                </tr>
+                <tr>
+                    <td>Knowledge on Containerization</td>
+                    <td>only Theory  or Implementation knowledge: Both</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="feedback-section">
+            <label for="detailed-feedback">Detailed Feedback: *</label>
+            <textarea id="detailed-feedback" class="feedback-section-text"
+                placeholder="Enter your detailed feedback here..." required></textarea>
+        </div>
+
+        <!-- Result Section -->
+        <div class="result-section">
+            <label for="result">Shortlisted for next round</label>
+            <select id="result" class="result-select" required>
+                <option value="">Select</option>
+                <option value="Recommended">Shortlisted</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button id="submit-button" style="background-color: #1f4e79; color: #ffffff; height: 25px; width: 200px; border-radius: 5px">Submit</button>
+        </div>
+
+    </div>
+    <br>
+
+    <script>
+        // Trigger the file input when clicking on the container or image
+        document.getElementById('imageContainer').addEventListener('click', function() {
+            document.getElementById('imageUpload').click();
+        });
+
+        // Handle image file selection and preview
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var image = document.getElementById('imagePreview');
+            var label = document.querySelector('label[for="imageUpload"]'); // Get the label
+
+            if (file && file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    image.style.display = 'block'; // Show the image
+                    label.style.display = 'none';  // Hide the label
+                };
+                reader.readAsDataURL(file);
+            } else {
+                image.src = "";
+                image.style.display = 'none';
+                label.style.display = 'block'; // Show the label again if no image is selected or it's not an image
+            }
+        });
+    </script>
+
+</body>
+
+</html>
