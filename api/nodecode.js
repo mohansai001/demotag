@@ -1796,58 +1796,32 @@ app.get('/api/hr-candidates-info', async (req, res) => {
 // Example Express.js route to update candidate status, panel, and date/time
 // const fetch = require('node-fetch');
 
-app.put('/api/update-status', async (req, res) => {
-  const { email, status, panel, dateTime } = req.body;
+app.put("/api/update-status", async (req, res) => {
+  const { email, status, panel, dateTime, meetingLink } = req.body; // Accept meetingLink from frontend
 
   try {
-    // Create Teams meeting via Microsoft Graph API
-    const meetingResponse = await fetch('https://graph.microsoft.com/v1.0/me/onlineMeetings', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer YOUR_ACCESS_TOKEN`, // Replace with your actual access token
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        startDateTime: dateTime,
-        endDateTime: new Date(new Date(dateTime).getTime() + 3600000).toISOString(), // 1-hour meeting
-        subject: `Interview for ${email}`,
-        participants: {
-          attendees: [
-            { emailAddress: { address: email }, type: 'required' },
-            { emailAddress: { address: panel }, type: 'required' },
-          ],
-        },
-      }),
-    });
-
-    const meetingData = await meetingResponse.json();
-    const meetingLink = meetingData.joinUrl;
-
-    // Extract the date and time portions
-    const interviewDate = new Date(dateTime).toISOString().split('T')[0]; // Date in YYYY-MM-DD format
-    const interviewTime = new Date(dateTime).toISOString().split('T')[1].split('.')[0]; // Time in HH:MM:SS format
-
-    // Save meeting link, recruitment phase, interview date, interview time, and panel name in the database
     const updateQuery = `
       UPDATE candidate_info
-      SET 
-          recruitment_phase = $1, 
-          meeting_link = $2, 
-          l_2_interviewdate = $3,
-          l_2_interviewtime = $4,
-          panel_name = $5
-      WHERE 
-          candidate_email = $6;
+      SET recruitment_phase = $1, meeting_link = $2, l_2_interviewdate = $3, l_2_interviewtime = $4,panel_name=$5
+      WHERE candidate_email = $6;
     `;
-    await pool.query(updateQuery, ['L2 Scheduled', meetingLink, interviewDate, interviewTime, panel, email]);
+
+    await pool.query(updateQuery, [
+      "L2 Scheduled",
+      meetingLink, // Use meetingLink from frontend
+      dateTime.split("T")[0],
+      dateTime.split("T")[1].split(".")[0],
+      panel,
+      email,
+    ]);
 
     res.status(200).json({
-      message: 'Recruitment phase updated, interview date, time, and panel name saved, and meeting link created successfully.',
+      message: "Interview scheduled successfully.",
       meetingLink,
     });
   } catch (error) {
-    console.error('Error creating Teams meeting:', error);
-    res.status(500).json({ message: 'Failed to create Teams meeting' });
+    console.error("Error updating status:", error.message);
+    res.status(500).json({ message: "Failed to update candidate status", error: error.message });
   }
 });
 app.get('/api/candidate-total-by-team', async (req, res) => {
