@@ -43,6 +43,8 @@ async function fetchCandidatesInfo() {
       row.innerHTML = `
         <td>${candidate.rrf_id}</td>
         <td>${candidate.candidate_name}</td>
+        <td>${candidate.hr_email}</td>
+        
         <td>${candidate.candidate_email}</td>
         <td>${candidate.candidate_phone}</td>
         <td>${candidate.role}</td>
@@ -290,7 +292,7 @@ document.querySelector('#candidates-table tbody').addEventListener('click', func
 });
 
 // Function to handle the modal for scheduling
-function handleScheduleClick(event) {
+async function handleScheduleClick(event) {
   try {
     const candidateRow = event.target.closest('tr');
     if (!candidateRow) {
@@ -309,67 +311,127 @@ function handleScheduleClick(event) {
 
     scheduleBtn.onclick = async () => {
       try {
-        const candidateEmail = candidateRow.cells[2].innerText; // Candidate email
-        const panel = document.getElementById('panel-select').value; // Panel email
+        const hr_email = candidateRow.cells[2].innerText;
+        const candidateEmail = candidateRow.cells[3].innerText;
+        const panelEmail = document.getElementById('panel-select').value;
         const dateTime = document.getElementById('datetime-input').value;
 
         const date = new Date(dateTime);
+        const startDateTime = date.toISOString();
+        const endDateTime = new Date(date.getTime() + 30 * 60 * 1000).toISOString();
 
-        // Convert the date to IST (Indian Standard Time), which is UTC +5:30
-        const istOffset = 5.5 * 60; // IST is 5 hours 30 minutes ahead of UTC
-        const gmtTime = date.getTime(); // Get time in milliseconds (UTC time)
-        const istTime = new Date(gmtTime + (istOffset * 60 * 1000)); // Convert to IST
+        const tokenRequest = {
+          scopes: ["OnlineMeetings.ReadWrite", "Calendars.ReadWrite"],
+          account: msalInstance.getAllAccounts()[0]
+        };
 
-        // Manually format the date to YYYY-MM-DDTHH:mm:ss (IST time)
-        const year = istTime.getFullYear();
-        const month = String(istTime.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
-        const day = String(istTime.getDate()).padStart(2, '0');
-        const hours = String(istTime.getHours()).padStart(2, '0');
-        const minutes = String(istTime.getMinutes()).padStart(2, '0');
-        const seconds = String(istTime.getSeconds()).padStart(2, '0');
+        let tokenResponse;
+        try {
+          tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
+        } catch (silentError) {
+          console.warn("Silent token acquisition failed; trying popup.", silentError);
+          tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
+        }
 
-        // Formatted IST datetime string
-        const istDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        const accessToken = tokenResponse.accessToken;
 
-        // API request to create Teams meeting and update status
-        const response = await fetch(`https://demotag.vercel.app/api/update-status`, {
-          method: 'PUT',
+        // 1️⃣ **Create Teams Meeting**
+        const meetingRequest = {
+          startDateTime,
+          endDateTime,
+          subject: `L2 Interview: ${candidateName}`,
+          participants: {
+            organizer: { upn: hr_email },
+            attendees: [
+              { upn: candidateEmail, role: "attendee" },
+              { upn: panelEmail, role: "attendee" }
+            ]
+          }
+        };
+
+        const meetingResponse = await fetch("https://graph.microsoft.com/v1.0/me/onlineMeetings", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
           },
+          body: JSON.stringify(meetingRequest)
+        });
+
+        if (!meetingResponse.ok) {
+          throw new Error("Failed to create Teams meeting");
+        }
+
+        const meetingData = await meetingResponse.json();
+        const meetingLink = meetingData.joinWebUrl;
+
+        // 2️⃣ **Create Calendar Event**
+        const eventRequest = {
+          subject: `L2 Interview: ${candidateName}`,
+          start: { dateTime: startDateTime, timeZone: "UTC" },
+          end: { dateTime: endDateTime, timeZone: "UTC" },
+          location: { displayName: "Microsoft Teams Meeting" },
+          attendees: [
+            {
+              emailAddress: { address: candidateEmail, name: candidateName },
+              type: "required"
+            },
+            {
+              emailAddress: { address: panelEmail, name: "Panel Member" },
+              type: "required"
+            }
+          ],
+          isOnlineMeeting: true,
+          onlineMeetingProvider: "teamsForBusiness",
+          onlineMeeting: { joinUrl: meetingLink }
+        };
+
+        const calendarResponse = await fetch("https://graph.microsoft.com/v1.0/me/events", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(eventRequest)
+        });
+
+        if (!calendarResponse.ok) {
+          throw new Error("Failed to create calendar event");
+        }
+
+        // 3️⃣ **Update Status in Backend**
+        await fetch("http://localhost:3000/api/update-status", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: candidateEmail,
-            status: 'L2 Scheduled',
-            panel: panel,
-            dateTime: istDateTime, // Send the manually formatted IST date
+            status: "L2 Scheduled",
+            panel: panelEmail,
+            dateTime: startDateTime,
+            meetingLink
           }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to update candidate status');
-        }
-
-        const data = await response.json();
+        // 4️⃣ **Success Message & UI Update**
         const successMessage = document.getElementById("success-message");
-        successMessage.innerText = `Interview for ${candidateName} scheduled successfully! Meeting link sent to ${candidateEmail} and ${panel}.`;
+        successMessage.innerText = `Interview for ${candidateName} scheduled successfully! Meeting link sent to ${candidateEmail} and ${panelEmail}.`;
         successMessage.style.display = "block";
 
-        // Update status in the table
-        candidateRow.cells[6].innerText = 'L2 Scheduled';
+        candidateRow.cells[7].innerText = "L2 Scheduled";
         button.disabled = true;
 
-        // Close modal after delay
         setTimeout(() => {
           modal.classList.remove("active");
           overlay.classList.remove("active");
           successMessage.style.display = "none";
         }, 3000);
+
       } catch (error) {
-        console.error('Error updating status:', error);
+        console.error("Error scheduling Teams meeting:", error);
       }
     };
   } catch (error) {
-    console.error('Error in handleScheduleClick:', error);
+    console.error("Error in handleScheduleClick:", error);
   }
 }
 
