@@ -46,9 +46,12 @@
       padding: 20px;
       border-bottom: 1px solid #eaeaea;
     }
-    .header .buttons { /* Wrap the buttons in a container */
+
+    .header .buttons {
+      /* Wrap the buttons in a container */
       display: flex;
-      gap: 15px; /* Controls the space between buttons */
+      gap: 15px;
+      /* Controls the space between buttons */
     }
 
     .profile-info {
@@ -99,7 +102,8 @@
       margin-left: 10px;
     }
 
-    .send-email-btn, .skip-email-btn {
+    .send-email-btn,
+    .skip-email-btn {
       background-color: #daf7a6;
       color: black;
       border: none;
@@ -109,7 +113,8 @@
       cursor: pointer;
     }
 
-    .send-email-btn:hover, .skip-email-btn:hover {
+    .send-email-btn:hover,
+    .skip-email-btn:hover {
       background-color: #daf7a6;
       color: grey;
     }
@@ -142,11 +147,7 @@
       z-index: -1;
     }
 
-    .step:nth-child(1).active+.step:nth-child(2)::after {
-      background: #d3d3d3;
-    }
-
-    .step:nth-child(2).active+.step:nth-child(3)::after {
+    .step.active+.step::after {
       background: #d3d3d3;
     }
 
@@ -350,6 +351,8 @@
       margin-left: 241px;
       margin: 20px auto;
       width: 61%;
+      position: relative;
+      /* Needed for absolute positioning of the + button */
     }
 
     .steps-container {
@@ -395,6 +398,73 @@
       font-weight: 500;
     }
 
+    /* + button positioned outside the steps-container */
+    .add-step-button {
+      position: absolute;
+      top: 50%;
+      right: -50px;
+      /* Adjust the value based on your preference */
+      transform: translateY(-50%);
+    }
+
+    .add-step-button button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .add-step-button button:hover {
+      background-color: #45a049;
+    }
+
+    /* Popup form styles */
+    .popup-form {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+
+    .popup-content input,
+    .popup-content select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .popup-content button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .popup-content button:hover {
+      background-color: #45a049;
+    }
+
     .back-button {
       position: absolute;
       top: 10px;
@@ -412,7 +482,7 @@
       background-color: #daf7a6;
     }
 
-    .edit-candidate{
+    .edit-candidate {
       display: grid;
       grid-template-columns: 110px 1fr;
       gap: 5px;
@@ -421,7 +491,7 @@
       margin-top: 10px;
     }
 
-    .candidate-details{
+    .candidate-details {
       padding: 5px;
       border-radius: 5px;
       border: 1px solid #ccc;
@@ -453,7 +523,31 @@
         <div class="step-title">Fitment Round</div>
       </div>
     </div>
+    <!-- Button placed outside the steps-container -->
+    <div class="add-step-button">
+      <button id="addStepButton">+</button>
+    </div>
   </div>
+
+
+  <!-- Popup Form -->
+  <div id="popupForm" class="popup-form">
+    <div class="popup-content">
+      <h3>Add New Step</h3>
+      <label for="name">Name:</label>
+      <input type="text" id="name" placeholder="Enter name">
+
+      <label for="position">Position:</label>
+      <select id="position">
+        <option value="before">Before Fitment Round</option>
+        <option value="after">After Fitment Round</option>
+      </select>
+
+      <button id="saveButton">Save</button>
+      <button id="closeButton">Close</button>
+    </div>
+  </div>
+
   <div class="container">
     <!-- Progress Bar -->
     <!-- Header -->
@@ -502,13 +596,13 @@
             <h4>Edit Candidate Details</h4>
             <div class="edit-candidate">
               <label for="name">Name:</label>
-              <input type="text" id="name" class="candidateName candidate-details" value=""/>
+              <input type="text" id="name" class="candidateName candidate-details" value="" />
 
               <label for="email">Email:</label>
-              <input type="email" id="email" class="candidateEmail candidate-details" value=""/>
+              <input type="email" id="email" class="candidateEmail candidate-details" value="" />
 
               <label for="phone">Phone Number:</label>
-              <input type="tel" id="phone" class="candidatePhoneNumber candidate-details" value=""/>
+              <input type="tel" id="phone" class="candidatePhoneNumber candidate-details" value="" />
             </div>
           </div>
         </div>
