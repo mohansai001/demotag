@@ -1759,17 +1759,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+function toggleDateInputs() {
+    const filterType = document.getElementById('filterSelect').value;
+    const customDateRange = document.getElementById('customDateRange');
+
+    if (filterType === 'custom_range') {
+        customDateRange.style.display = 'block';
+    } else {
+        customDateRange.style.display = 'none';
+    }
+}
+
 async function updateFilter() {
     const filterType = document.getElementById('filterSelect').value;
+    let startDate = null, endDate = null;
 
-    await fetch('https://demotag.vercel.app/api/update-visibility', {
+    if (filterType === 'custom_range') {
+        startDate = document.getElementById('startDate').value;
+        endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            alert("Please select both start and end dates.");
+            return;
+        }
+    }
+
+    await fetch('http://localhost:3000/api/update-visibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filterType })
+        body: JSON.stringify({ filterType, startDate, endDate })
     });
 
-    // Reload the page after updating the visibility
-    window.location.reload();
+    window.location.reload(); // Reload to reflect changes
 }
 
 
