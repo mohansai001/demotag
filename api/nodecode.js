@@ -2119,30 +2119,36 @@ function getDateRange(filterType) {
 
 // API to update visibility in the database
 app.post('/api/update-visibility', async (req, res) => {
-  const { filterType } = req.body;
+  const { filterType, startDate, endDate } = req.body;
 
   if (!filterType) {
-    return res.status(400).json({ error: 'Filter type is required.' });
+      return res.status(400).json({ error: 'Filter type is required.' });
   }
 
   try {
-    await pool.query(`UPDATE candidate_info SET visible = FALSE;`); // Hide all records first
+      await pool.query(`UPDATE candidate_info SET visible = FALSE;`); // Hide all records first
 
-    const dateRange = getDateRange(filterType);
+      if (filterType === 'custom_range' && startDate && endDate) {
+          await pool.query(
+              `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
+              [startDate, endDate]
+          );
+      } else {
+          const dateRange = getDateRange(filterType);
+          if (dateRange) {
+              await pool.query(
+                  `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
+                  [dateRange.startDate, dateRange.endDate]
+              );
+          } else {
+              await pool.query(`UPDATE candidate_info SET visible = TRUE;`); // Show all for "Overall"
+          }
+      }
 
-    if (dateRange) {
-      await pool.query(
-        `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
-        [dateRange.startDate, dateRange.endDate]
-      );
-    } else {
-      await pool.query(`UPDATE candidate_info SET visible = TRUE;`); // Show all for "Overall"
-    }
-
-    res.status(200).json({ message: `Records updated for filter: ${filterType}` });
+      res.status(200).json({ message: `Records updated for filter: ${filterType}` });
   } catch (error) {
-    console.error('Error updating visibility:', error);
-    res.status(500).json({ error: 'Failed to update visibility.' });
+      console.error('Error updating visibility:', error);
+      res.status(500).json({ error: 'Failed to update visibility.' });
   }
 });
 
