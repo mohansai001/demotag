@@ -1784,7 +1784,7 @@ async function updateFilter() {
         }
     }
 
-    await fetch('http://localhost:3000/api/update-visibility', {
+    await fetch('https://demotag.vercel.app/api/update-visibility', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filterType, startDate, endDate })
