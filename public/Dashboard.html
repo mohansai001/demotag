@@ -1456,11 +1456,21 @@
 
  <div class="filter-container">
     <h2>Filter Candidates by Date</h2>
-    <select id="filterSelect">
+    <select id="filterSelect" onchange="toggleDateInputs()">
         <option value="overall">Overall</option>
         <option value="last_week">Last Week</option>
         <option value="last_month">Last Month</option>
+        <option value="custom_range">Custom Range</option>
     </select>
+
+    <div id="customDateRange" style="display: none;">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+    </div>
+
     <button onclick="updateFilter()">Apply Filter</button>
 </div>
 
