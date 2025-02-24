@@ -1747,6 +1747,131 @@ app.post('/api/ecusecasesubmitform', async (req, res) => {
 });
 
 
+app.post('/api/feedback-form-db', async (req, res) => {
+  const {
+    candidate_email,
+    rrf_id,
+    position,
+    candidate_name,
+    uan_number,
+    interview_date,
+    hr_email,
+    introduction_value_momentum,
+    introduction_cloud_app,
+    roles_responsibilities,
+    pre_screening,
+    status,
+    summary,
+    ec_select,
+    cloud_experience_azure_experience,
+    cloud_experience_azure_well_architected_framework,
+    cloud_experience_azure_zero_trust_security,
+    cloud_experience_aws_experience,
+    cloud_experience_aws_well_architected_framework,
+    cloud_experience_aws_zero_trust_security,
+    migration_experience_as_is_migration,
+    migration_experience_paas_migration,
+    migration_experience_database_migration,
+    presales_experience_proposals_worked,
+    presales_experience_proposals_worked_end_to_end,
+    presales_experience_efforts_calculations,
+    presales_experience_efforts_calculations_end_to_end,
+    devops_experience_devops_maturity_model,
+    devops_experience_dora_metrics,
+    devops_experience_build_release_solutioning,
+    devops_experience_devops_maturity_model_projects,
+    devops_experience_dora_metrics_projects,
+    devops_experience_build_release_solutioning_projects,
+    observability_experience_observability_knowledge,
+    observability_experience_observability_knowledge_projects,
+    containerization_experience_containerization_knowledge,
+    containerization_experience_containerization_knowledge_projects,
+    java_experience_java_experience,
+    java_experience_java8_experience,
+    java_experience_concurrency_experience,
+    java_experience_microservice_experience,
+    java_experience_distributed_transactions_experience,
+    java_experience_event_driven_experience,
+    java_experience_security_experience,
+    java_experience_design_patterns_experience,
+    java_experience_data_structures_experience,
+    java_experience_spring_boot_experience_details,
+    java_experience_sql_queries_experience,
+    java_experience_jvm_tuning_experience,
+    feedback
+  } = req.body;
+
+  // Check if the necessary fields are provided
+  if (!candidate_email || !rrf_id || !candidate_name || !position || !interview_date || !hr_email) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    // Insert feedback data into the database
+    await pool.query(`
+      INSERT INTO prescreening_form (
+        candidate_email, rrf_id, position, candidate_name, uan_number, interview_date,
+        hr_email, introduction_value_momentum, introduction_cloud_app, roles_responsibilities,
+        pre_screening, status, summary, ec_select, cloud_experience_azure_experience, 
+        cloud_experience_azure_well_architected_framework, cloud_experience_azure_zero_trust_security, 
+        cloud_experience_aws_experience, cloud_experience_aws_well_architected_framework, 
+        cloud_experience_aws_zero_trust_security, migration_experience_as_is_migration, 
+        migration_experience_paas_migration, migration_experience_database_migration, 
+        presales_experience_proposals_worked, presales_experience_proposals_worked_end_to_end, 
+        presales_experience_efforts_calculations, presales_experience_efforts_calculations_end_to_end, 
+        devops_experience_devops_maturity_model, devops_experience_dora_metrics, 
+        devops_experience_build_release_solutioning, devops_experience_devops_maturity_model_projects, 
+        devops_experience_dora_metrics_projects, devops_experience_build_release_solutioning_projects, 
+        observability_experience_observability_knowledge, 
+        observability_experience_observability_knowledge_projects, 
+        containerization_experience_containerization_knowledge, 
+        containerization_experience_containerization_knowledge_projects, 
+        java_experience_java_experience, java_experience_java8_experience, 
+        java_experience_concurrency_experience, java_experience_microservice_experience, 
+        java_experience_distributed_transactions_experience, java_experience_event_driven_experience, 
+        java_experience_security_experience, java_experience_design_patterns_experience, 
+        java_experience_data_structures_experience, java_experience_spring_boot_experience_details, 
+        java_experience_sql_queries_experience, java_experience_jvm_tuning_experience, feedback
+      )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
+        $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, 
+        $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, 
+        $42, $43, $44, $45, $46, $47, $48, $49, $50
+      )
+    `, [
+      candidate_email, rrf_id, position, candidate_name, uan_number, interview_date,
+      hr_email, introduction_value_momentum, introduction_cloud_app, roles_responsibilities,
+      pre_screening, status, summary, ec_select, cloud_experience_azure_experience,
+      cloud_experience_azure_well_architected_framework, cloud_experience_azure_zero_trust_security,
+      cloud_experience_aws_experience, cloud_experience_aws_well_architected_framework,
+      cloud_experience_aws_zero_trust_security, migration_experience_as_is_migration,
+      migration_experience_paas_migration, migration_experience_database_migration,
+      presales_experience_proposals_worked, presales_experience_proposals_worked_end_to_end,
+      presales_experience_efforts_calculations, presales_experience_efforts_calculations_end_to_end,
+      devops_experience_devops_maturity_model, devops_experience_dora_metrics,
+      devops_experience_build_release_solutioning, devops_experience_devops_maturity_model_projects,
+      devops_experience_dora_metrics_projects, devops_experience_build_release_solutioning_projects,
+      observability_experience_observability_knowledge,
+      observability_experience_observability_knowledge_projects,
+      containerization_experience_containerization_knowledge,
+      containerization_experience_containerization_knowledge_projects,
+      java_experience_java_experience, java_experience_java8_experience,
+      java_experience_concurrency_experience, java_experience_microservice_experience,
+      java_experience_distributed_transactions_experience, java_experience_event_driven_experience,
+      java_experience_security_experience, java_experience_design_patterns_experience,
+      java_experience_data_structures_experience, java_experience_spring_boot_experience_details,
+      java_experience_sql_queries_experience, java_experience_jvm_tuning_experience, feedback
+    ]);
+
+    return res.status(200).json({ message: 'Feedback submitted successfully!' });
+  } catch (error) {
+    console.error('Error processing feedback submission:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 // panel call
 app.get('/api/panel-candidates-info', async (req, res) => {
   try {
