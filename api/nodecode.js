@@ -1871,6 +1871,31 @@ app.post('/api/feedback-form-db', async (req, res) => {
   }
 });
 
+app.get('/api/getAllCandidateEmails', async (req, res) => {
+  try {
+    // Query to fetch all emails where the prescreening_status is 'Shortlisted'
+    const query = `
+      SELECT candidate_email
+      FROM candidate_info
+      WHERE prescreening_status = 'Shortlisted';
+    `;
+    
+    // Execute the query
+    const result = await pool.query(query);
+    
+    if (result.rows.length > 0) {
+      // Return the list of emails in the response
+      const emails = result.rows.map(row => row.candidate_email);
+      return res.json({ emails });
+    } else {
+      return res.status(404).json({ error: 'No shortlisted candidates found' });
+    }
+  } catch (error) {
+    console.error('Error fetching candidate emails:', error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+});
+
 
 // panel call
 app.get('/api/panel-candidates-info', async (req, res) => {
