@@ -631,7 +631,27 @@
 
     <!-- Include html2pdf.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://alcdn.msauth.net/browser/2.25.0/js/msal-browser.min.js"></script>
+
+
     <script>
+
+const msalConfig = {
+  auth: {
+    clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
+    authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
+    redirectUri: "https://demotag.vercel.app", // Must match the redirect URI registered in Azure AD
+  }
+};
+
+// Initialize MSAL instance
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+// Get the logged-in user's email from localStorage
+const loggedInUserEmail = localStorage.getItem("userEmail");
+
+
+
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -702,6 +722,9 @@
 
     document.getElementById('submit-button').addEventListener('click', function(e) {
         e.preventDefault(); // Prevent the default form submission
+        
+  
+
 
         // Collect the form data
         const feedback = document.getElementById('detailed-feedback').value;
@@ -731,6 +754,7 @@
             if (data.success) {
                 showToast('Feedback and result updated successfully.');
                 window.close();
+               
             } else {
                 showToast('Error updating the feedback and result.', 'error');
             }
@@ -744,6 +768,9 @@
 
     document.getElementById('submit-button').addEventListener('click', function (e) {
         e.preventDefault();
+
+        
+        
 
         // Collect all dropdown and textarea values
         const formData = {
@@ -801,29 +828,133 @@
             detailed_feedback: document.getElementById('detailed-feedback').value,
             result: document.getElementById('result').value
         };
+           // Step 1: Generate PDF
+           const formContainer = document.querySelector('.form-container');
 
-        // Send data to backend
-        fetch('https://demotag.vercel.app/api/add-feedback', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
+// Adjust layout before PDF generation
+const originalMarginLeft = formContainer.style.marginLeft;
+const originalMarginTop = formContainer.style.marginTop;
+formContainer.style.marginLeft = '0';
+formContainer.style.marginTop = '0';
+
+// Wait for a short time to ensure layout changes take effect
+setTimeout(() => {
+    html2pdf()
+        .set({
+            margin: 0.5,
+            filename: 'Interview_Feedback_Form.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true },
+            jsPDF: { unit: 'in', format: [11, 8.5], orientation: 'landscape' } 
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('Feedback submitted successfully!');
-            } else {
-                alert('Error submitting feedback');
-                showToast('Error submitting feedback form', 'error');
+        .from(formContainer)
+        .toPdf()
+        .get('pdf')
+        .then(async (pdf) => {
+            const pdfBlob = pdf.output('blob');
+
+            // Restore original styles after PDF generation
+            formContainer.style.marginLeft = originalMarginLeft;
+            formContainer.style.marginTop = originalMarginTop;
+
+            // Convert Blob to Base64
+            const base64PDF = await convertBlobToBase64(pdfBlob);
+
+            // Acquire Microsoft Graph API Token
+            const tokenRequest = {
+                scopes: ["Mail.Send"],
+                account: msalInstance.getAllAccounts()[0]
+            };
+
+            let tokenResponse;
+            try {
+                tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
+            } catch (silentError) {
+                console.warn("Silent token acquisition failed; trying popup.", silentError);
+                tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('An error occurred while submitting the feedback', 'error');
+
+            const accessToken = tokenResponse.accessToken;
+
+            // Prepare Email Data
+            const emailContent = {
+                message: {
+                    subject: "Interview Feedback Form",
+                    body: {
+                        contentType: "HTML",
+                        content: `<p>Please find the attached interview feedback form for <strong>${formData.candidate_name}</strong>.</p>`
+                    },
+                    toRecipients: [
+                        { emailAddress: { address: formData.hr_email } }
+                    ],
+                    attachments: [
+                        {
+                            "@odata.type": "#microsoft.graph.fileAttachment",
+                            name: "Interview_Feedback_Form.pdf",
+                            contentType: "application/pdf",
+                            contentBytes: base64PDF
+                        }
+                    ]
+                }
+            };
+
+            // Send Email via Microsoft Graph API
+            fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(emailContent)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showToast("Email sent successfully with attachment!");
+            })
+            .catch(error => {
+                console.error("Error sending email:", error);
+                //showToast("Failed to send email.", "error");
+            });
+
+            // Submit Form Data to Backend
+            fetch('https://demotag.vercel.app/api/add-feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Feedback submitted successfully!");
+                } else {
+                    showToast("Error submitting feedback", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showToast("An error occurred while submitting the feedback", "error");
+            });
         });
+}, 500); // Small delay to ensure proper rendering
+
+// Helper Function to Convert Blob to Base64
+async function convertBlobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+            resolve(reader.result.split(',')[1]); // Extract Base64 data
+        };
+        reader.onerror = reject;
     });
+}
+
+});
+
+
+
+
+
 
 
     </script>
