@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Evaluation Form</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+            color: #000;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-container {
+            width: 96%;
+            margin: 0 auto;
+            border: 1px solid #333;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #d8d8d8;
+            text-align: center;
+        }
+
+        .header-cell {
+            background-color: #d8d8d8;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .section-title {
+            background-color: #e0e0e0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Global Column Widths */
+        th:nth-child(1), td:nth-child(1) {
+            width: 16%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 23%;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 23%;
+        }
+
+        th:nth-child(5), td:nth-child(5) {
+            width: 23%;
+        }
+        .styled-dropdown {
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #888888;
+            background-color: #fff;
+            width: 100%;
+            appearance: none;
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .styled-dropdown option {
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .styled-dropdown option:nth-child(odd) {
+            background-color: #f4f4f4;
+        }
+
+        .styled-dropdown option:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .styled-dropdown:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <center><h1><strong>Final Feedback</strong></h1></center>
+        <div style="color: #000000; width: 60%;">
+            <select id="candidate-email-dropdown" class="styled-dropdown">
+                <option value="">Select a Candidate Email</option>
+            </select>
+        </div>
+        <div style="color: #000000">
+            <p>Email: <span id="candidate-email"></span></p>
+            <p style="margin-top: -5px;">iMocha Score: <span id="imocha-score"></span></p>
+        </div>
+
+        <!--Candidate Details-->
+        <div>
+            <table>
+                <tr>
+                    <th></th> <th></th> <th>Evaluation Criteria</th> <th>Final Rating</th> <th>Feedback</th>
+                </tr>
+                <tr>
+                    <td class="header-cell">RRF Code</td> <td></td> <td></td> <td></td> <td></td>
+                </tr>
+                <tr>
+                    <td class="header-cell">Account</td> <td></td> <td></td> <td></td> <td></td>
+                </tr>
+                <tr>
+                    <td class="header-cell">Job Designation</td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td class="header-cell">Name of the Candidate</td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td class="header-cell">Date of Interview</td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td class="header-cell">Interview Panel</td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td class="header-cell">TAG Team Member</td><td></td><td></td><td></td><td></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Section 1 -->
+        <table>
+            <tr>
+                <th></th> <th></th> <th>Evaluation Criteria</th> <th>Final Rating</th> <th>Feedback</th>
+            </tr>
+            <tr>
+                <td class="header-cell">RRF Code</td> <td></td> <td></td> <td></td> <td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Account</td> <td></td> <td></td> <td></td> <td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Job Designation</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Name of the Candidate</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Date of Interview</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Interview Panel</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">TAG Team Member</td><td></td><td></td><td></td><td></td>
+            </tr>
+        </table>
+
+        <!-- Section 2 -->
+        <table>
+            <tr>
+                <th></th><th></th> <th>Evaluation Criteria</th> <th>Final Rating</th> <th>Feedback</th>
+            </tr>
+            <tr>
+                <td class="header-cell">L1 Technical</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">EC Fitment</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Project Team Fitment</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Onsite CS Team</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Client Feedback</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">HR</td><td></td><td></td><td></td><td></td>
+            </tr>
+        </table>
+
+        <!-- Section 3 -->
+        <table>
+            <tr>
+                <th></th> <th></th> <th>Evaluation Criteria</th> <th>Final Rating</th> <th>Feedback</th>
+            </tr>
+            <tr>
+                <td class="header-cell">RRF Code</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Job Designation</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Name of the Candidate</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Date of Interview</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Interviewer Name</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">TAG Team Member</td><td></td><td></td><td></td><td></td>
+            </tr>
+        </table>
+
+        <!-- Section 4 -->
+        <table>
+            <tr>
+                <th></th> <th></th> <th>Evaluation Criteria</th> <th>Final Rating</th> <th>Feedback</th>
+            </tr>
+            <tr>
+                <td class="header-cell">RRF Code</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Job Designation</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Name of the Candidate</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Date of Interview</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">Interviewer Name</td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td class="header-cell">TAG Team Member</td><td></td><td></td><td></td><td></td>
+            </tr>
+        </table>
+    </div>
+    <br>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch all candidate emails from the server
+            fetch('http://localhost:3000/api/getAllCandidateEmails')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        // Populate the dropdown with emails
+                        const emailDropdown = document.getElementById('candidate-email-dropdown');
+                        data.emails.forEach(email => {
+                            const option = document.createElement('option');
+                            option.value = email;
+                            option.textContent = email;
+                            emailDropdown.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching candidate emails:', error);
+                    showToast("Failed to load candidate emails.", "error");
+                });
+
+            // Event listener to fetch candidate details when an email is selected
+            const emailDropdown = document.getElementById('candidate-email-dropdown');
+            emailDropdown.addEventListener('change', function (event) {
+                const selectedEmail = event.target.value;
+                if (selectedEmail) {
+                    // Fetch candidate data based on the selected email
+                    fetch(`http://localhost:3000/api/getCandidateData?candidateEmail=${selectedEmail}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Check if the data is returned successfully
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
+                                document.getElementById('candidate-name').value = data.candidate_name;
+                                document.getElementById('position').value = data.role;
+                                document.getElementById('interviewer-name').value = data.panel_name;
+                                document.getElementById('interview-date').value = data.l_2_interviewdate;
+                                document.getElementById('imocha-score').textContent = data.l_1_score;
+                                document.getElementById('candidate-email').textContent = candidateEmail;
+                                document.getElementById('rrf-id').value = data.rrf_id;
+                                document.getElementById('hr-email').value = data.hr_email;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching candidate data:', error);
+                            showToast("Failed to load candidate data.", "error");
+                        });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
