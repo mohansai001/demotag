@@ -1208,18 +1208,15 @@ app.get('/api/fetch-results', async (req, res) => {
     res.status(500).json({ message: 'An error occurred while fetching results.' });
   }
 });
-
 app.get('/api/candidates', async (req, res) => {
   try {
-      // Retrieve eng_center from the URL query parameters
       const engCenter = req.query.eng_center;
 
-      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info';
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE visible = TRUE';
       const params = [];
 
-      // If an eng_center value is provided, add a WHERE clause
       if (engCenter) {
-          query += ' WHERE eng_center = $1';
+          query += ' AND eng_center = $1';
           params.push(engCenter);
       }
 
@@ -1231,18 +1228,14 @@ app.get('/api/candidates', async (req, res) => {
   }
 });
 
-
-//Shortlisted data
+// Shortlisted candidates with visible = true
 app.get('/api/candidates/shortlisted', async (req, res) => {
   try {
-      // Retrieve eng_center from the URL query parameters
       const engCenter = req.query.eng_center;
 
-      // Base query filtering for 'Shortlisted' status
-      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1';
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1 AND visible = TRUE';
       const params = ['Shortlisted'];
 
-      // If eng_center is provided, add an additional filter condition
       if (engCenter) {
           query += ' AND eng_center = $2';
           params.push(engCenter);
@@ -1256,17 +1249,14 @@ app.get('/api/candidates/shortlisted', async (req, res) => {
   }
 });
 
-//Rejected data
+// Rejected candidates with visible = true
 app.get('/api/candidates/rejected', async (req, res) => {
   try {
-      // Retrieve eng_center from the URL query parameters
       const engCenter = req.query.eng_center;
 
-      // Base query filtering for 'Rejected' status
-      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1';
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1 AND visible = TRUE';
       const params = ['Rejected'];
 
-      // If eng_center is provided, add an additional filter condition
       if (engCenter) {
           query += ' AND eng_center = $2';
           params.push(engCenter);
