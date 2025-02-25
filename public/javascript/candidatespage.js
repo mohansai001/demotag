@@ -39,12 +39,12 @@ async function fetchCandidatesInfo() {
 
       const isEligibleForScheduling = candidate.recruitment_phase === 'Moved to L2' || candidate.recruitment_phase === 'No iMocha Exam';
       const showPendingText = (!candidate.score || candidate.score === 'N/A') && candidate.recruitment_phase === 'Move to L1';
+      const isL2Scheduled = candidate.recruitment_phase === 'L2 Scheduled';
 
       row.innerHTML = `
         <td>${candidate.rrf_id}</td>
         <td>${candidate.candidate_name}</td>
         <td>${candidate.hr_email}</td>
-        
         <td>${candidate.candidate_email}</td>
         <td>${candidate.candidate_phone}</td>
         <td>${candidate.role}</td>
@@ -54,15 +54,20 @@ async function fetchCandidatesInfo() {
         <td>
           ${showPendingText 
             ? '<span class="pending-text">Pending iMocha Exam</span>' 
-            : `<button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button>`}
+            : `
+            <button class="schedule-btn" 
+              ${isEligibleForScheduling || isL2Scheduled ? '' : 'disabled'}>
+              ${isL2Scheduled ? 'Reschedule' : 'Schedule L2'}
+            </button>`}
         </td>
       `;
 
       const button = row.querySelector('.schedule-btn');
-      if (button && isEligibleForScheduling) {
-        button.addEventListener('click', handleScheduleClick);
+      if (button) {
+        if (isEligibleForScheduling || isL2Scheduled) {
+          button.addEventListener('click', handleScheduleClick);
+        }
       }
-
       tableBody.appendChild(row);
     });
 
