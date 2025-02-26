@@ -1010,7 +1010,6 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
     const allTestAttempts = [];
 
-    // Using Promise.all to fetch all test attempts in parallel
     const requests = testIds.map(async (testId) => {
       const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
 
@@ -1019,8 +1018,11 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
           `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, 
           requestBody, 
           { 
-            headers: { 'x-api-key': IMOCHA_API_KEY, 'Content-Type': 'application/json' },
-            timeout: 10000 // Timeout set to prevent long waits
+            headers: { 
+              'x-api-key': IMOCHA_API_KEY, 
+              'Content-Type': 'application/json' 
+            },
+            timeout: 10000 // 10s timeout
           }
         );
 
@@ -1040,7 +1042,35 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
   }
 }
 
-// Function to fetch and save test results into PostgreSQL
+// API endpoint to fetch and save test results
+app.post('/api/fetchAndSaveResults', async (req, res) => {
+  let { startDate, endDate } = req.body;
+
+  const today = new Date();
+  const last7Days = new Date();
+  last7Days.setDate(today.getDate() - 7);
+
+  const formatDate = (date) => date.toISOString().split('T')[0];
+
+  startDate = startDate || formatDate(last7Days);
+  endDate = endDate || formatDate(today);
+
+  try {
+    const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
+    const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
+
+    console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
+
+    await fetchAndSaveTestResults(startDateTime, endDateTime);
+
+    res.json({ success: true, message: 'Test results fetched and saved successfully.' });
+  } catch (error) {
+    console.error('Error in fetching and saving test results:', error);
+    res.status(500).json({ message: 'Error fetching test results.', error: error.message });
+  }
+});
+
+// Function to fetch and save test results to database
 async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   console.log('fetchAndSaveTestResults started at:', new Date().toISOString());
 
@@ -1057,105 +1087,81 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
         const report = await getReport(attempt.testInvitationId);
 
         if (report) {
-          const query = `
-            INSERT INTO imocha_results 
-            (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            ON CONFLICT (candidate_email) 
-            DO UPDATE SET 
-              score = EXCLUDED.score,
-              total_test_points = EXCLUDED.total_test_points,
-              score_percentage = EXCLUDED.score_percentage,
-              performance_category = EXCLUDED.performance_category,
-              test_name = EXCLUDED.test_name,
-              attempted_date = EXCLUDED.attempted_date,
-              pdf_report_url = EXCLUDED.pdf_report_url;
-          `;
-
-          const values = [
-            report.candidateEmail,
-            report.score,
-            report.totalTestPoints,
-            report.scorePercentage,
-            report.performanceCategory,
-            report.testName,
-            report.pdfReportUrl,
-            report.attemptedOn,
-          ];
-
-          await pool.query(query, values);
-          console.log(`✅ Saved/Updated record for: ${report.candidateEmail}`);
+          await saveTestResultToDB(report);
         }
       } catch (err) {
-        console.error('❌ Error processing test attempt:', err.message);
+        console.error('Error processing test attempt:', err.message);
       }
     }
 
-    console.log('✅ fetchAndSaveTestResults completed at:', new Date().toISOString());
+    console.log('fetchAndSaveTestResults completed at:', new Date().toISOString());
   } catch (error) {
-    console.error('❌ Error in fetchAndSaveTestResults:', error.message);
+    console.error('Error in fetchAndSaveTestResults:', error.message);
   }
 }
 
-// Function to get report data from iMocha
+// Function to get report data
 async function getReport(testInvitationId) {
   try {
     const response = await axios.get(
       `${IMOCHA_BASE_URL}/test/report/${testInvitationId}`, 
       {
         headers: { 'x-api-key': IMOCHA_API_KEY },
-        timeout: 10000
+        timeout: 10000 // Timeout added
       }
     );
-
+    
     return response.data;
   } catch (error) {
-    console.error(`❌ Error fetching report for testInvitationId ${testInvitationId}:`, error.message);
+    console.error(`Error fetching report for testInvitationId ${testInvitationId}:`, error.message);
     return null;
   }
 }
 
-// API Endpoint to fetch test results and save them in DB
-app.post('/api/callTestAttempts', async (req, res) => {
-  let { startDate, endDate } = req.body;
-
-  const today = new Date();
-  const last7Days = new Date();
-  last7Days.setDate(today.getDate() - 7);
-
-  const formatDate = (date) => date.toISOString().split('T')[0];
-
-  const defaultStartDate = formatDate(last7Days);
-  const defaultEndDate = formatDate(today);
-
-  startDate = startDate || defaultStartDate;
-  endDate = endDate || defaultEndDate;
-
+// Function to save test results in database
+async function saveTestResultToDB(report) {
   try {
-    const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
-    const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
+    const query = `
+      INSERT INTO imocha_results 
+      (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (candidate_email) 
+      DO UPDATE SET 
+        score = EXCLUDED.score,
+        total_test_points = EXCLUDED.total_test_points,
+        score_percentage = EXCLUDED.score_percentage,
+        performance_category = EXCLUDED.performance_category,
+        test_name = EXCLUDED.test_name,
+        attempted_date = EXCLUDED.attempted_date,
+        pdf_report_url = EXCLUDED.pdf_report_url;
+    `;
 
-    console.log(`Fetching and saving test results from ${startDateTime} to ${endDateTime}`);
+    const values = [
+      report.candidateEmail,
+      report.score,
+      report.totalTestPoints,
+      report.scorePercentage,
+      report.performanceCategory,
+      report.testName,
+      report.pdfReportUrl,
+      report.attemptedOn,
+    ];
 
-    await fetchAndSaveTestResults(startDateTime, endDateTime);
-
-    res.json({ success: true, message: 'Test results fetched and saved successfully.' });
+    await pool.query(query, values);
+    console.log(`Saved/Updated record for email: ${report.candidateEmail}`);
   } catch (error) {
-    console.error('❌ Error processing test results:', error);
-    res.status(500).json({ message: 'Error fetching and saving test results.', error: error.message });
+    console.error('Error saving test result to database:', error.message);
   }
-});
+}
 
-// Schedule function to run every 5 minutes
+// Run fetchAndSaveTestResults every 5 minutes (Last 7 Days)
 setInterval(() => {
-  console.log('🔄 Scheduled task running...');
+  console.log('Scheduled task running...');
   fetchAndSaveTestResults(
     new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
     new Date().toISOString()
   );
-}, 300000); // 5 minutes interval
-// Call function immediately when the server starts
-
+}, 300000); // 5 minutes
 
 app.get('/api/test-counts', async (req, res) => {
   try {
