@@ -1077,7 +1077,7 @@ setInterval(() => {
     new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
     new Date().toISOString()
   );
-}, 300000); // 5 minutes
+}, 10000); // 5 minutes
 
 
 
