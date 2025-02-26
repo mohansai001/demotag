@@ -1081,15 +1081,13 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   console.log('fetchAndSaveTestResults started at:', new Date().toISOString());
 
   try {
-    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
+    const testIds = ['1292180','1293122','1292779', '1292781', '1295883','1292990','1292769','1292775','1292950','1292733','1292976','1292765','1292203']; // Example test IDs
 
-    if (testAttempts.length === 0) {
-      console.log('No test attempts found.');
-      return;
-    }
+    for (const testId of testIds) {
+      // Fetch the test attempts for each testId within the given date range
+      const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
 
-    for (const attempt of testAttempts) {
-      try {
+      for (const attempt of testAttempts) {
         const report = await getReport(attempt.testInvitationId);
 
         if (report) {
@@ -1118,11 +1116,10 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
             report.attemptedOn,
           ];
 
+          // Save to the database
           await pool.query(query, values);
           console.log(`Saved/Updated record for email: ${report.candidateEmail}`);
         }
-      } catch (err) {
-        console.error('Error processing test attempt:', err.message);
       }
     }
 
@@ -1131,6 +1128,8 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
     console.error('Error in fetchAndSaveTestResults:', error.message);
   }
 }
+
+
 
 // Function to get report data
 async function getReport(testInvitationId) {
