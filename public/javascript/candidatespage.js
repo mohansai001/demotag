@@ -39,12 +39,12 @@ async function fetchCandidatesInfo() {
 
       const isEligibleForScheduling = candidate.recruitment_phase === 'Moved to L2' || candidate.recruitment_phase === 'No iMocha Exam';
       const showPendingText = (!candidate.score || candidate.score === 'N/A') && candidate.recruitment_phase === 'Move to L1';
-      const isL2Scheduled = candidate.recruitment_phase === 'L2 Scheduled';
 
       row.innerHTML = `
         <td>${candidate.rrf_id}</td>
         <td>${candidate.candidate_name}</td>
         <td>${candidate.hr_email}</td>
+        
         <td>${candidate.candidate_email}</td>
         <td>${candidate.candidate_phone}</td>
         <td>${candidate.role}</td>
@@ -54,20 +54,15 @@ async function fetchCandidatesInfo() {
         <td>
           ${showPendingText 
             ? '<span class="pending-text">Pending iMocha Exam</span>' 
-            : `
-            <button class="schedule-btn" 
-              ${isEligibleForScheduling || isL2Scheduled ? '' : 'disabled'}>
-              ${isL2Scheduled ? 'Reschedule' : 'Schedule L2'}
-            </button>`}
+            : `<button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button>`}
         </td>
       `;
 
       const button = row.querySelector('.schedule-btn');
-      if (button) {
-        if (isEligibleForScheduling || isL2Scheduled) {
-          button.addEventListener('click', handleScheduleClick);
-        }
+      if (button && isEligibleForScheduling) {
+        button.addEventListener('click', handleScheduleClick);
       }
+
       tableBody.appendChild(row);
     });
 
@@ -299,9 +294,9 @@ document.querySelector('#candidates-table tbody').addEventListener('click', func
 // Function to handle the modal for scheduling
 async function handleScheduleClick(event) {
   try {
-    const candidateRow = event.target.closest('tr');
+    const candidateRow = event.target.closest("tr");
     if (!candidateRow) {
-      throw new Error('Table row not found. Ensure the button is inside a <tr> element.');
+      throw new Error("Table row not found. Ensure the button is inside a <tr> element.");
     }
 
     const candidateName = candidateRow.cells[0].innerText;
@@ -316,18 +311,18 @@ async function handleScheduleClick(event) {
 
     scheduleBtn.onclick = async () => {
       try {
-        const hr_email = candidateRow.cells[2].innerText;
+        const hrEmail = "nagavardhana.anasuri@valuemomentum.com"; // Hardcoded HR email
         const candidateEmail = candidateRow.cells[3].innerText;
-        const panelEmail = document.getElementById('panel-select').value;
-        const dateTime = document.getElementById('datetime-input').value;
+        const panelEmail = document.getElementById("panel-select").value;
+        const dateTime = document.getElementById("datetime-input").value;
 
         const date = new Date(dateTime);
         const startDateTime = date.toISOString();
         const endDateTime = new Date(date.getTime() + 30 * 60 * 1000).toISOString();
 
         const tokenRequest = {
-          scopes: ["OnlineMeetings.ReadWrite", "Calendars.ReadWrite"],
-          account: msalInstance.getAllAccounts()[0]
+          scopes: ["https://graph.microsoft.com/Calendars.ReadWrite"],
+          account: msalInstance.getAllAccounts()[0],
         };
 
         let tokenResponse;
@@ -346,21 +341,21 @@ async function handleScheduleClick(event) {
           endDateTime,
           subject: `L2 Interview: ${candidateName}`,
           participants: {
-            organizer: { upn: hr_email },
+            organizer: { upn: hrEmail }, // Using HR email as the organizer
             attendees: [
               { upn: candidateEmail, role: "attendee" },
-              { upn: panelEmail, role: "attendee" }
-            ]
-          }
+              { upn: panelEmail, role: "attendee" },
+            ],
+          },
         };
 
         const meetingResponse = await fetch("https://graph.microsoft.com/v1.0/me/onlineMeetings", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(meetingRequest)
+          body: JSON.stringify(meetingRequest),
         });
 
         if (!meetingResponse.ok) {
@@ -370,38 +365,29 @@ async function handleScheduleClick(event) {
         const meetingData = await meetingResponse.json();
         const meetingLink = meetingData.joinWebUrl;
 
-        // 2️⃣ **Create Calendar Event**
+        // 2️⃣ **Create Calendar Event from HR's Calendar**
         const eventRequest = {
           subject: `L2 Interview: ${candidateName}`,
           start: { dateTime: startDateTime, timeZone: "UTC" },
           end: { dateTime: endDateTime, timeZone: "UTC" },
           location: { displayName: "Microsoft Teams Meeting" },
           attendees: [
-            {
-              emailAddress: { address: candidateEmail, name: candidateName },
-              type: "required"
-            },
-            {
-              emailAddress: { address: panelEmail, name: "Panel Member" },
-              type: "required"
-            },
-             {
-              emailAddress: { address: "Tagassistdemo@valuemomentum.com", name: "TAG Assist" },
-              type: "optional"  // Use "optional" instead of "cc"
-            }
+            { emailAddress: { address: candidateEmail, name: candidateName }, type: "required" },
+            { emailAddress: { address: panelEmail, name: "Panel Member" }, type: "required" },
+            { emailAddress: { address: hrEmail, name: "HR Member" }, type: "required" },
           ],
           isOnlineMeeting: true,
           onlineMeetingProvider: "teamsForBusiness",
-          onlineMeeting: { joinUrl: meetingLink }
+          onlineMeeting: { joinUrl: meetingLink },
         };
 
-        const calendarResponse = await fetch("https://graph.microsoft.com/v1.0/me/events", {
+        const calendarResponse = await fetch(`https://graph.microsoft.com/v1.0/users/${hrEmail}/events`, {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(eventRequest)
+          body: JSON.stringify(eventRequest),
         });
 
         if (!calendarResponse.ok) {
@@ -417,7 +403,7 @@ async function handleScheduleClick(event) {
             status: "L2 Scheduled",
             panel: panelEmail,
             dateTime: startDateTime,
-            meetingLink
+            meetingLink,
           }),
         });
 
@@ -434,7 +420,6 @@ async function handleScheduleClick(event) {
           overlay.classList.remove("active");
           successMessage.style.display = "none";
         }, 3000);
-
       } catch (error) {
         console.error("Error scheduling Teams meeting:", error);
       }
@@ -443,6 +428,9 @@ async function handleScheduleClick(event) {
     console.error("Error in handleScheduleClick:", error);
   }
 }
+
+
+
 
 // Close modal functionality
 document.getElementById('close-modal-btn').addEventListener('click', () => {
