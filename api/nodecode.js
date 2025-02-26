@@ -1043,7 +1043,7 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
 }
 
 // API endpoint to fetch and save test results
-app.post('/api/fetchAndSaveResults', async (req, res) => {
+app.post('/api/callTestAttempts', async (req, res) => {
   let { startDate, endDate } = req.body;
 
   const today = new Date();
