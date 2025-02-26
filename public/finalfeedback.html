@@ -12,7 +12,7 @@
             padding: 10px;
             background: linear-gradient(120deg, #e6e6fa, #daf7a6);
             color: #000;
-            height: 100%;
+            height: max-content;
             font-family: Arial, sans-serif;
         }
 
@@ -46,7 +46,7 @@
         .header-cell {
             background-color: #d8d8d8;
             color: #000;
-            font-weight: bold;
+            font-weight: bold; 
         }
 
         .section-title {
@@ -109,6 +109,17 @@
             border-color: #007bff;
             outline: none;
         }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 94%;
+            padding: 0.75rem;
+            border: 1px solid #888888;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
     </style>
 </head>
 
@@ -120,41 +131,46 @@
                 <option value="">Select a Candidate Email</option>
             </select>
         </div>
-        <div style="color: #000000">
-            <p>Email: <span id="candidate-email"></span></p>
-            <p style="margin-top: -5px;">iMocha Score: <span id="imocha-score"></span></p>
-        </div>
+        <br>
 
         <!--Candidate Details-->
         <div>
-            <table>
+            <table style="width: 60%;">
                 <tr>
-                    <th></th> <th></th> <th>Evaluation Criteria</th> <th>Final Rating</th> <th>Feedback</th>
+                    <td class="header-cell">RRF ID</td>
+                    <td><input type="text" id="rrf-id" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">RRF Code</td> <td></td> <td></td> <td></td> <td></td>
+                    <td class="header-cell">Account</td>
+                    <td><input type="text" id="rrf-id" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">Account</td> <td></td> <td></td> <td></td> <td></td>
+                    <td class="header-cell">Job Designation</td>
+                    <td><input type="text" id="position" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">Job Designation</td><td></td><td></td><td></td><td></td>
+                    <td class="header-cell">Name of the Candidate</td>
+                    <td><input type="text" id="candidate-name" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">Name of the Candidate</td><td></td><td></td><td></td><td></td>
+                    <td class="header-cell">Date of Interview</td>
+                    <td><input type="text" id="interview-date" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">Date of Interview</td><td></td><td></td><td></td><td></td>
+                    <td class="header-cell">Interview Panel</td>
+                    <td><input type="text" id="interviewer-name" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">Interview Panel</td><td></td><td></td><td></td><td></td>
+                    <td class="header-cell">TAG Team Member</td>
+                    <td><input type="text" id="hr-email" placeholder="" readonly></td>
                 </tr>
                 <tr>
-                    <td class="header-cell">TAG Team Member</td><td></td><td></td><td></td><td></td>
+                    <td class="header-cell">iMocha Score</td>
+                    <td><input type="text" id="imocha-score" placeholder="" readonly></td>
                 </tr>
             </table>
         </div>
-
+    
         <!-- Section 1 -->
         <table>
             <tr>
@@ -297,14 +313,13 @@
                             if (data.error) {
                                 alert(data.error);
                             } else {
+                                document.getElementById('rrf-id').value = data.rrf_id;
+                                document.getElementById('hr-email').value = data.hr_email;
                                 document.getElementById('candidate-name').value = data.candidate_name;
                                 document.getElementById('position').value = data.role;
                                 document.getElementById('interviewer-name').value = data.panel_name;
                                 document.getElementById('interview-date').value = data.l_2_interviewdate;
-                                document.getElementById('imocha-score').textContent = data.l_1_score;
-                                document.getElementById('candidate-email').textContent = candidateEmail;
-                                document.getElementById('rrf-id').value = data.rrf_id;
-                                document.getElementById('hr-email').value = data.hr_email;
+                                document.getElementById('imocha-score').value = data.l_1_score;
                             }
                         })
                         .catch(error => {
