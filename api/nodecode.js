@@ -1077,7 +1077,8 @@ setInterval(() => {
     new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
     new Date().toISOString()
   );
-}, 60000); // 300,000 milliseconds = 5 minutes
+}, 300000); // 5 minutes
+
 
 
 // Function to fetch report for a given invitationId
