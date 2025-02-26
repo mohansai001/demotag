@@ -1029,11 +1029,23 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
 // API endpoint to fetch completed test attempts within the given date range
 // API endpoint to fetch completed test attempts within the given date range
 app.post('/api/callTestAttempts', async (req, res) => {
-  const { startDate, endDate } = req.body;
+  let { startDate, endDate } = req.body;
 
-  if (!startDate || !endDate) {
-    return res.status(400).json({ message: 'Start date and end date are required.' });
-  }
+  // Get today's date
+  const today = new Date();
+  const last7Days = new Date();
+  last7Days.setDate(today.getDate() - 7); // Go back 7 days
+
+  // Format dates as YYYY-MM-DD
+  const formatDate = (date) => date.toISOString().split('T')[0];
+
+  // Default range: last 7 days to today
+  const defaultStartDate = formatDate(last7Days);
+  const defaultEndDate = formatDate(today);
+
+  // Use provided dates or default to last 7 days
+  startDate = startDate || defaultStartDate;
+  endDate = endDate || defaultEndDate;
 
   try {
     const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
@@ -1042,7 +1054,7 @@ app.post('/api/callTestAttempts', async (req, res) => {
     // Fetch the completed test attempts from all test IDs
     const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
 
-    // Call the fetchAndSaveTestResults function and pass the date range
+    // ✅ Always save test results (for both default and custom dates)
     await fetchAndSaveTestResults(startDateTime, endDateTime);
 
     res.json(testAttempts); // Return the result to the frontend
@@ -1051,6 +1063,21 @@ app.post('/api/callTestAttempts', async (req, res) => {
     res.status(500).json({ message: 'Error fetching test attempts.' });
   }
 });
+
+// Call function immediately when the server starts (Default: Last 7 Days)
+fetchAndSaveTestResults(
+  new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+  new Date().toISOString()
+);
+
+// Run fetchAndSaveTestResults every 5 minutes (Default: Last 7 Days)
+setInterval(() => {
+  console.log('Scheduled task running...');
+  fetchAndSaveTestResults(
+    new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+    new Date().toISOString()
+  );
+}, 60000); // 300,000 milliseconds = 5 minutes
 
 
 // Function to fetch report for a given invitationId
@@ -1122,13 +1149,7 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
 
 
 // Call function immediately when the server starts
-fetchAndSaveTestResults();
 
-// Run the fetchAndSaveTestResults every 10 seconds
-setInterval(() => {
-  console.log('Scheduled task running...');
-  fetchAndSaveTestResults();
-}, 10000);
 
 app.get('/api/test-counts', async (req, res) => {
   try {
