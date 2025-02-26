@@ -1002,131 +1002,52 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-const testIds = [
-  '1292180', '1293122', '1292779', '1292781', '1295883', '1292990', 
-  '1292769', '1292775', '1292950', '1292733', '1292976', '1292765', '1292203'
-];
 
-// Function to fetch test attempts and save them simultaneously
-async function fetchAndSaveTestResults(startDateTime, endDateTime) {
-  console.log('Fetching test attempts and saving results...');
 
-  try {
-    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
+const testIds = ['1292180','1293122','1292779', '1292781', '1295883','1292990','1292769','1292775','1292950','1292733','1292976','1292765','1292203']; // Example test IDs
 
-    if (testAttempts.length === 0) {
-      console.log('No test attempts found.');
-      return;
-    }
-
-    const savePromises = testAttempts.map(async (attempt) => {
-      try {
-        const report = await getReport(attempt.testInvitationId);
-        if (report) {
-          await saveTestResult(report);
-        }
-      } catch (err) {
-        console.error(`Error processing test attempt ${attempt.testInvitationId}:`, err.message);
-      }
-    });
-
-    await Promise.all(savePromises);
-    console.log('All test results fetched and saved successfully.');
-  } catch (error) {
-    console.error('Error in fetchAndSaveTestResults:', error.message);
-  }
-}
-
-// Function to fetch completed test attempts
+// Function to fetch completed test attempts for multiple test IDs
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
-    const allTestAttempts = [];
-    const requests = testIds.map(async (testId) => {
-      try {
-        const response = await axios.post(
-          `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, 
-          { testId, StartDateTime: startDateTime, EndDateTime: endDateTime }, 
-          { headers: { 'x-api-key': IMOCHA_API_KEY, 'Content-Type': 'application/json' }, timeout: 10000 }
-        );
-        if (response.data?.result?.testAttempts) {
-          allTestAttempts.push(...response.data.result.testAttempts);
-        }
-      } catch (err) {
-        console.error(`Error fetching test attempts for testId ${testId}:`, err.message);
-      }
-    });
+    const allTestAttempts = []; // Array to store all test attempts
 
-    await Promise.all(requests);
-    return allTestAttempts;
+    for (const testId of testIds) {
+      const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
+
+      // Fetch test attempts for the current test ID
+      const response = await axios.post(`${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, requestBody, {
+        headers: { 'x-api-key': IMOCHA_API_KEY, 'Content-Type': 'application/json' },
+      });
+
+      // Push the results of this test ID to the allTestAttempts array
+      allTestAttempts.push(...response.data.result.testAttempts);
+    }
+
+    return allTestAttempts; // Return combined results from all test IDs
   } catch (error) {
-    console.error('Error fetching completed test attempts:', error.message);
+    console.error('Error fetching completed test attempts:', error.response?.status, error.response?.data);
     return [];
   }
 }
 
-// Function to get report data
-async function getReport(testInvitationId) {
-  try {
-    const response = await axios.get(
-      `${IMOCHA_BASE_URL}/test/report/${testInvitationId}`, 
-      { headers: { 'x-api-key': IMOCHA_API_KEY }, timeout: 10000 }
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching report for testInvitationId ${testInvitationId}:`, error.message);
-    return null;
-  }
-}
-
-// Function to save test results in the database
-async function saveTestResult(report) {
-  try {
-    const query = `
-      INSERT INTO imocha_results 
-      (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      ON CONFLICT (candidate_email) 
-      DO UPDATE SET 
-        score = EXCLUDED.score,
-        total_test_points = EXCLUDED.total_test_points,
-        score_percentage = EXCLUDED.score_percentage,
-        performance_category = EXCLUDED.performance_category,
-        test_name = EXCLUDED.test_name,
-        attempted_date = EXCLUDED.attempted_date,
-        pdf_report_url = EXCLUDED.pdf_report_url;
-    `;
-
-    const values = [
-      report.candidateEmail,
-      report.score,
-      report.totalTestPoints,
-      report.scorePercentage,
-      report.performanceCategory,
-      report.testName,
-      report.pdfReportUrl,
-      report.attemptedOn,
-    ];
-
-    await pool.query(query, values);
-    console.log(`Saved record for: ${report.candidateEmail}`);
-  } catch (error) {
-    console.error(`Error saving test result for ${report.candidateEmail}:`, error.message);
-  }
-}
-
-// API endpoint to trigger fetching and saving test results
+// API endpoint to fetch completed test attempts within the given date range
+// API endpoint to fetch completed test attempts within the given date range
 app.post('/api/callTestAttempts', async (req, res) => {
   let { startDate, endDate } = req.body;
 
+  // Get today's date
   const today = new Date();
   const last7Days = new Date();
-  last7Days.setDate(today.getDate() - 7);
+  last7Days.setDate(today.getDate() - 7); // Go back 7 days
 
+  // Format dates as YYYY-MM-DD
   const formatDate = (date) => date.toISOString().split('T')[0];
 
+  // Default range: last 7 days to today
   const defaultStartDate = formatDate(last7Days);
   const defaultEndDate = formatDate(today);
 
+  // Use provided dates or default to last 7 days
   startDate = startDate || defaultStartDate;
   endDate = endDate || defaultEndDate;
 
@@ -1134,26 +1055,105 @@ app.post('/api/callTestAttempts', async (req, res) => {
     const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
     const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
 
-    console.log(`Fetching and saving results from ${startDateTime} to ${endDateTime}`);
+    // Fetch the completed test attempts from all test IDs
+    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
 
+    // ✅ Always save test results (for both default and custom dates)
     await fetchAndSaveTestResults(startDateTime, endDateTime);
 
-    res.json({ success: true, message: 'Test results fetched and saved successfully.' });
+    res.json(testAttempts); // Return the result to the frontend
   } catch (error) {
-    console.error('Error in fetchAndSaveResults API:', error);
-    res.status(500).json({ message: 'Error processing request.', error: error.message });
+    console.error('Error calling getCompletedTestAttempts:', error);
+    res.status(500).json({ message: 'Error fetching test attempts.' });
   }
 });
 
-// Run fetchAndSaveTestResults every 5 minutes
+// Call function immediately when the server starts (Default: Last 7 Days)
+fetchAndSaveTestResults(
+  new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+  new Date().toISOString()
+);
+
+// Run fetchAndSaveTestResults every 5 minutes (Default: Last 7 Days)
 setInterval(() => {
   console.log('Scheduled task running...');
   fetchAndSaveTestResults(
     new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
     new Date().toISOString()
   );
-}, 300000); // Every 5 minutes
+}, 60000); // 300,000 milliseconds = 5 minutes
 
+
+
+
+
+
+// Function to fetch report for a given invitationId
+async function getReport(invitationId) {
+  try {
+    const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
+      headers: { 'x-api-key': IMOCHA_API_KEY, 'Content-Type': 'application/json' },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching report for invitation ID ${invitationId}:`, error.response?.status, error.response?.data);
+    return null;
+  }
+}
+
+// Function to fetch and save test results to the database
+async function fetchAndSaveTestResults(startDateTime, endDateTime) {
+  console.log('fetchAndSaveTestResults started at:', new Date().toISOString());
+
+  try {
+    const testIds = ['1292180','1293122','1292779', '1292781', '1295883','1292990','1292769','1292775','1292950','1292733','1292976','1292765','1292203']; // Example test IDs
+
+    for (const testId of testIds) {
+      // Fetch the test attempts for each testId within the given date range
+      const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
+
+      for (const attempt of testAttempts) {
+        const report = await getReport(attempt.testInvitationId);
+
+        if (report) {
+          const query = `
+            INSERT INTO imocha_results 
+            (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (candidate_email) 
+            DO UPDATE SET 
+              score = EXCLUDED.score,
+              total_test_points = EXCLUDED.total_test_points,
+              score_percentage = EXCLUDED.score_percentage,
+              performance_category = EXCLUDED.performance_category,
+              test_name = EXCLUDED.test_name,
+              attempted_date = EXCLUDED.attempted_date,
+              pdf_report_url = EXCLUDED.pdf_report_url;
+          `;
+          const values = [
+            report.candidateEmail,
+            report.score,
+            report.totalTestPoints,
+            report.scorePercentage,
+            report.performanceCategory,
+            report.testName,
+            report.pdfReportUrl,
+            report.attemptedOn,
+          ];
+
+          // Save to the database
+          await pool.query(query, values);
+          console.log(`Saved/Updated record for email: ${report.candidateEmail}`);
+        }
+      }
+    }
+
+    console.log('fetchAndSaveTestResults completed at:', new Date().toISOString());
+  } catch (error) {
+    console.error('Error in fetchAndSaveTestResults:', error.message);
+  }
+}
 app.get('/api/test-counts', async (req, res) => {
   try {
       const testNames = [
