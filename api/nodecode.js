@@ -1001,17 +1001,17 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
+
 const testIds = [
   '1292180', '1293122', '1292779', '1292781', '1295883', '1292990', 
   '1292769', '1292775', '1292950', '1292733', '1292976', '1292765', '1292203'
 ];
 
-// Function to fetch completed test attempts
+// Fetch completed test attempts for all test IDs
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
     const allTestAttempts = [];
 
-    // Using Promise.all to make all API calls in parallel
     const requests = testIds.map(async (testId) => {
       const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
 
@@ -1020,11 +1020,8 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
           `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, 
           requestBody, 
           { 
-            headers: { 
-              'x-api-key': IMOCHA_API_KEY, 
-              'Content-Type': 'application/json' 
-            },
-            timeout: 10000 // 10s timeout to prevent hanging requests
+            headers: { 'x-api-key': IMOCHA_API_KEY, 'Content-Type': 'application/json' },
+            timeout: 10000 
           }
         );
         
@@ -1044,40 +1041,7 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
   }
 }
 
-// API endpoint to fetch completed test attempts
-app.post('/api/callTestAttempts', async (req, res) => {
-  let { startDate, endDate } = req.body;
-
-  const today = new Date();
-  const last7Days = new Date();
-  last7Days.setDate(today.getDate() - 7);
-
-  const formatDate = (date) => date.toISOString().split('T')[0];
-
-  const defaultStartDate = formatDate(last7Days);
-  const defaultEndDate = formatDate(today);
-
-  startDate = startDate || defaultStartDate;
-  endDate = endDate || defaultEndDate;
-
-  try {
-    const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
-    const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
-
-    console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
-
-    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
-
-    await fetchAndSaveTestResults(startDateTime, endDateTime);
-
-    res.json({ success: true, data: testAttempts });
-  } catch (error) {
-    console.error('Error calling getCompletedTestAttempts:', error);
-    res.status(500).json({ message: 'Error fetching test attempts.', error: error.message });
-  }
-});
-
-// Function to fetch and save test results to database
+// Save test results to database
 async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   console.log('fetchAndSaveTestResults started at:', new Date().toISOString());
 
@@ -1133,14 +1097,14 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   }
 }
 
-// Function to get report data
+// Fetch candidate report
 async function getReport(testInvitationId) {
   try {
     const response = await axios.get(
       `${IMOCHA_BASE_URL}/test/report/${testInvitationId}`, 
       {
         headers: { 'x-api-key': IMOCHA_API_KEY },
-        timeout: 10000 // Timeout added
+        timeout: 10000
       }
     );
     
@@ -1151,13 +1115,38 @@ async function getReport(testInvitationId) {
   }
 }
 
-// Call function immediately when server starts (Default: Last 7 Days)
-fetchAndSaveTestResults(
-  new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
-  new Date().toISOString()
-);
+// API endpoint to manually trigger fetching test results
+app.post('/api/callTestAttempts', async (req, res) => {
+  let { startDate, endDate } = req.body;
 
-// Run fetchAndSaveTestResults every 5 minutes (Default: Last 7 Days)
+  const today = new Date();
+  const last7Days = new Date();
+  last7Days.setDate(today.getDate() - 7);
+
+  const formatDate = (date) => date.toISOString().split('T')[0];
+
+  const defaultStartDate = formatDate(last7Days);
+  const defaultEndDate = formatDate(today);
+
+  startDate = startDate || defaultStartDate;
+  endDate = endDate || defaultEndDate;
+
+  try {
+    const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
+    const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
+
+    console.log(`Fetching test results from ${startDateTime} to ${endDateTime}`);
+
+    await fetchAndSaveTestResults(startDateTime, endDateTime);
+
+    res.json({ success: true, message: "Test results saved successfully!" });
+  } catch (error) {
+    console.error('Error fetching test results:', error.message);
+    res.status(500).json({ message: 'Error fetching test results.', error: error.message });
+  }
+});
+
+// Fetch and save test results every 5 minutes (Default: Last 7 Days)
 setInterval(() => {
   console.log('Scheduled task running...');
   fetchAndSaveTestResults(
@@ -1165,6 +1154,7 @@ setInterval(() => {
     new Date().toISOString()
   );
 }, 300000); // 5 minutes
+
 
 app.get('/api/test-counts', async (req, res) => {
   try {
