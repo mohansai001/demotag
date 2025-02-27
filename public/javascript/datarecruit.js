@@ -852,16 +852,15 @@ ${globalJobDescription}
 
                 // Check if the recommendation section includes "Shortlisted" or "Rejected"
                 // Check if the recommendation section includes "Shortlisted" or "Rejected"
-                if (section.title === "Result") {
+                      if (section.title === "Result") {
                     finalSummary = sectionContent;
                     suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1];
-                    if (sectionContent.includes("Shortlisted for the next round")  || suitabilityPercentage >= 70) {
+                
+                    if (sectionContent.includes("Shortlisted for the next round") || (suitabilityPercentage && suitabilityPercentage >= 70)) {
                         statusText = "Shortlisted";
-                       // Extract percentage
-                        isShortlisted = true;  // Mark as shortlisted
-                    } else if (sectionContent.includes("Rejected")) {
+                        isShortlisted = true;
+                    } else if (sectionContent.includes("Rejected")|| (suitabilityPercentage && suitabilityPercentage < 70)) {
                         statusText = "Rejected";
-                        suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1];
                     }
 
                     // Print status in the console
