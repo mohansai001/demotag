@@ -1160,15 +1160,19 @@ app.post("/api/callTestAttempts", async (req, res) => {
 
     console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
 
-    // Wait for test results to be saved
-    await fetchAndSaveTestResults(startDateTime, endDateTime);
+    // Run the function in the background
+    setTimeout(async () => {
+      await fetchAndSaveTestResults(startDateTime, endDateTime);
+    }, 0);
 
-    res.json({ message: "Data successfully processed." });
+    // Return success response immediately
+    res.json({ message: "Processing started. Data will be available soon." });
   } catch (error) {
     console.error("Error fetching test attempts:", error.message);
     res.status(500).json({ message: "Error fetching test attempts." });
   }
 });
+
 
 // Scheduled job to run every 5 minutes
 setInterval(() => {
