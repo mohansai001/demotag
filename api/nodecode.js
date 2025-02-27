@@ -1040,7 +1040,7 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
     console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
     
     // Increased chunk size for more parallelism
-    const chunkSize = 10; // Increased from 5
+    const chunkSize = 5; // Increased from 5
     const allTestAttempts = [];
 
     for (let i = 0; i < testIds.length; i += chunkSize) {
