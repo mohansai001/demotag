@@ -1718,46 +1718,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const ecMapping = urlParams.get("ec_mapping");
+    const ecMappingParam = urlParams.get("ec_mapping");
 
-    console.log("EC Mapping Value:", ecMapping); // Debugging
+    console.log("EC Mapping Value:", ecMappingParam); // Debugging
 
     // Define role groups for different EC mappings
     const roleGroups = {
-      "Data EC": [
-        "data-engineer-applicants",
-        "bi-visualization-applicants",
-        "data-analyst-applicants",
-        "data-modeller-applicants"
-      ],
-      "Cloud EC": [
-        "cloudops-applicants",
-        "site-applicants",
-        "platform-applicants",
-        "devops-applicants"
-      ],
-	     "App EC":[
-        "cloud-native-backend-applicants",
-        "cloud-native-frontend-applicants",
-        "lcnc-platform-engineer-applicants",
-        "integration-engineer-applicants"
-
-      ]
+        "Data EC": [
+            "data-engineer-applicants",
+            "bi-visualization-applicants",
+            "data-analyst-applicants",
+            "data-modeller-applicants"
+        ],
+        "Cloud EC": [
+            "cloudops-applicants",
+            "site-applicants",
+            "platform-applicants",
+            "devops-applicants"
+        ],
+        "App EC": [
+            "cloud-native-backend-applicants",
+            "cloud-native-frontend-applicants",
+            "lcnc-platform-engineer-applicants",
+            "integration-engineer-applicants"
+        ]
     };
 
     // Get all job cards
     const jobCards = document.querySelectorAll(".cardss");
 
-    // Check if ecMapping exists in roleGroups
-    if (roleGroups[ecMapping]) {
-      jobCards.forEach(card => {
-        const applicantsDiv = card.querySelector(".applicants");
-        if (!roleGroups[ecMapping].includes(applicantsDiv.id)) {
-          card.style.display = "none"; // Hide non-matching cards
+    if (ecMappingParam) {
+        // Split EC mappings if multiple values exist
+        const selectedECs = ecMappingParam.split(",").map(ec => ec.trim());
+
+        // If only one EC is selected, use previous logic
+        if (selectedECs.length === 1 && roleGroups[selectedECs[0]]) {
+            jobCards.forEach(card => {
+                const applicantsDiv = card.querySelector(".applicants");
+                if (!roleGroups[selectedECs[0]].includes(applicantsDiv.id)) {
+                    card.style.display = "none"; // Hide non-matching cards
+                }
+            });
+        } else {
+            // Multiple ECs are present, so pick one role from each EC
+            let selectedRoles = new Set(); // To store unique selected roles
+
+            selectedECs.forEach(ec => {
+                if (roleGroups[ec]) {
+                    selectedRoles.add(roleGroups[ec][0]); // Pick the first role from each EC
+                }
+            });
+
+            jobCards.forEach(card => {
+                const applicantsDiv = card.querySelector(".applicants");
+                if (!selectedRoles.has(applicantsDiv.id)) {
+                    card.style.display = "none"; // Hide non-matching cards
+                }
+            });
         }
-      });
     }
-  });
+});
 
 function toggleDateInputs() {
     const filterType = document.getElementById('filterSelect').value;
