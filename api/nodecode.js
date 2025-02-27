@@ -41,6 +41,8 @@ const pool = new Pool({
   connectionString,
   ssl: {
     rejectUnauthorized: false, // Ensures compatibility with cloud-hosted databases
+	  idleTimeoutMillis: 30000, // Close idle connections after 30s
+  connectionTimeoutMillis: 5000, // Wait max 5s for connection
   },
 });
 
