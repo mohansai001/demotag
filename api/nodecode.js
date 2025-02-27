@@ -1160,10 +1160,13 @@ app.post("/api/callTestAttempts", async (req, res) => {
 
     console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
 
-    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
-    await fetchAndSaveTestResults(startDateTime, endDateTime);
+    // Run the function in the background
+    setTimeout(async () => {
+      await fetchAndSaveTestResults(startDateTime, endDateTime);
+    }, 0);
 
-    res.json(testAttempts);
+    // Return success response immediately
+    res.json({ message: "Processing started. Data will be available soon." });
   } catch (error) {
     console.error("Error fetching test attempts:", error.message);
     res.status(500).json({ message: "Error fetching test attempts." });
