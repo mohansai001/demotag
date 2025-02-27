@@ -1611,7 +1611,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let hrChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Prescreening', 'Move to L1', 'L2 Scheduled', 'Shortlisted'], // All recruitment phases as labels
+        labels: ['Prescreening', 'Technical L1(Imocha)', 'Techincal L2','EC Fitment','Project Fitment','Client Interview', 'Shortlisted'], // All recruitment phases as labels
         datasets: [], // Data will be added dynamically here
       },
       options: {
