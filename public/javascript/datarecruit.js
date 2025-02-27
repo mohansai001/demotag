@@ -855,7 +855,7 @@ ${globalJobDescription}
                 if (section.title === "Result") {
                     finalSummary = sectionContent;
                     suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1];
-                    if (sectionContent.includes("Shortlisted for the next round")  || suitabilityPercentage >= 30) {
+                    if (sectionContent.includes("Shortlisted for the next round")  || suitabilityPercentage >= 70) {
                         statusText = "Shortlisted";
                        // Extract percentage
                         isShortlisted = true;  // Mark as shortlisted
