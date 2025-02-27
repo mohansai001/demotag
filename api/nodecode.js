@@ -1040,7 +1040,8 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
     console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
     
-    const chunkSize = 5;
+    // Increased chunk size for more parallelism
+    const chunkSize = 10; // Increased from 5
     const allTestAttempts = [];
 
     for (let i = 0; i < testIds.length; i += chunkSize) {
@@ -1065,7 +1066,7 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
         }
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Rate limit delay
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Reduced from 2000ms
     }
 
     return allTestAttempts;
@@ -1103,12 +1104,16 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
       return;
     }
 
-    const batchSize = 5;
+    // Increased batch size for more parallelism
+    const batchSize = 10; // Increased from 5
     for (let i = 0; i < testAttempts.length; i += batchSize) {
       const batch = testAttempts.slice(i, i + batchSize);
       const reportPromises = batch.map((attempt) => getReport(attempt.testInvitationId));
 
       const reports = await Promise.allSettled(reportPromises);
+      
+      // Prepare all database operations
+      const dbOperations = [];
 
       for (const reportResult of reports) {
         if (reportResult.status === "fulfilled" && reportResult.value) {
@@ -1140,12 +1145,15 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
             report.attemptedOn,
           ];
 
-          await pool.query(query, values);
-          console.log(`Saved/Updated: ${report.candidateEmail}`);
+          dbOperations.push(pool.query(query, values));
         }
       }
+      
+      // Execute all database operations in parallel
+      await Promise.all(dbOperations);
+      console.log(`Processed batch of ${dbOperations.length} reports`);
 
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Rate limit delay
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Reduced from 2000ms
     }
 
     console.log("Test results updated successfully.");
@@ -1154,6 +1162,7 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   }
 }
 
+// API endpoint to fetch completed test attempts
 // API endpoint to fetch completed test attempts
 app.post("/api/callTestAttempts", async (req, res) => {
   let { startDate, endDate } = req.body;
@@ -1173,15 +1182,19 @@ app.post("/api/callTestAttempts", async (req, res) => {
 
     console.log(`Processing test attempts from ${startDateTime} to ${endDateTime}`);
 
-    await fetchAndSaveTestResults(startDateTime, endDateTime);
+    // Respond immediately to prevent timeout
+    res.json({ message: "Processing started. Check logs for completion." });
 
-    res.json({ message: "Processing completed." });
+    // Process in the background after responding to the client
+    fetchAndSaveTestResults(startDateTime, endDateTime)
+      .then(() => console.log("Background processing completed successfully."))
+      .catch(error => console.error("Error in background processing:", error.message));
+    
   } catch (error) {
     console.error("Error processing test attempts:", error.message);
     res.status(500).json({ message: "Error processing test attempts." });
   }
 });
-
 
 app.get('/api/test-counts', async (req, res) => {
   try {
