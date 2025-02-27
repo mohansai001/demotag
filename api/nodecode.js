@@ -1023,51 +1023,32 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-axios.defaults.timeout = 120000;
-
-const testIds = [
-  "1292180", "1293122", "1292779", "1292781", "1295883", "1292990",
-  "1292769", "1292775", "1292950", "1292733", "1292976", "1292765",
-  "1292203", "1303946", "1293813", "1293971", "1263132", "1304065",
-  "1233151", "1294495", "1302835", "1294495", "1304066", "1304100",
-  "1292173", "1293822", "1303985", "1303999", "1304109", "1304111",
-  "1304149",
-];
-
-// Function to fetch completed test attempts with batching
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
     console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
-    
-    // Increased chunk size for more parallelism
-    const chunkSize = 5; // Increased from 5
+    const chunkSize = 10;
     const allTestAttempts = [];
 
     for (let i = 0; i < testIds.length; i += chunkSize) {
       const chunk = testIds.slice(i, i + chunkSize);
       const requests = chunk.map((testId) =>
         axios.post(
-          `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
+          `${process.env.IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
           { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
-          { headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" } }
+          { headers: { "x-api-key": process.env.IMOCHA_API_KEY, "Content-Type": "application/json" } }
         )
       );
 
       const responses = await Promise.allSettled(requests);
-
       responses.forEach((response) => {
-        if (response.status === "fulfilled") {
-          if (response.value.data?.result?.testAttempts) {
-            allTestAttempts.push(...response.value.data.result.testAttempts);
-          }
+        if (response.status === "fulfilled" && response.value.data?.result?.testAttempts) {
+          allTestAttempts.push(...response.value.data.result.testAttempts);
         } else {
           console.error("Failed to fetch test attempts:", response.reason.message);
         }
       });
-
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Reduced from 2000ms
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-
     return allTestAttempts;
   } catch (error) {
     console.error("Error fetching test attempts:", error.message);
@@ -1075,15 +1056,13 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
   }
 }
 
-// Function to fetch report for an invitation ID
 async function getReport(invitationId) {
   try {
     console.log(`Fetching report for invitation ID: ${invitationId}`);
-    const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
-      headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
+    const response = await axios.get(`${process.env.IMOCHA_BASE_URL}/reports/${invitationId}`, {
+      headers: { "x-api-key": process.env.IMOCHA_API_KEY, "Content-Type": "application/json" },
       timeout: 120000,
     });
-
     return response.data;
   } catch (error) {
     console.error(`Error fetching report for invitation ID ${invitationId}:`, error.message);
@@ -1091,109 +1070,88 @@ async function getReport(invitationId) {
   }
 }
 
-// Function to fetch and save test results in the database
 async function fetchAndSaveTestResults(startDateTime, endDateTime) {
-  console.log("Fetching test results...");
-
   try {
     const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
-
     if (testAttempts.length === 0) {
       console.log("No test attempts found.");
       return;
     }
-
-    // Increased batch size for more parallelism
-    const batchSize = 10; // Increased from 5
+    const batchSize = 10;
     for (let i = 0; i < testAttempts.length; i += batchSize) {
       const batch = testAttempts.slice(i, i + batchSize);
       const reportPromises = batch.map((attempt) => getReport(attempt.testInvitationId));
-
       const reports = await Promise.allSettled(reportPromises);
-      
-      // Prepare all database operations
-      const dbOperations = [];
-
-      for (const reportResult of reports) {
-        if (reportResult.status === "fulfilled" && reportResult.value) {
-          const report = reportResult.value;
-
-          const query = `
-            INSERT INTO imocha_results 
-            (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            ON CONFLICT (candidate_email) 
-            DO UPDATE SET 
-              score = EXCLUDED.score,
-              total_test_points = EXCLUDED.total_test_points,
-              score_percentage = EXCLUDED.score_percentage,
-              performance_category = EXCLUDED.performance_category,
-              test_name = EXCLUDED.test_name,
-              attempted_date = EXCLUDED.attempted_date,
-              pdf_report_url = EXCLUDED.pdf_report_url;
-          `;
-
-          const values = [
-            report.candidateEmail,
-            report.score,
-            report.totalTestPoints,
-            report.scorePercentage,
-            report.performanceCategory,
-            report.testName,
-            report.pdfReportUrl,
-            report.attemptedOn,
-          ];
-
-          dbOperations.push(pool.query(query, values));
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        for (const reportResult of reports) {
+          if (reportResult.status === "fulfilled" && reportResult.value) {
+            const report = reportResult.value;
+            const query = `
+              INSERT INTO imocha_results (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+              ON CONFLICT (candidate_email) DO UPDATE SET 
+                score = EXCLUDED.score,
+                total_test_points = EXCLUDED.total_test_points,
+                score_percentage = EXCLUDED.score_percentage,
+                performance_category = EXCLUDED.performance_category,
+                test_name = EXCLUDED.test_name,
+                attempted_date = EXCLUDED.attempted_date,
+                pdf_report_url = EXCLUDED.pdf_report_url;
+            `;
+            const values = [
+              report.candidateEmail,
+              report.score,
+              report.totalTestPoints,
+              report.scorePercentage,
+              report.performanceCategory,
+              report.testName,
+              report.pdfReportUrl,
+              report.attemptedOn
+            ];
+            await client.query(query, values);
+          }
         }
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        console.error("Database transaction error:", error);
+      } finally {
+        client.release();
       }
-      
-      // Execute all database operations in parallel
-      await Promise.all(dbOperations);
-      console.log(`Processed batch of ${dbOperations.length} reports`);
-
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Reduced from 2000ms
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-
     console.log("Test results updated successfully.");
   } catch (error) {
     console.error("Error saving test results:", error.message);
   }
 }
 
-// API endpoint to fetch completed test attempts
-// API endpoint to fetch completed test attempts
-app.post("/api/callTestAttempts", async (req, res) => {
-  let { startDate, endDate } = req.body;
-
-  const today = new Date();
-  const last7Days = new Date();
-  last7Days.setDate(today.getDate() - 7);
-
-  const formatDate = (date) => date.toISOString().split("T")[0];
-
-  startDate = startDate || formatDate(last7Days);
-  endDate = endDate || formatDate(today);
-
+module.exports = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
   try {
+    let { startDate, endDate } = req.body;
+    const today = new Date();
+    const last7Days = new Date();
+    last7Days.setDate(today.getDate() - 7);
+    const formatDate = (date) => date.toISOString().split("T")[0];
+    startDate = startDate || formatDate(last7Days);
+    endDate = endDate || formatDate(today);
     const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
     const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
-
-    console.log(`Processing test attempts from ${startDateTime} to ${endDateTime}`);
-
-    // Respond immediately to prevent timeout
     res.json({ message: "Processing started. Check logs for completion." });
-
-    // Process in the background after responding to the client
     fetchAndSaveTestResults(startDateTime, endDateTime)
       .then(() => console.log("Background processing completed successfully."))
       .catch(error => console.error("Error in background processing:", error.message));
-    
   } catch (error) {
     console.error("Error processing test attempts:", error.message);
     res.status(500).json({ message: "Error processing test attempts." });
   }
-});
+};
+
 
 app.get('/api/test-counts', async (req, res) => {
   try {
