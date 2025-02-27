@@ -1094,7 +1094,7 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
       return;
     }
 
-    const batchSize = 5; // Reduced batch size for Vercel execution limits
+    const batchSize = 2; // Reduced batch size for Vercel execution limits
     for (let i = 0; i < testAttempts.length; i += batchSize) {
       const batch = testAttempts.slice(i, i + batchSize);
       const reportPromises = batch.map((attempt) => getReport(attempt.testInvitationId));
