@@ -1020,7 +1020,6 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-axios.defaults.timeout = 60000; // Reduced timeout to 60s
 
 const testIds = [
   "1292180", "1293122", "1292779", "1292781", "1295883", "1292990",
