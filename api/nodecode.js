@@ -37,7 +37,12 @@ app.use(express.json());
 const connectionString = 'postgresql://retool:4zBLlh1TPsAu@ep-frosty-pine-a6aqfk20.us-west-2.retooldb.com/retool?sslmode=require';
 
 // Create a new pool instance
-const pool = new Pool({ connectionString });
+const pool = new Pool({
+  connectionString,
+  ssl: {
+    rejectUnauthorized: false, // Ensures compatibility with cloud-hosted databases
+  },
+});
 
 // iMocha API credentials
 const IMOCHA_API_KEY = 'JHuaeAvDQsGfJxlHYpeJwFOxySVrdm'; // Your iMocha API key
@@ -1016,22 +1021,24 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
+
+axios.defaults.timeout = 120000;
+
 const testIds = [
   "1292180", "1293122", "1292779", "1292781", "1295883", "1292990",
   "1292769", "1292775", "1292950", "1292733", "1292976", "1292765",
   "1292203", "1303946", "1293813", "1293971", "1263132", "1304065",
   "1233151", "1294495", "1302835", "1294495", "1304066", "1304100",
   "1292173", "1293822", "1303985", "1303999", "1304109", "1304111",
-  "1304149"
+  "1304149",
 ];
-
-// Increase Axios timeout (120 seconds)
-axios.defaults.timeout = 120000;
 
 // Function to fetch completed test attempts with batching
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
-    const chunkSize = 5; // Process 5 testIds at a time to prevent rate limits
+    console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
+    
+    const chunkSize = 5;
     const allTestAttempts = [];
 
     for (let i = 0; i < testIds.length; i += chunkSize) {
@@ -1056,8 +1063,7 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
         }
       });
 
-      // Delay between batches to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Rate limit delay
     }
 
     return allTestAttempts;
@@ -1070,9 +1076,10 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
 // Function to fetch report for an invitation ID
 async function getReport(invitationId) {
   try {
+    console.log(`Fetching report for invitation ID: ${invitationId}`);
     const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
       headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-      timeout: 120000, // 120 seconds timeout
+      timeout: 120000,
     });
 
     return response.data;
@@ -1089,7 +1096,12 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   try {
     const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
 
-    const batchSize = 5; // Process 5 reports at a time
+    if (testAttempts.length === 0) {
+      console.log("No test attempts found.");
+      return;
+    }
+
+    const batchSize = 5;
     for (let i = 0; i < testAttempts.length; i += batchSize) {
       const batch = testAttempts.slice(i, i + batchSize);
       const reportPromises = batch.map((attempt) => getReport(attempt.testInvitationId));
@@ -1131,8 +1143,7 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
         }
       }
 
-      // Delay between batch processing to prevent overload
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Rate limit delay
     }
 
     console.log("Test results updated successfully.");
@@ -1158,30 +1169,16 @@ app.post("/api/callTestAttempts", async (req, res) => {
     const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
     const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
 
-    console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
+    console.log(`Processing test attempts from ${startDateTime} to ${endDateTime}`);
 
-    // Run the function in the background
-    setTimeout(async () => {
-      await fetchAndSaveTestResults(startDateTime, endDateTime);
-    }, 0);
+    await fetchAndSaveTestResults(startDateTime, endDateTime);
 
-    // Return success response immediately
-    res.json({ message: "Processing started. Data will be available soon." });
+    res.json({ message: "Processing completed." });
   } catch (error) {
-    console.error("Error fetching test attempts:", error.message);
-    res.status(500).json({ message: "Error fetching test attempts." });
+    console.error("Error processing test attempts:", error.message);
+    res.status(500).json({ message: "Error processing test attempts." });
   }
 });
-
-
-// Scheduled job to run every 5 minutes
-setInterval(() => {
-  console.log("Scheduled task running...");
-  fetchAndSaveTestResults(
-    new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
-    new Date().toISOString()
-  );
-}, 300000); // 5 minutes
 
 
 app.get('/api/test-counts', async (req, res) => {
