@@ -1020,8 +1020,7 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-
-axios.defaults.timeout = 120000;
+axios.defaults.timeout = 60000; // Reduced timeout to 60s
 
 const testIds = [
   "1292180", "1293122", "1292779", "1292781", "1295883", "1292990",
@@ -1032,54 +1031,47 @@ const testIds = [
   "1304149",
 ];
 
-// Function to fetch completed test attempts with batching
+// Function to fetch test attempts in chunks
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
-  try {
-    console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
-    
-    // Increased chunk size for more parallelism
-    const chunkSize = 10; // Increased from 5
-    const allTestAttempts = [];
+  console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
+  
+  const chunkSize = 5; // Reduced batch size for better execution in Vercel
+  const allTestAttempts = [];
 
-    for (let i = 0; i < testIds.length; i += chunkSize) {
-      const chunk = testIds.slice(i, i + chunkSize);
-      const requests = chunk.map((testId) =>
-        axios.post(
-          `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
-          { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
-          { headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" } }
-        )
-      );
+  for (let i = 0; i < testIds.length; i += chunkSize) {
+    const chunk = testIds.slice(i, i + chunkSize);
+    const requests = chunk.map((testId) =>
+      axios.post(
+        `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
+        { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
+        { headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" } }
+      ).catch(err => {
+        console.error(`Error fetching test attempts for testId ${testId}:`, err.message);
+        return null; // Return null to avoid breaking Promise.all
+      })
+    );
 
-      const responses = await Promise.allSettled(requests);
+    const responses = await Promise.all(requests);
 
-      responses.forEach((response) => {
-        if (response.status === "fulfilled") {
-          if (response.value.data?.result?.testAttempts) {
-            allTestAttempts.push(...response.value.data.result.testAttempts);
-          }
-        } else {
-          console.error("Failed to fetch test attempts:", response.reason.message);
-        }
-      });
+    responses.forEach((response) => {
+      if (response && response.data?.result?.testAttempts) {
+        allTestAttempts.push(...response.data.result.testAttempts);
+      }
+    });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Reduced from 2000ms
-    }
-
-    return allTestAttempts;
-  } catch (error) {
-    console.error("Error fetching test attempts:", error.message);
-    return [];
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Reduced delay
   }
+
+  return allTestAttempts;
 }
 
-// Function to fetch report for an invitation ID
+// Function to fetch reports
 async function getReport(invitationId) {
   try {
     console.log(`Fetching report for invitation ID: ${invitationId}`);
     const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
       headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-      timeout: 120000,
+      timeout: 60000, // Lowered timeout for better performance
     });
 
     return response.data;
@@ -1089,7 +1081,7 @@ async function getReport(invitationId) {
   }
 }
 
-// Function to fetch and save test results in the database
+// Function to fetch and save test results
 async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   console.log("Fetching test results...");
 
@@ -1101,17 +1093,14 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
       return;
     }
 
-    // Increased batch size for more parallelism
-    const batchSize = 10; // Increased from 5
+    const batchSize = 5; // Reduced batch size for Vercel execution limits
     for (let i = 0; i < testAttempts.length; i += batchSize) {
       const batch = testAttempts.slice(i, i + batchSize);
       const reportPromises = batch.map((attempt) => getReport(attempt.testInvitationId));
 
       const reports = await Promise.allSettled(reportPromises);
-      
-      // Prepare all database operations
-      const dbOperations = [];
 
+      const dbOperations = [];
       for (const reportResult of reports) {
         if (reportResult.status === "fulfilled" && reportResult.value) {
           const report = reportResult.value;
@@ -1145,12 +1134,11 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
           dbOperations.push(pool.query(query, values));
         }
       }
-      
-      // Execute all database operations in parallel
+
       await Promise.all(dbOperations);
       console.log(`Processed batch of ${dbOperations.length} reports`);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Reduced from 2000ms
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Reduced delay
     }
 
     console.log("Test results updated successfully.");
@@ -1159,7 +1147,6 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   }
 }
 
-// API endpoint to fetch completed test attempts
 // API endpoint to fetch completed test attempts
 app.post("/api/callTestAttempts", async (req, res) => {
   let { startDate, endDate } = req.body;
@@ -1179,10 +1166,8 @@ app.post("/api/callTestAttempts", async (req, res) => {
 
     console.log(`Processing test attempts from ${startDateTime} to ${endDateTime}`);
 
-    // Respond immediately to prevent timeout
     res.json({ message: "Processing started. Check logs for completion." });
 
-    // Process in the background after responding to the client
     fetchAndSaveTestResults(startDateTime, endDateTime)
       .then(() => console.log("Background processing completed successfully."))
       .catch(error => console.error("Error in background processing:", error.message));
