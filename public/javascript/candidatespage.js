@@ -311,7 +311,7 @@ async function handleScheduleClick(event) {
 
     scheduleBtn.onclick = async () => {
       try {
-        const hrEmail = "nagavardhana.anasuri@valuemomentum.com"; // Hardcoded HR email
+        const hr_email = candidateRow.cells[2].innerText;
         const candidateEmail = candidateRow.cells[3].innerText;
         const panelEmail = document.getElementById("panel-select").value;
         const dateTime = document.getElementById("datetime-input").value;
