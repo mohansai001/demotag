@@ -402,10 +402,10 @@
                                 <input type="radio" name="cloudProvider" value="Java" id="awsRadio"> Java
                             </label>
                             <label style="margin-left: 10px;">
-                                <input type="radio" name="cloudProvider" value="Nodejs" id="awsRadio"> Nodejs
+                                <input type="radio" name="cloudProvider" value="Nodejs" id="awsRadio" disabled> Nodejs
                             </label>
                             <label style="margin-left: 10px;">
-                                <input type="radio" name="cloudProvider" value="Python" id="awsRadio"> Python
+                                <input type="radio" name="cloudProvider" value="Python" id="awsRadio" disabled> Python
                             </label>
                         </span>
 
@@ -415,7 +415,7 @@
                             <option>select</option>
                             <option value="Junior">Junior</option>
                             <option value="Senior">Senior</option>
-                            <option value="Lead">Lead</option>
+                            <option disabled value="Lead">Lead</option>
                         </select>
                     </div>
 
@@ -441,16 +441,16 @@
                         </span>
 
                         <!-- Dropdown Field -->
-                        <select id="levelDropdown2" style="padding: 5px;background: #E6E6FA;
-    color: black;">
-                            <option>select</option>
-                            <option value="Junior">Junior</option>
-                            <option value="Senior">Senior</option>
-                            <option value="Lead">Lead</option>
-                        </select>
+                        <select id="levelDropdown2" style="padding: 5px; background: #E6E6FA; color: black;">
+    <option>select</option>
+    <option value="Junior">Junior</option>
+    <option value="Senior">Senior</option>
+    <option disabled value="Lead">Lead</option>
+</select>
+
                     </div>
 
-                    <button onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Front End','levelDropdown2')"
+                    <button onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Frontend','levelDropdown2')"
                         style="margin-left: 51px;background-color:#DAF7A6; color:black;margin-top: 10px;;margin-inline-start: revert-layer;">Select</button>
                 </div>
                 <div class="role-card">
@@ -467,7 +467,7 @@
                                 <input type="radio" name="cloudProvider" value="Mendix" id="azureRadio"> Mendix
                             </label>
                             <label style="margin-left: 10px;">
-                                <input type="radio" name="cloudProvider" value="UIMendix" id="awsRadio"> UI Mendix
+                                <input type="radio" name="cloudProvider" value="UIMendix" id="awsRadio" disabled> UI Mendix
                             </label>
                         </span>
 
@@ -477,7 +477,7 @@
                             <option>select</option>
                             <option value="Junior">Junior</option>
                             <option value="Senior">Senior</option>
-                            <option value="Lead">Lead</option>
+                            <option disabled value="Lead">Lead</option>
                         </select>
                     </div>
 
