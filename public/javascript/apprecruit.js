@@ -1113,42 +1113,109 @@ ${globalJobDescription}
             });
     }
 
-    function  sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue) {
-        const candidateDetails = {
-            name: candidateName,
-            email: candidateEmail,
-            status: statusText,
-            role: role,
-            suitabilityPercentage: suitabilityPercentage,
-            candidatePhoneNumber: candidatePhoneNumber,
-            resumeUrl: resumeUrl,
-            hrEmail: globalHrEmail,
-            rrfId: globalRrfId,
-        };
-    
-        fetch('https://demotag.vercel.app/api/send-hr-email', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(candidateDetails),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to send email');
+     const msalConfig = {
+        auth: {
+          clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
+          authority:
+            "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
+          redirectUri: "https://demotag.vercel.app", // Ensure this matches Azure AD's redirect URI
+        },
+      };
+ 
+      const msalInstance = new msal.PublicClientApplication(msalConfig);
+ 
+    async function sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl, globalHrEmail, globalRrfId, selectedValue,finalSummary) {
+        const loggedInUserEmail = localStorage.getItem("userEmail");
+   
+        if (!loggedInUserEmail) {
+            alert("User is not logged in. Please log in again.");
+            return;
+        }
+                   
+           try {
+            // Get the access token for sending email
+            const account = msalInstance.getAllAccounts()[0];
+            if (!account) {
+                throw new Error("No active account! Please login first.");
+            }
+   
+            const tokenRequest = {
+                scopes: ["Mail.Send"],
+                account: account
+            };
+   
+            // Try to get token silently first
+            let tokenResponse;
+            try {
+                tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
+            } catch (error) {
+                if (error instanceof msal.InteractionRequiredAuthError) {
+                    // If silent token acquisition fails, try popup
+                    tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
+                } else {
+                    throw error;
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Email sent successfully:', data);
-                alert('Email sent successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to send email');
+            }
+   
+            // Prepare the email data
+            const emailData = {
+                message: {
+                   subject: `Prescreening Result: RRFID-${globalRrfId} - ${candidateName} for ${role} Role`,
+                    body: {
+                        contentType: "HTML",
+                        content: `
+                            <h3>Candidate Pre-screening Details</h3>
+                            <p><strong>Name:</strong> ${candidateName}</p>
+                            <p><strong>Email:</strong> ${candidateEmail}</p>
+                            <p><strong>Status:</strong> ${statusText}</p>
+                            <p><strong>Role:</strong> ${role}</p>
+                            <p><strong>Suitability Score:</strong> ${suitabilityPercentage}% Matching With JD</p>
+                            <p><strong>Phone Number:</strong> ${candidatePhoneNumber}</p>
+                            <p><strong>Resume:</strong> <a href="${resumeUrl}">View Resume</a></p>
+                            <p><strong>Result:</strong> ${finalSummary}</p>
+                            <br />
+                            <p>Please take the necessary actions based on the pre-screening results.</p>
+                        `
+                    },
+                    toRecipients: [
+                        {
+                            emailAddress: {
+                                address: globalHrEmail
+                            }
+                        }
+                    ]
+                }
+            };
+   
+            // Send the email using Microsoft Graph API directly
+            const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${tokenResponse.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailData)
             });
+   
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error ? errorData.error.message : 'Failed to send email');
+            }
+   
+            console.log('Email sent successfully');
+            alert('Email sent successfully!');
+   
+        } catch (error) {
+            console.error('Error:', error);
+            alert(`Failed to send email: ${error.message}`);
+           
+            // If there's a permission error, let the user know they need admin consent
+            if (error.message?.includes('permission')) {
+                alert('This app needs permission to send emails. Please contact your administrator to grant the necessary permissions.');
+            }
+        }
     }
-    
+
     // Call the function when needed (e.g., on button click)
     // document.getElementById('sendEmailButton').addEventListener('click', sendCandidateDetailsToHR);
     
