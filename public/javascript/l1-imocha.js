@@ -137,7 +137,17 @@
           "Tableau Data – BI Visualization Engineer":1303999,
           "WebFOCUS Data – BI Visualization Engineer":1304109,
           "DataAnalyst":1304111,
-          "Data Modeller":1304149
+          "Data Modeller":1304149,
+          "Junior .Net Cloud Native Application Engineer - Backend":1304441,
+          "Senior .Net Cloud Native Application Engineer - Backend":1228695,
+          "Junior Java Cloud Native Application Engineer - Backend":1302022,
+          "Senior Java Cloud Native Application Engineer - Backend":1228712,
+          "Junior Angular Cloud Native Application Engineer - Frontend":1228715,
+          "Senior Angular Cloud Native Application Engineer - Frontend":1228781,
+          "Junior React Cloud Native Application Engineer - Frontend":1288123,
+          "Senior React Cloud Native Application Engineer - Frontend":1228853,
+          "Junior Mendix LCNC Platform Engineer":1229987,
+          "Senior Mendix LCNC Platform Engineer":1229987    
        
         };
 
