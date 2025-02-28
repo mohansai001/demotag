@@ -2221,36 +2221,29 @@ app.get('/api/get-panel-emails', async (req, res) => {
   }
 });
 
-async function addVisibilityColumn() {
-  try {
-    await pool.query(`ALTER TABLE candidate_info ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
-    console.log("Visibility column added successfully.");
-  } catch (error) {
-    console.error("Error adding visibility column:", error);
-  }
-}
-addVisibilityColumn();
-
-// Function to get the correct date range
 function getDateRange(filterType) {
   const currentDate = new Date();
   let startDate, endDate;
 
-  if (filterType === 'last_week') {
-    startDate = new Date(currentDate);
-    startDate.setDate(currentDate.getDate() - 7); // Last 7 days including today
-    endDate = currentDate;
-  } else if (filterType === 'last_month') {
-    const previousMonth = currentDate.getMonth() - 1;
-    startDate = new Date(currentDate.getFullYear(), previousMonth, 1); // Start of last month
-    endDate = new Date(currentDate.getFullYear(), previousMonth + 1, 0); // End of last month
+  if (filterType === '24_hours') {
+      startDate = new Date();
+      startDate.setDate(currentDate.getDate() - 1); // Last 24 hours
+      endDate = currentDate;
+  } else if (filterType === 'last_week') {
+      startDate = new Date();
+      startDate.setDate(currentDate.getDate() - 7); // Last 7 days
+      endDate = currentDate;
+  } else if (filterType === 'last_15_days') {
+      startDate = new Date();
+      startDate.setDate(currentDate.getDate() - 15); // Last 15 days
+      endDate = currentDate;
   } else {
-    return null; // Overall case
+      return null; // Custom range case
   }
 
-  return { 
-    startDate: startDate.toISOString().split('T')[0], 
-    endDate: endDate.toISOString().split('T')[0] 
+  return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
   };
 }
 
@@ -2277,8 +2270,6 @@ app.post('/api/update-visibility', async (req, res) => {
                   `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
                   [dateRange.startDate, dateRange.endDate]
               );
-          } else {
-              await pool.query(`UPDATE candidate_info SET visible = TRUE;`); // Show all for "Overall"
           }
       }
 
@@ -2289,6 +2280,16 @@ app.post('/api/update-visibility', async (req, res) => {
   }
 });
 
+// Ensure visibility column exists
+async function addVisibilityColumn() {
+  try {
+      await pool.query(`ALTER TABLE candidate_info ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
+      console.log("Visibility column added successfully.");
+  } catch (error) {
+      console.error("Error adding visibility column:", error);
+  }
+}
+addVisibilityColumn();
 
 
 
