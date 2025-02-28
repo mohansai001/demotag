@@ -207,71 +207,34 @@ app.get('/api/rrf-details', async (req, res) => {
   }
 });
 
+//final feedback form prescreening details fetch
+app.get('/api/final-prescreening', async (req, res) => {
+  try {
+    const { candidateEmail } = req.query;  // Get the email from query params
 
-// Route 2: Update resumes count in the database
-// Route 2: Update resumes count in the database
-// Route 2: Update resumes count in the database
-// app.post('/send-resumes-count', async (req, res) => {
-//   try {
-//     // Fetch the current rejected and shortlisted counts
-//     const result = await pool.query('SELECT rejected, shortlisted FROM resume_counts WHERE id = 1');
+    if (!candidateEmail) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
 
-//     if (result.rows.length === 0) {
-//       return res.status(404).json({ message: 'No resume count found.' });
-//     }
+    console.log(`Fetching prescreening details for: ${candidateEmail}`);  // Debugging log
 
-//     // Log the rejected and shortlisted values for debugging
-//     console.log('Rejected count:', result.rows[0].rejected);
-//     console.log('Shortlisted count:', result.rows[0].shortlisted);
+    // Ensure you're using the correct column name: candidate_email
+    const result = await pool.query(`
+      SELECT feedback, status, summary
+      FROM prescreening_form
+      WHERE candidate_email = $1
+    `, [candidateEmail]);
 
-//     // Calculate the total count by summing rejected and shortlisted columns
-//     const totalCount = result.rows[0].rejected + result.rows[0].shortlisted + 1;
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No prescreening details found for this email' });
+    }
 
-//     // Log the total count to ensure it's calculated correctly
-//     console.log('Total count:', totalCount);
-
-//     // Update the count field in the resume_counts table
-//     const updateQuery = `UPDATE resume_counts SET count =  $1 WHERE id = 1;`;
-//     await pool.query(updateQuery, [totalCount]);
-
-//     // Send the response back with the updated count
-//     res.status(200).json({ 
-//       message: 'Resumes count updated successfully.', 
-//       count: totalCount // Send the correct total count in the response
-//     });
-//   } catch (error) {
-//     console.error('Error updating resumes count:', error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// });
-
-
-
-// Route to update the 'resumescount' table
-// app.post('/update-resumescount', async (req, res) => {
-//     const { attempted, improvement } = req.body;
-
-//     if (typeof attempted !== 'number' || typeof improvement !== 'number') {
-//         return res.status(400).json({ message: 'Invalid data. Expected numbers for attempted and improvement.' });
-//     }
-
-//     try {
-//         const query = `
-//             UPDATE resume_counts
-//             SET attempted = $1, improvement = $2
-//             WHERE id = 1;
-//         `;
-        
-//         // Execute the update query
-//         await pool.query(query, [attempted, improvement]);
-
-//         return res.status(200).json({ message: 'Resumes count updated successfully.' });
-//     } catch (error) {
-//         console.error('Error updating resumes count:', error);
-//         return res.status(500).json({ message: 'Internal Server Error' });
-//     }
-// });
-
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching prescreening details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 
