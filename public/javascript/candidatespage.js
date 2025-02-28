@@ -311,7 +311,9 @@ async function handleScheduleClick(event) {
 
     scheduleBtn.onclick = async () => {
       try {
+        const candidate_name= candidateRow.cells[1].innerText;
         const hr_email = candidateRow.cells[2].innerText;
+      
         const candidateEmail = candidateRow.cells[3].innerText;
         const panelEmail = document.getElementById('panel-select').value;
         const dateTime = document.getElementById('datetime-input').value;
@@ -339,7 +341,7 @@ async function handleScheduleClick(event) {
         const meetingRequest = {
           startDateTime,
           endDateTime,
-          subject: `L2 Interview: ${candidateName}`,
+          subject: `L2 Interview: ${candidate_name}`,
           participants: {
             organizer: { upn: hr_email },
             attendees: [
@@ -365,15 +367,15 @@ async function handleScheduleClick(event) {
         const meetingData = await meetingResponse.json();
         const meetingLink = meetingData.joinWebUrl;
 
-        // 2️⃣ **Create Calendar Event**
+        // 2️⃣ **Create Calendar Event with Meeting Details**
         const eventRequest = {
-          subject: `L2 Interview: ${candidateName}`,
+          subject: `L2 Interview: ${candidate_name}`,
           start: { dateTime: startDateTime, timeZone: "UTC" },
           end: { dateTime: endDateTime, timeZone: "UTC" },
           location: { displayName: "Microsoft Teams Meeting" },
           attendees: [
             {
-              emailAddress: { address: candidateEmail, name: candidateName },
+              emailAddress: { address: candidateEmail, name: candidate_name },
               type: "required"
             },
             {
@@ -382,12 +384,28 @@ async function handleScheduleClick(event) {
             },
             {
               emailAddress: { address: "Tagassistdemo@valuemomentum.com", name: "TAG Assist" },
-              type: "optional"  // Use "optional" instead of "cc"
+              type: "optional"
             }
           ],
           isOnlineMeeting: true,
           onlineMeetingProvider: "teamsForBusiness",
-          onlineMeeting: { joinUrl: meetingLink }
+          onlineMeeting: { joinUrl: meetingLink },
+          body: {
+            contentType: "HTML",
+            content: `
+              <p>Dear ${candidate_name},</p>
+              <p>You have been scheduled for your <b>L2 Interview</b>.</p>
+              <p><b>Interview Details:</b></p>
+              <ul>
+                <li><b>Date & Time:</b> ${date.toUTCString()}</li>
+                <li><b>Panel Member:</b> ${panelEmail}</li>
+                <li><b>Meeting Link:</b> <a href="${meetingLink}">${meetingLink}</a></li>
+              </ul>
+              <p>Please ensure you join on time and have a stable internet connection.</p>
+              <p>Best Regards,</p>
+              <p><b>TAG Assist Team</b></p>
+            `
+          }
         };
 
         const calendarResponse = await fetch("https://graph.microsoft.com/v1.0/me/events", {
@@ -404,7 +422,7 @@ async function handleScheduleClick(event) {
         }
 
         // 3️⃣ **Update Status in Backend**
-        await fetch("https://demotag.vercel.app/api/update-status", {
+        await fetch("http://localhost:3000/api/update-status", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -438,8 +456,6 @@ async function handleScheduleClick(event) {
     console.error("Error in handleScheduleClick:", error);
   }
 }
-
-
 
 
 // Close modal functionality
