@@ -310,8 +310,8 @@
                         <tr>
                             <td>Introduction of Cloud/App Engineering</td>
                             <td><select id="introduction-cloud-app">
-                                <option value="" selected>Select</option>    
-                                <option value="Yes">Yes</option>
+                                    <option value="" selected>Select</option>
+                                    <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </select></td>
                         </tr>
@@ -403,8 +403,8 @@
                     </tr>
                     <tr>
                         <td>Total Experience in AWS Cloud ?</td>
-                        <td><input type="text" id="aws-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
+                        <td><input type="text" id="aws-experience" placeholder="Enter total experience in Years/Months">
+                        </td>
                         <td>
                             <select id="aws-well-architected-framework">
                                 <option value="" selected>Select</option>
@@ -469,8 +469,8 @@
                     </tr>
                     <tr>
                         <td>Efforts calculations Knowledge</td>
-                        <td><input type="text" id="efforts-calculations"
-                                placeholder="Enter number of proposals worked"></td>
+                        <td><input type="text" id="efforts-calculations" placeholder="Enter number of proposals worked">
+                        </td>
                         <td><select id="efforts-calculations-end-to-end">
                                 <option value="" selected>Select</option>
                                 <option value="Yes">Yes</option>
@@ -513,8 +513,8 @@
                     <tr>
                         <td>Build Release Solutioning</td>
                         <td><select id="build-release-solutioning">
-                            <option value="" selected>Select</option>    
-                            <option value="Yes">Yes</option>
+                                <option value="" selected>Select</option>
+                                <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                             </select></td>
                         <td><input type="text" id="build-release-solutioning-projects"
@@ -730,6 +730,9 @@
         });
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Retrieve candidate details from localStorage
+            const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
+
             // Fetch all candidate emails from the server
             fetch('https://demotag.vercel.app/api/getAllCandidateEmails')
                 .then(response => response.json())
@@ -745,6 +748,15 @@
                             option.textContent = email;
                             emailDropdown.appendChild(option);
                         });
+
+                        // Set the email from localStorage after options are populated
+                        if (candidateDetails && candidateDetails.candidateEmail) {
+                            console.log("Candidate email found in localStorage:", candidateDetails.candidateEmail);
+                            emailDropdown.value = candidateDetails.candidateEmail;
+
+                            // Fetch candidate details based on the email from localStorage
+                            fetchCandidateData(candidateDetails.candidateEmail);
+                        }
                     }
                 })
                 .catch(error => {
@@ -757,29 +769,33 @@
             emailDropdown.addEventListener('change', function (event) {
                 const selectedEmail = event.target.value;
                 if (selectedEmail) {
-                    // Fetch candidate data based on the selected email
-                    fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${selectedEmail}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Check if the data is returned successfully
-                            if (data.error) {
-                                alert(data.error);
-                            } else {
-                                // Populate the form fields with the returned data
-                                document.getElementById('candidate-name').value = data.candidate_name;
-                                document.getElementById('position').value = data.role;
-
-                                document.getElementById('rrf-id').value = data.rrf_id;
-                                document.getElementById('hr-email').value = data.hr_email;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching candidate data:', error);
-                            showToast("Failed to load candidate data.", "error");
-                        });
+                    fetchCandidateData(selectedEmail);
                 }
             });
+
+            // Function to fetch candidate details based on the selected email
+            function fetchCandidateData(email) {
+                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Check if the data is returned successfully
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            // Populate the form fields with the returned data
+                            document.getElementById('candidate-name').value = data.candidate_name;
+                            document.getElementById('position').value = data.role;
+                            document.getElementById('rrf-id').value = data.rrf_id;
+                            document.getElementById('hr-email').value = data.hr_email;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching candidate data:', error);
+                        showToast("Failed to load candidate data.", "error");
+                    });
+            }
         });
+
 
         document.getElementById('ec-select').addEventListener('change', function () {
             const selectedValue = this.value;
@@ -867,7 +883,7 @@
                 .then(data => {
                     if (data.message) {
                         alert(data.message);
-                        location.reload();
+                        window.location.href = 'l1-imocha.html';
                     }
                 })
                 .catch(error => {
