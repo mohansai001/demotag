@@ -9,7 +9,7 @@ window.location.href = "ECselection.html";
 }
     async function loadCandidateCounts() {
         try {
-            const response = await fetch('http://localhost:3000/api/candidate-counts');
+            const response = await fetch('https://demotag.vercel.app/api/candidate-counts');
             const data = await response.json();
 
             // Update the counts on the page
@@ -54,16 +54,16 @@ window.location.href = "ECselection.html";
         let fileName = '';
         switch (role) {
             case 'Cloud Native Application Engineer - Backend':
-                fileName = `Job Description/${selectedLevel}_${cloudProvider}_DevOpsEngineer.txt`;
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
                 break;
             case 'Cloud Native Application Engineer - Front End':
-                fileName = `Job Description/${selectedLevel}_${cloudProvider}_PlatformEngineer.txt`;
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
                 break;
             case 'LCNC Platform Engineer':
-                fileName = `Job Description/${selectedLevel}_${cloudProvider}_CloudOpsEngineer.txt`;
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_APP.txt`;
                 break;
             case 'Integration Engineer':
-                fileName = `Job Description/${selectedLevel}_${cloudProvider}_SiteReliabilityEngineer.txt`;
+                fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
                 break;
             default:
                 console.log("Role not found");
@@ -197,7 +197,7 @@ async function uploadResume() {
                 formData.append("word", file);
 
                 // Send the file to the /docxtopdf endpoint for conversion
-                const response = await fetch("http://localhost:3000/docxtopdf", {
+                const response = await fetch("https://demotag.vercel.app/docxtopdf", {
                     method: "POST",
                     body: formData,
                 });
@@ -286,7 +286,7 @@ return re.test(email);
     }
     async function getGithubToken() {
         try {
-            const response = await fetch('http://localhost:3000/api/github-token');
+            const response = await fetch('https://demotag.vercel.app/api/github-token');
             if (!response.ok) throw new Error('Network response was not ok');
 
             const data = await response.json();
@@ -419,7 +419,7 @@ const githubToken = await getGithubToken();// Fetch the GitHub token here
     // Function to send resume count to the database
     async function sendCountToDatabase(count) {
         try {
-            const response = await fetch('http://localhost:3000/send-resumes-count', {
+            const response = await fetch('https://demotag.vercel.app/send-resumes-count', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -896,7 +896,7 @@ ${globalJobDescription}
                     const updateField = statusText === "Rejected" ? "rejected" : "shortlisted";
 
                     // API call to update the relevant column in resume_counts
-                    fetch('http://localhost:3000/update-resume-count', {
+                    fetch('https://demotag.vercel.app/update-resume-count', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1039,7 +1039,7 @@ ${globalJobDescription}
         // The resume_score column will now store the suitability percentage
         const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
-        fetch('http://localhost:3000/api/add-candidate-info', {
+        fetch('https://demotag.vercel.app/api/add-candidate-info', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1085,7 +1085,7 @@ ${globalJobDescription}
         // The resume_score column will now store the suitability percentage
         const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
-        fetch('http://localhost:3000/api/add-prescreening-info', {
+        fetch('https://demotag.vercel.app/api/add-prescreening-info', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1126,7 +1126,7 @@ ${globalJobDescription}
             rrfId: globalRrfId,
         };
     
-        fetch('http://localhost:3000/api/send-hr-email', {
+        fetch('https://demotag.vercel.app/api/send-hr-email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1154,7 +1154,7 @@ ${globalJobDescription}
     
 
     function sendRRFToDB(globalRrfId, role, selectedValue, status = 'open') {
-        fetch('http://localhost:3000/api/rrf-update', {
+        fetch('https://demotag.vercel.app/api/rrf-update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1228,7 +1228,7 @@ ${globalJobDescription}
     }
     async function fetchCandidates() {
         try {
-            const response = await fetch('http://localhost:3000/api/candidates');
+            const response = await fetch('https://demotag.vercel.app/api/candidates');
             const data = await response.json();
 
             const tableBody = document.querySelector('#candidateTable tbody');
