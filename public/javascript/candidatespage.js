@@ -422,7 +422,7 @@ async function handleScheduleClick(event) {
         }
 
         // 3️⃣ **Update Status in Backend**
-        await fetch("http://localhost:3000/api/update-status", {
+        await fetch("https://demotag.vercel.app/api/update-status", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
