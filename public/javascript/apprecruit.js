@@ -56,7 +56,7 @@ window.location.href = "ECselection.html";
             case 'Cloud Native Application Engineer - Backend':
                 fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
                 break;
-            case 'Cloud Native Application Engineer - Front End':
+            case 'Cloud Native Application Engineer - Frontend':
                 fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
                 break;
             case 'LCNC Platform Engineer':
