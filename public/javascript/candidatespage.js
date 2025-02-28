@@ -341,7 +341,7 @@ async function handleScheduleClick(event) {
           endDateTime,
           subject: `L2 Interview: ${candidateName}`,
           participants: {
-            organizer: { upn: hrEmail }, // Using HR email as the organizer
+            organizer: { upn: hr_Email }, // Using HR email as the organizer
             attendees: [
               { upn: candidateEmail, role: "attendee" },
               { upn: panelEmail, role: "attendee" },
