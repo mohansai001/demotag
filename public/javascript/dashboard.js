@@ -1779,20 +1779,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Retrieve selected filter from localStorage
+    const savedFilter = localStorage.getItem("selectedFilter");
+    if (savedFilter) {
+        document.getElementById("filterSelect").value = savedFilter;
+        toggleDateInputs();
+    }
+
+    // Retrieve and set custom date values if stored
+    if (savedFilter === "custom_range") {
+        document.getElementById("startDate").value = localStorage.getItem("startDate") || "";
+        document.getElementById("endDate").value = localStorage.getItem("endDate") || "";
+    }
+});
+
 function toggleDateInputs() {
     const filterType = document.getElementById('filterSelect').value;
     const customDateRange = document.getElementById('customDateRange');
 
-    if (filterType === 'custom_range') {
-        customDateRange.style.display = 'block';
-    } else {
-        customDateRange.style.display = 'none';
-    }
+    customDateRange.style.display = (filterType === 'custom_range') ? 'block' : 'none';
 }
 
 async function updateFilter() {
     const filterType = document.getElementById('filterSelect').value;
     let startDate = null, endDate = null;
+
+    // Save selected filter to localStorage
+    localStorage.setItem("selectedFilter", filterType);
 
     if (filterType === 'custom_range') {
         startDate = document.getElementById('startDate').value;
@@ -1802,6 +1816,10 @@ async function updateFilter() {
             alert("Please select both start and end dates.");
             return;
         }
+
+        // Save custom range dates
+        localStorage.setItem("startDate", startDate);
+        localStorage.setItem("endDate", endDate);
     }
 
     await fetch('https://demotag.vercel.app/api/update-visibility', {
@@ -1812,7 +1830,6 @@ async function updateFilter() {
 
     window.location.reload(); // Reload to reflect changes
 }
-
 
 
 
