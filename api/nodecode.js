@@ -984,58 +984,44 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-axios.defaults.timeout = 60000; // Reduced timeout to 60s
+const testIds = ["1292180", "1293122", "1292779", "1292781", "1295883", "1292990", "1292769", "1292775", "1292950", "1292733", "1292976", "1292765", "1292203"];
 
-const testIds = [
-  "1292180", "1293122", "1292779", "1292781", "1295883", "1292990",
-  "1292769", "1292775", "1292950", "1292733", "1292976", "1292765",
-  "1292203", "1303946", "1293813", "1293971", "1263132", "1304065",
-  "1233151", "1294495", "1302835", "1294495", "1304066", "1304100",
-  "1292173", "1293822", "1303985", "1303999", "1304109", "1304111",
-  "1304149",
-];
+// Set Axios timeout (60 seconds)
+axios.defaults.timeout = 60000;
 
-// Function to fetch test attempts in chunks
+// Function to fetch completed test attempts
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
-  console.log(`Fetching test attempts from ${startDateTime} to ${endDateTime}`);
-  
-  const chunkSize = 5; // Reduced batch size for better execution in Vercel
-  const allTestAttempts = [];
+  try {
+    const requests = testIds.map((testId) => {
+      const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
+      return axios.post(`${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, requestBody, {
+        headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
+      });
+    });
 
-  for (let i = 0; i < testIds.length; i += chunkSize) {
-    const chunk = testIds.slice(i, i + chunkSize);
-    const requests = chunk.map((testId) =>
-      axios.post(
-        `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
-        { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
-        { headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" } }
-      ).catch(err => {
-        console.error(`Error fetching test attempts for testId ${testId}:`, err.message);
-        return null; // Return null to avoid breaking Promise.all
-      })
-    );
-
-    const responses = await Promise.all(requests);
+    const responses = await Promise.allSettled(requests);
+    const allTestAttempts = [];
 
     responses.forEach((response) => {
-      if (response && response.data?.result?.testAttempts) {
-        allTestAttempts.push(...response.data.result.testAttempts);
+      if (response.status === "fulfilled") {
+        allTestAttempts.push(...response.value.data.result.testAttempts);
+      } else {
+        console.error("Failed to fetch test attempts:", response.reason.message);
       }
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Reduced delay
+    return allTestAttempts;
+  } catch (error) {
+    console.error("Error fetching test attempts:", error.message);
+    return [];
   }
-
-  return allTestAttempts;
 }
 
-// Function to fetch reports
+// Function to fetch report for an invitation ID
 async function getReport(invitationId) {
   try {
-    console.log(`Fetching report for invitation ID: ${invitationId}`);
     const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
       headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-      timeout: 60000, // Lowered timeout for better performance
     });
 
     return response.data;
@@ -1045,64 +1031,45 @@ async function getReport(invitationId) {
   }
 }
 
-// Function to fetch and save test results
+// Function to fetch and save test results in DB
 async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   console.log("Fetching test results...");
 
   try {
     const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
 
-    if (testAttempts.length === 0) {
-      console.log("No test attempts found.");
-      return;
-    }
+    for (const attempt of testAttempts) {
+      const report = await getReport(attempt.testInvitationId);
 
-    const batchSize = 2; // Reduced batch size for Vercel execution limits
-    for (let i = 0; i < testAttempts.length; i += batchSize) {
-      const batch = testAttempts.slice(i, i + batchSize);
-      const reportPromises = batch.map((attempt) => getReport(attempt.testInvitationId));
+      if (report) {
+        const query = `
+          INSERT INTO imocha_results 
+          (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT (candidate_email) 
+          DO UPDATE SET 
+            score = EXCLUDED.score,
+            total_test_points = EXCLUDED.total_test_points,
+            score_percentage = EXCLUDED.score_percentage,
+            performance_category = EXCLUDED.performance_category,
+            test_name = EXCLUDED.test_name,
+            attempted_date = EXCLUDED.attempted_date,
+            pdf_report_url = EXCLUDED.pdf_report_url;
+        `;
+        const values = [
+          report.candidateEmail,
+          report.score,
+          report.totalTestPoints,
+          report.scorePercentage,
+          report.performanceCategory,
+          report.testName,
+          report.pdfReportUrl,
+          report.attemptedOn,
+        ];
 
-      const reports = await Promise.allSettled(reportPromises);
-
-      const dbOperations = [];
-      for (const reportResult of reports) {
-        if (reportResult.status === "fulfilled" && reportResult.value) {
-          const report = reportResult.value;
-
-          const query = `
-            INSERT INTO imocha_results 
-            (candidate_email, score, total_test_points, score_percentage, performance_category, test_name, pdf_report_url, attempted_date)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            ON CONFLICT (candidate_email) 
-            DO UPDATE SET 
-              score = EXCLUDED.score,
-              total_test_points = EXCLUDED.total_test_points,
-              score_percentage = EXCLUDED.score_percentage,
-              performance_category = EXCLUDED.performance_category,
-              test_name = EXCLUDED.test_name,
-              attempted_date = EXCLUDED.attempted_date,
-              pdf_report_url = EXCLUDED.pdf_report_url;
-          `;
-
-          const values = [
-            report.candidateEmail,
-            report.score,
-            report.totalTestPoints,
-            report.scorePercentage,
-            report.performanceCategory,
-            report.testName,
-            report.pdfReportUrl,
-            report.attemptedOn,
-          ];
-
-          dbOperations.push(pool.query(query, values));
-        }
+        await pool.query(query, values);
+        console.log(`Saved/Updated: ${report.candidateEmail}`);
       }
-
-      await Promise.all(dbOperations);
-      console.log(`Processed batch of ${dbOperations.length} reports`);
-
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Reduced delay
     }
 
     console.log("Test results updated successfully.");
@@ -1128,19 +1095,25 @@ app.post("/api/callTestAttempts", async (req, res) => {
     const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
     const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
 
-    console.log(`Processing test attempts from ${startDateTime} to ${endDateTime}`);
+    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
+    await fetchAndSaveTestResults(startDateTime, endDateTime);
 
-    res.json({ message: "Processing started. Check logs for completion." });
-
-    fetchAndSaveTestResults(startDateTime, endDateTime)
-      .then(() => console.log("Background processing completed successfully."))
-      .catch(error => console.error("Error in background processing:", error.message));
-    
+    res.json(testAttempts);
   } catch (error) {
-    console.error("Error processing test attempts:", error.message);
-    res.status(500).json({ message: "Error processing test attempts." });
+    console.error("Error fetching test attempts:", error.message);
+    res.status(500).json({ message: "Error fetching test attempts." });
   }
 });
+
+// Run fetchAndSaveTestResults every 5 minutes
+setInterval(() => {
+  console.log("Scheduled task running...");
+  fetchAndSaveTestResults(
+    new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+    new Date().toISOString()
+  );
+}, 300000); // 5 minutes
+
 app.get('/api/test-counts', async (req, res) => {
   try {
       const testNames = [
