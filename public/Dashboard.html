@@ -1392,10 +1392,10 @@
     width: fit-content;
     margin-left: 0;
   }
-    .filter-container {
+  .filter-container {
     position: relative;
     top: 6px;
-    right: -842px;
+    right: 0; /* Remove the offset from the right */
     background: white;
     padding: 10px;
     border-radius: 8px;
@@ -1404,7 +1404,8 @@
     align-items: center;
     gap: 10px;
     z-index: 931;
-    width: 388px; /* Ensures it stays above other elements */
+    width: fit-content; /* Width will automatically adjust to the content */
+    margin: 0 auto; /* This will center it horizontally */
 }
 
 .filter-container h2 {
@@ -1416,6 +1417,7 @@
 .filter-container button {
     padding: 5px;
     font-size: 14px;
+    border-radius: 6px;
 }
 </style>
 
