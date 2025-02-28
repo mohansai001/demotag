@@ -569,14 +569,11 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    /* 2 columns of equal width */
-    gap: 0.5rem;
-    /* Default gap between items */
-    width: 400px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: fit-content;
     padding-left: 0.25rem;
-    /* Reduces the left padding of the grid */
-    height: 260px;
+    height: fit-content;
   }
 
   .cardss {
@@ -1325,6 +1322,10 @@
     padding-left: 200px;
   }
 
+  .hrcardnew {
+    padding-left: 200px;
+  }
+
   /* .containerss {
     display: flex;
     flex-wrap: wrap;
@@ -1336,8 +1337,8 @@
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    width: 325px;
-    height: 260px;
+    width: calc(100% - 5%);
+    height: 350px;
     padding: 20px;
     text-align: center;
     margin-top: 0;
@@ -1358,7 +1359,7 @@
 
   canvas {
     width: 100% !important;
-    height: 186px !important;
+    height: 300px !important;
     margin-top: 20px;
   }
 
@@ -1739,6 +1740,13 @@
      
     </div>
   </div>
+
+  <div class="hrcardnew">
+    <div class="hrcard">
+      <h3 style="color: black; margin-top:5px;">HR Selection Details</h3>
+      <canvas id="hrChart"></canvas>
+    </div>
+  </div>
   
   <h4 style="color:black; padding-left: 200px;">By Role</h4>
   <div class="wrapper">
@@ -1932,12 +1940,6 @@
       
   </div>
     </div>
-
-    <div class="hrcard">
-      <h3 style="color: black; margin-top:5px;">HR Selection Details</h3>
-      <canvas id="hrChart"></canvas>
-    </div>
-
   </div>
 </div>
 
