@@ -381,7 +381,7 @@ async function handleScheduleClick(event) {
           onlineMeeting: { joinUrl: meetingLink },
         };
 
-        const calendarResponse = await fetch(`https://graph.microsoft.com/v1.0/users/${hrEmail}/events`, {
+      const calendarResponse = await fetch("https://graph.microsoft.com/v1.0/me/events", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
