@@ -2221,24 +2221,37 @@ app.get('/api/get-panel-emails', async (req, res) => {
   }
 });
 
+async function addVisibilityColumn() {
+  try {
+      await pool.query(`ALTER TABLE candidate_info ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
+      await pool.query(`ALTER TABLE rrf_details ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
+      await pool.query(`ALTER TABLE imocha_results ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
+      console.log("Visibility column added successfully in all tables.");
+  } catch (error) {
+      console.error("Error adding visibility column:", error);
+  }
+}
+addVisibilityColumn();
+
+// Function to get predefined date ranges
 function getDateRange(filterType) {
   const currentDate = new Date();
   let startDate, endDate;
 
   if (filterType === '24_hours') {
       startDate = new Date();
-      startDate.setDate(currentDate.getDate() - 1); // Last 24 hours
+      startDate.setDate(currentDate.getDate() - 1);
       endDate = currentDate;
   } else if (filterType === 'last_week') {
       startDate = new Date();
-      startDate.setDate(currentDate.getDate() - 7); // Last 7 days
+      startDate.setDate(currentDate.getDate() - 7);
       endDate = currentDate;
   } else if (filterType === 'last_15_days') {
       startDate = new Date();
-      startDate.setDate(currentDate.getDate() - 15); // Last 15 days
+      startDate.setDate(currentDate.getDate() - 15);
       endDate = currentDate;
   } else {
-      return null; // Custom range case
+      return null;
   }
 
   return {
@@ -2247,7 +2260,7 @@ function getDateRange(filterType) {
   };
 }
 
-// API to update visibility in the database
+// API to update visibility in candidate_info, rrf_details, and imocha_results
 app.post('/api/update-visibility', async (req, res) => {
   const { filterType, startDate, endDate } = req.body;
 
@@ -2256,18 +2269,43 @@ app.post('/api/update-visibility', async (req, res) => {
   }
 
   try {
-      await pool.query(`UPDATE candidate_info SET visible = FALSE;`); // Hide all records first
+      // Hide all records before applying the filter
+      await pool.query(`UPDATE candidate_info SET visible = FALSE;`);
+      await pool.query(`UPDATE rrf_details SET visible = FALSE;`);
+      await pool.query(`UPDATE imocha_results SET visible = FALSE;`);
 
       if (filterType === 'custom_range' && startDate && endDate) {
+          // Update visibility for a custom date range
           await pool.query(
               `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
               [startDate, endDate]
           );
+
+          await pool.query(
+              `UPDATE rrf_details SET visible = TRUE WHERE rrf_startdate BETWEEN $1 AND $2;`,
+              [startDate, endDate]
+          );
+
+          await pool.query(
+              `UPDATE imocha_results SET visible = TRUE WHERE attempted_date BETWEEN $1 AND $2;`,
+              [startDate, endDate]
+          );
       } else {
+          // Use predefined date range logic
           const dateRange = getDateRange(filterType);
           if (dateRange) {
               await pool.query(
                   `UPDATE candidate_info SET visible = TRUE WHERE date BETWEEN $1 AND $2;`,
+                  [dateRange.startDate, dateRange.endDate]
+              );
+
+              await pool.query(
+                  `UPDATE rrf_details SET visible = TRUE WHERE rrf_startdate BETWEEN $1 AND $2;`,
+                  [dateRange.startDate, dateRange.endDate]
+              );
+
+              await pool.query(
+                  `UPDATE imocha_results SET visible = TRUE WHERE attempted_date BETWEEN $1 AND $2;`,
                   [dateRange.startDate, dateRange.endDate]
               );
           }
@@ -2279,17 +2317,6 @@ app.post('/api/update-visibility', async (req, res) => {
       res.status(500).json({ error: 'Failed to update visibility.' });
   }
 });
-
-// Ensure visibility column exists
-async function addVisibilityColumn() {
-  try {
-      await pool.query(`ALTER TABLE candidate_info ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;`);
-      console.log("Visibility column added successfully.");
-  } catch (error) {
-      console.error("Error adding visibility column:", error);
-  }
-}
-addVisibilityColumn();
 
 
 
