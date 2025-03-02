@@ -1140,11 +1140,11 @@ app.get('/api/test-counts', async (req, res) => {
           'Azure Cloud Engineer - Cloud EC'
       ];
 
-      // Query the database for counts of the specified test names
+      // Query the database for counts of the specified test names where visible = TRUE
       const query = `
           SELECT test_name, COUNT(*) AS count
           FROM imocha_results
-          WHERE test_name = ANY($1)
+          WHERE test_name = ANY($1) AND visible = TRUE
           GROUP BY test_name
       `;
       const result = await pool.query(query, [testNames]);
@@ -1161,7 +1161,6 @@ app.get('/api/test-counts', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch test counts' });
   }
 });
-
 
 
 // app.get('/api/test-results', async (req, res) => {
