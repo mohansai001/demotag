@@ -1746,10 +1746,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get all job cards
     const jobCards = document.querySelectorAll(".cardss");
+    const qaCard = document.getElementById("qa-engineer-card");
 
     if (ecMappingParam) {
         // Split EC mappings if multiple values exist
         const selectedECs = ecMappingParam.split(",").map(ec => ec.trim());
+
+        // If all three ECs are selected, show the QA Engineer card
+        if (
+            selectedECs.includes("App EC") &&
+            selectedECs.includes("Data EC") &&
+            selectedECs.includes("Cloud EC")
+        ) {
+            qaCard.style.display = "block"; // Show the QA Engineer card
+        } else {
+            qaCard.style.display = "none"; // Hide the QA Engineer card
+        }
 
         // If only one EC is selected, use previous logic
         if (selectedECs.length === 1 && roleGroups[selectedECs[0]]) {
