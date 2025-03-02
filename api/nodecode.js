@@ -1310,7 +1310,7 @@ app.get('/api/moved-to-l2-count', async (req, res) => {
       const query = `
           SELECT COUNT(*) AS moved_to_l2_count
           FROM candidate_info
-          WHERE recruitment_phase = 'Moved to L2';
+          WHERE recruitment_phase = 'Shortlisted in L2';
       `;
       const result = await pool.query(query);
 
