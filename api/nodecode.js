@@ -189,11 +189,12 @@ app.post('/api/update-candidate-recruitment-phase', async (req, res) => {
 
 app.get('/api/rrf-details', async (req, res) => {
   try {
-    // Query to fetch aggregated resume counts grouped by eng_center
+    // Query to fetch aggregated resume counts grouped by eng_center where visible is TRUE
     const result = await pool.query(`
       SELECT eng_center, SUM(resume_count) AS resume_count
       FROM rrf_details
-      GROUP BY eng_center
+      WHERE visible = TRUE
+      GROUP BY eng_center;
     `);
 
     if (result.rows.length === 0) {
