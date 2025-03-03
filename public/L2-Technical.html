@@ -311,15 +311,15 @@
 
         .toast {
             position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             display: none;
-            z-index: 1000;
+            z-index: 9999;
         }
 
         .toast.show {
@@ -657,9 +657,10 @@ const loggedInUserEmail = localStorage.getItem("userEmail");
             toast.textContent = message;
             toast.classList.add('show', type);
 
+            // Remove the toast after 4 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 4000);
+            }, 3000);
         }
 
         function downloadPDF() {
@@ -699,7 +700,7 @@ const loggedInUserEmail = localStorage.getItem("userEmail");
                 .then(data => {
                     // Check if the data is returned successfully
                     if (data.error) {
-                        alert(data.error);
+                        showToast(data.error, "error");
                     } else {
                         // Populate the form fields with the returned data
                         document.getElementById('candidate-name').value = data.candidate_name;
