@@ -6,82 +6,92 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     body,
-      html {
+    html {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
         padding: 0;
         background: linear-gradient(120deg, #e6e6fa, #daf7a6);
         color: #333;
         height: max-content;
-      }
+    }
+
     .sidebar-menu {
-  width: 150px;
-  position: fixed;
-  top: 2px;
-  left: 0;
-  height: 100%;
-  margin-top:55px;
-  /*     overflow: auto; */
-  transition: transform 0.3s ease;
-  transform: translateX(-100%);
-  border: 1px solid;
-  background: white;
-  z-index:1001;
-  box-shadow:2px 0 5px rgba(0,0,0,0.2);
-}
- 
-.sidebar-menu.show {
-  transform: translateX(0); /* Show the sidebar */
-}
- 
-#toggle-sidebar-btn {
-  position: fixed;
-  top: 2px;
-  background-color: white;
-  color: black;
-  border: none;
-  /* padding: 10px 15px; */
-  cursor: pointer;
-  font-size: 18px;
-  width: 200px;
-  border-radius: 4px;
-  height: 41px;
-  margin-left: -2px;
-}
- 
-.sidebar-option {
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.3s ease; /* Smooth transitions for all properties */
-  position: relative;
-   width: 80%;
-  color: black;
-  border-radius: 5px; /* Adds rounded corners */
-}
- 
-.sidebar-option:hover {
-  background-color: #daf7a6; /* Light gray hover background */
-  color: black; /* Text changes to blue */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  transform: translateY(-2px); /* Slight upward movement */
-}
- 
-.sidebar-option::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 3px;
-  background-color: black; /* Highlight bar color */
-  transition: width 0.3s ease;
-}
- 
-.sidebar-option:hover::before {
-  width: 100%; /* Expands the highlight bar */
-}
+        width: 150px;
+        position: fixed;
+        top: 2px;
+        left: 0;
+        height: 100%;
+        margin-top: 55px;
+        /*     overflow: auto; */
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+        border: 1px solid;
+        background: white;
+        z-index: 1001;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-menu.show {
+        transform: translateX(0);
+        /* Show the sidebar */
+    }
+
+    #toggle-sidebar-btn {
+        position: fixed;
+        top: 2px;
+        background-color: white;
+        color: black;
+        border: none;
+        /* padding: 10px 15px; */
+        cursor: pointer;
+        font-size: 18px;
+        width: 200px;
+        border-radius: 4px;
+        height: 41px;
+        margin-left: -2px;
+    }
+
+    .sidebar-option {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        /* Smooth transitions for all properties */
+        position: relative;
+        width: 80%;
+        color: black;
+        border-radius: 5px;
+        /* Adds rounded corners */
+    }
+
+    .sidebar-option:hover {
+        background-color: #daf7a6;
+        /* Light gray hover background */
+        color: black;
+        /* Text changes to blue */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* Subtle shadow */
+        transform: translateY(-2px);
+        /* Slight upward movement */
+    }
+
+    .sidebar-option::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 3px;
+        background-color: black;
+        /* Highlight bar color */
+        transition: width 0.3s ease;
+    }
+
+    .sidebar-option:hover::before {
+        width: 100%;
+        /* Expands the highlight bar */
+    }
 
     .dashboard-container {
         display: flex;
@@ -169,7 +179,7 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         margin-left: 241px;
         width: 61%;
-	z-index: 1;
+        z-index: 1;
     }
 
     .steps-container {
@@ -179,7 +189,7 @@
         position: relative;
         max-width: 800px;
         margin: 0 auto;
-	z-index: 1;
+        z-index: 1;
     }
 
     .step {
@@ -188,7 +198,7 @@
         align-items: center;
         z-index: 1;
         width: 120px;
-	z-index: 1;
+        z-index: 1;
     }
 
     .step-circle {
@@ -203,7 +213,7 @@
         margin-bottom: 10px;
         font-weight: bold;
         transition: all 0.3s ease;
-	z-index: 1;
+        z-index: 1;
     }
 
     .step.active .step-circle {
@@ -227,20 +237,46 @@
         background: #e0e0e0;
         z-index: 0;
     }
-    .backbutton{
+
+    .backbutton {
         width: 30px;
         background-color: whitesmoke;
         height: 30px;
         border-radius: 50%;
         margin-left: 215px;
-        margin-top:15px;
+        margin-top: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-      }
+    }
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        z-index: 9999;
+    }
+
+    .toast.show {
+        display: block;
+    }
+
+    .toast.success {
+        background-color: #4CAF50;
+    }
+
+    .toast.error {
+        background-color: #f44336;
+    }
 </style>
 
 <body>
+    <div id="toast" class="toast"></div>
 
     <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
 
@@ -258,7 +294,7 @@
             <i class="fas fa-users"></i>
             <span>Recruit</span>
         </div>
-	      <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo"
+        <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo"
             onclick="navigateTo('candidatespage.html')">
             <i class="fas fa-tasks"></i><span>RRF Tracking</span>
         </div>
@@ -266,16 +302,6 @@
             onclick="navigateTo('GTPrescreening.html')">
             <i class="fas fa-tasks"></i><span>GT's Prescreening</span>
         </div>
-        <!-- <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('L1-ImochaOnline.html')">
-        <i class="fas fa-tasks"></i><span>L1-ImochaOnline</span>
-    </div> -->
-
-      
-
-
-        <!--     <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('assessment-form-html.html')">
-        <i class="fas fa-tasks"></i><span>Assessment</span>
-    </div> -->
 
         <div class="sidebar-option logout-option" data-tooltip="Logout" onclick="navigateTo('index.html')" style="
     margin-top: 149px;">
@@ -286,74 +312,7 @@
 
     <div class="backbutton" onclick="navigateToPage()">
         <i class="fas fa-arrow-left"></i>
-      </div>
-
-    <!-- dashboard -->
-    <!-- <div class="dashboard-container" >
-        <div class="card" style="background-color: #3b3f45;text-align: center;
-    padding: 1rem;
-    background: #000000;
-    color: #ffffff;
-    border-radius: 10px;
-    flex: 1;
-    margin: 0 10px;
-    border: 2px solid #808080;
-    max-width: 100px;		">
-            <h2 id="uploadCount">0</h2>
-            <p>Uploads</p>
-        </div>
-        <div class="card" style="background-color: #3b3f45;text-align: center;
-    padding: 1rem;
-    background: #000000;
-    color: #ffffff;
-    border-radius: 10px;
-    flex: 1;
-    margin: 0 10px;
-    border: 2px solid #808080;
-		 max-width: 100px;">
-            <h2 id="shortlistedCount">0</h2>
-            <p>Shortlisted</p>
-        </div>
-        <div class="card" style="background-color: #3b3f45;text-align: center;
-    padding: 1rem;
-    background: #000000;
-    color: #ffffff;
-    border-radius: 10px;
-    flex: 1;
-    margin: 0 10px;
-    border: 2px solid #808080;
-		 max-width: 100px;">
-            <h2 id="rejectedCount">0</h2>
-            <p>Rejected</p>
-        </div>
     </div>
-    <div class="button-container">
-        
-        <button class="button" onclick="showInterviews()">Cloud</button>
-        <button class="button" onclick="showInterviews()"> APP</button>
-        <button class="button" onclick="showInterviews()">Data</button>
-        <button class="button" onclick="showInterviews()">Core</button>
-    </div>
- 
- 
-   <div class="table-container">
-        <h2>Candidate Details</h2>
-        <table id="candidateTable">
-            <thead>
-                <tr>
-                    <th>Candidate Name</th>
-                    <th>Candidate Email</th>
-                    <th>Status</th>
-                    <th>Role</th>
-                    <th>Recruitment Phase</th>
-                    <th>resume_score</th>
-                </tr>
-            </thead>
-            <tbody>
-            
-            </tbody>
-        </table>
-    </div> -->
     <div class="progress-steps">
         <div class="steps-container">
             <div class="progress-line"></div>
@@ -419,7 +378,8 @@
                         </select>
                     </div>
 
-                    <button onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Backend','levelDropdown1')"
+                    <button
+                        onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Backend','levelDropdown1')"
                         style="margin-left: 46px; background-color:#DAF7A6; color:black;">Select</button>
                 </div>
 
@@ -442,15 +402,16 @@
 
                         <!-- Dropdown Field -->
                         <select id="levelDropdown2" style="padding: 5px; background: #E6E6FA; color: black;">
-    <option>select</option>
-    <option value="Junior">Junior</option>
-    <option value="Senior">Senior</option>
-    <option disabled value="Lead">Lead</option>
-</select>
+                            <option>select</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option disabled value="Lead">Lead</option>
+                        </select>
 
                     </div>
 
-                    <button onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Frontend','levelDropdown2')"
+                    <button
+                        onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Frontend','levelDropdown2')"
                         style="margin-left: 51px;background-color:#DAF7A6; color:black;margin-top: 10px;;margin-inline-start: revert-layer;">Select</button>
                 </div>
                 <div class="role-card">
@@ -467,7 +428,8 @@
                                 <input type="radio" name="cloudProvider" value="Mendix" id="azureRadio"> Mendix
                             </label>
                             <label style="margin-left: 10px;">
-                                <input type="radio" name="cloudProvider" value="UIMendix" id="awsRadio" disabled> UI Mendix
+                                <input type="radio" name="cloudProvider" value="UIMendix" id="awsRadio" disabled> UI
+                                Mendix
                             </label>
                         </span>
 
@@ -493,22 +455,26 @@
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <!-- Cloud Provider Radio Buttons -->
                         <span class="radio-group" style="font-size:6px;">
-    <label>
-        <input type="radio" name="cloudProvider" value="IBM Integration Bus" id="ibmIntegrationBus"> IBM Integration Bus
-    </label>
-    <label style="margin-left: 10px;">
-        <input type="radio" name="cloudProvider" value="IBM Data Power" id="ibmDataPower"> IBM Data Power
-    </label>
-    <label style="margin-left: 10px;">
-        <input type="radio" name="cloudProvider" value="MuleSoft" id="muleSoft"> MuleSoft
-    </label>
-    <label style="margin-left: 10px;">
-        <input type="radio" name="cloudProvider" value="API Connect" id="apiConnect"> API Connect
-    </label>
-    <label style="margin-left: 10px;">
-        <input type="radio" name="cloudProvider" value="SAG web methods" id="sagWebMethods"> SAG web methods
-    </label>
-</span>
+                            <label>
+                                <input type="radio" name="cloudProvider" value="IBM Integration Bus"
+                                    id="ibmIntegrationBus"> IBM Integration Bus
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="IBM Data Power" id="ibmDataPower"> IBM
+                                Data Power
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="MuleSoft" id="muleSoft"> MuleSoft
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="API Connect" id="apiConnect"> API
+                                Connect
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="SAG web methods" id="sagWebMethods"> SAG
+                                web methods
+                            </label>
+                        </span>
 
 
 
@@ -593,38 +559,42 @@
 
 
 
-<div id="resume-popup" class="popup">
-    <div class="popup-content">
-        <h2 style="color:black;">Prescreening</h2>
-        
-        <!-- HR Email Input Field -->
-        <label for="hr-email" style="color:black;">HR Email:</label>
-        <input type="email" id="hr-email" placeholder="Enter HR Email" style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;" />
-        
-        <label for="RRF-ID" style="color:black;">RRF ID:</label>
-        <input type="text" id="RRF-ID" placeholder="Enter RRF-ID" style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;" oninput="addPrefix()" />
-        
-        <div style="display: flex; align-items: center; justify-content: center;">
-            <label for="ec-name" style="color:black; margin-right: 10px;">EC Name:</label>
-            <input type="text" id="ec-name" style="width: 60%; padding: 8px; background-color: #E6E6FA; text-align: center;" readonly />
-        </div>
-        
-        <!-- Resume Upload -->
-        <input type="file" id="resume" accept=".pdf,.doc,.docx" />
+        <div id="resume-popup" class="popup">
+            <div class="popup-content">
+                <h2 style="color:black;">Prescreening</h2>
 
-        
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress-bar"></div>
+                <!-- HR Email Input Field -->
+                <label for="hr-email" style="color:black;">HR Email:</label>
+                <input type="email" id="hr-email" placeholder="Enter HR Email"
+                    style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;" />
+
+                <label for="RRF-ID" style="color:black;">RRF ID:</label>
+                <input type="text" id="RRF-ID" placeholder="Enter RRF-ID"
+                    style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;"
+                    oninput="addPrefix()" />
+
+                <div style="display: flex; align-items: center; justify-content: center;">
+                    <label for="ec-name" style="color:black; margin-right: 10px;">EC Name:</label>
+                    <input type="text" id="ec-name"
+                        style="width: 60%; padding: 8px; background-color: #E6E6FA; text-align: center;" readonly />
+                </div>
+
+                <!-- Resume Upload -->
+                <input type="file" id="resume" accept=".pdf,.doc,.docx" />
+
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+
+                <br />
+
+                <!-- Buttons -->
+                <button onclick="uploadResume()" style="background-color: #DAF7A6; width: 144px;">Upload</button>
+                <button onclick="closePopup()" style="background-color: #DAF7A6; width: 120px;">Cancel</button>
+            </div>
         </div>
-        
-        <br />
-        
-        <!-- Buttons -->
-        <button onclick="uploadResume()" style="background-color: #DAF7A6; width: 144px;">Upload</button>
-        <button onclick="closePopup()" style="background-color: #DAF7A6; width: 120px;">Cancel</button>
-    </div>
-</div>
 
 
 
@@ -653,11 +623,11 @@
 			    justify-content: center;
 			    align-items: center;
 			    display: flex;">
-			    
+
                         <div style="
                         border: 6px solid rgba(255, 255, 255, 0.3); border-top: 6px solid #ffffff; border-radius: 50%;
                         width: 50px; height: 50px; margin: 0 auto; animation: spin 1s linear infinite;">
-                	</div>
+                        </div>
                         <span style="margin-top: 20px;">Please wait while resume is being evaluated!...</span>
                     </div>
 
@@ -669,28 +639,18 @@
                         <h1 style="color: #bb86fc;"></h1>
                     </div>
                     <div id="questions-form-container" class="form-container"></div>
-
-
-
-
-
                 </div>
-
-
             </div>
-
-
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-<script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+        <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1017.0.min.js"></script>
-<script src="./javascript/apprecruit.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1017.0.min.js"></script>
+        <script src="./javascript/apprecruit.js"></script>
 
 </body>
 
