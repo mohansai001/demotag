@@ -362,8 +362,7 @@
             <div class="candidate-photo">
                 <input type="file" id="imageUpload" accept="image/*" style="display:none;">
                 <div class="image-container" id="imageContainer">
-                    <label for="imageUpload" id="uploadLabel" class="upload-label">Upload Candidate Passport
-                        Image</label>
+                    <label for="imageUpload" id="uploadLabel" class="upload-label"><center>Upload</center><br>Candidate Image</label>
                     <img id="imagePreview" style="display:none;">
                 </div>
             </div>
@@ -391,8 +390,9 @@
                 <label for="ec-select">Select the EC</label>
                 <select id="ec-select" style="width: 150px;">
                     <option value="" selected>Select an option</option>
-                    <option value="Cloud">Cloud</option>
-                    <option value="App">App</option>
+                    <option value="Cloud">Cloud EC</option>
+                    <option value="App">App EC</option>
+                    <option value="Data">Data EC</option>
                 </select>
             </div>
         </div>
@@ -677,6 +677,12 @@
                 </table>
             </div>
         </div>
+        
+        <div id="data-section" style="display: none;">
+            <div class="section">
+                <h1><center>Coming Soon</center></h1>
+            </div>
+        </div>
 
         <!-- Feedback Section -->
         <div class="feedback-section">
@@ -755,6 +761,7 @@
                     image.src = e.target.result;
                     image.style.display = 'block'; // Show the image
                     label.style.display = 'none';  // Hide the label
+                    showToast('Image uploaded successfully!', 'success');
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -837,14 +844,22 @@
             if (selectedValue === 'Cloud') {
                 document.getElementById('cloud-section').style.display = 'block';
                 document.getElementById('app-section').style.display = 'none';
+                document.getElementById('data-section').style.display = 'none';
             } else if (selectedValue === 'App') {
                 document.getElementById('app-section').style.display = 'block';
                 document.getElementById('cloud-section').style.display = 'none';
+                document.getElementById('data-section').style.display = 'none';
+            } else if (selectedValue === 'Data') {
+                document.getElementById('data-section').style.display = 'block';
+                document.getElementById('cloud-section').style.display = 'none';
+                document.getElementById('app-section').style.display = 'none';
             } else {
                 // If no option is selected (the default one)
                 document.getElementById('cloud-section').style.display = 'none';
                 document.getElementById('app-section').style.display = 'none';
+                document.getElementById('data-section').style.display = 'none';
             }
+
         });
 
         // Trigger the change event to handle initial state with no selection
