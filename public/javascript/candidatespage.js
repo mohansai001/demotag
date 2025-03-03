@@ -522,17 +522,29 @@ document.getElementById('dateRangeForm').addEventListener('submit', async (event
 
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
+  const selectedEC = document.getElementById('ecCategory').value;
+
+  if (!startDate || !endDate || !selectedEC) {
+      alert("Please select all required fields.");
+      return;
+  }
+
+  document.getElementById('statusMessage').innerText = "Processing, please wait...";
+
+  const apiUrl = `https://demotag.vercel.app/api/callTestAttempts/${selectedEC}`;
 
   try {
-    const response = await fetch('https://demotag.vercel.app/api/callTestAttempts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startDate, endDate }),
-    });
+      const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startDate, endDate }),
+      });
 
-    const data = await response.json();
-    console.log('Completed test attempts:', data);
+      const data = await response.json();
+      console.log("API Response:", data);
+      document.getElementById('statusMessage').innerText = `Success: ${selectedEC} test attempts processed!`;
   } catch (error) {
-    console.error('Error:', error);
+      console.error("Error:", error);
+      document.getElementById('statusMessage').innerText = "Error processing test attempts!";
   }
 });
