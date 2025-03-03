@@ -121,7 +121,7 @@ const newRoleCtx = document.getElementById('newRoleChart').getContext('2d');
 const newStatusChart = new Chart(newStatusCtx, {
     type: 'doughnut',
     data: {
-       labels: ['Cloud Native Application Engineer - Front End', 'Cloud Native Application Engineer - Backend', 'LCNC Platform Engineer', 'Integration Engineer' ],
+       labels: [' App Engineer - Front End', ' App Engineer - Backend', 'LCNC Platform Engineer', 'Integration Engineer' ],
         datasets: [{
             data: [0, 0, 0, 0], // Replace with actual data
             backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4']
@@ -157,7 +157,7 @@ const newStatusChart = new Chart(newStatusCtx, {
 const newRoleChart = new Chart(newRoleCtx, {
     type: 'bar',
     data: {
-     labels: ['Cloud Native Application Engineer - Front End', 'Cloud Native Application Engineer - Backend', 'LCNC Platform Engineer', 'Integration Engineer' ],
+     labels: ['App Engineer - Front End', 'App Engineer - Backend', 'LCNC Platform Engineer', 'Integration Engineer' ],
         datasets: [{
             label: 'Applicants',
             data: [0, 0, 0, 0], // Initial placeholder data
