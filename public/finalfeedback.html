@@ -121,6 +121,30 @@
             font-size: 1rem;
             transition: border-color 0.3s ease;
         }
+        .toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #f44336;
+        }
     </style>
 </head>
 
@@ -223,16 +247,27 @@
             </tr>
         </table>
     </div>
+    <div id="toast" class="toast"></div>
     <br>
 
     <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', type);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             // Fetch all candidate emails from the server
             fetch('https://demotag.vercel.app/api/getAllCandidateEmails')
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        alert(data.error);
+                        showToast(data.error, 'error');
                     } else {
                         // Populate the dropdown with emails
                         const emailDropdown = document.getElementById('candidate-email-dropdown');
@@ -260,7 +295,7 @@
                         .then(data => {
                             // Check if the data is returned successfully
                             if (data.error) {
-                                alert(data.error);
+                                showToast(data.error, 'error');
                             } else {
                                 // Populate the candidate data fields
                                 document.getElementById('rrf-id').value = data.rrf_id;
@@ -294,7 +329,7 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.message) {
-                                alert(data.message);
+                                showToast(data.message, 'error');
                             } else {
                                 document.getElementById('prescreening-feedback').value = data.feedback;
                                 document.getElementById('prescreening-summary').value = data.summary;
