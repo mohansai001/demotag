@@ -453,15 +453,21 @@ async function fetchTotalCountAndUpdateCharts(ecMapping) {
 
         // Render Bar Chart (Applications per Department)
         const departmentRoleCtx = document.getElementById("departmentRoleChart").getContext("2d");
-        new Chart(departmentRoleCtx, {
+          new Chart(departmentRoleCtx, {
             type: "bar",
             data: {
                 labels: ["Cloud", "App", "Data"],
                 datasets: [{
-                    label: "Applications",
-                    data: [cloudCount, appCount, dataCount],
+                    data: [cloudCount, appCount, dataCount], // No label here
                     backgroundColor: ["#ADD8E6", "#FFA07A", "#90EE90"],
                 }],
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false // Ensures no undefined legend appears
+                    }
+                }
             },
             plugins: [ChartDataLabels],
         });
