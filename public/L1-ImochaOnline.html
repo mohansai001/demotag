@@ -167,6 +167,30 @@
           margin-bottom: 1rem;
         }
       }
+      .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 14px;
+      display: none;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.success {
+      background-color: #4CAF50;
+    }
+
+    .toast.error {
+      background-color: #f44336;
+    }
     </style>
   </head>
   <body>
@@ -236,10 +260,23 @@
         <button onclick="closePopup()">Cancel</button>
       </div>
     </div>
+    <div id="toast" class="toast"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
+
+      function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', type);
+
+            // Remove the toast after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+      
       let currentRowData = null; // Store the data of the current row
       async function fetchTestResults() {
         try {
@@ -386,7 +423,7 @@
         const email = document.getElementById("emailInput").value;
 
         if (!validateEmail(email)) {
-          alert("Please enter a valid email address.");
+          showToast("Please enter a valid email address.", "error");
           return;
         }
 
@@ -405,12 +442,12 @@
             }
           );
 
-          if (response.ok) {
-            alert("Email sent successfully!");
-            closePopup();
-          } else {
-            alert("Failed to send email.");
-          }
+        if (response.ok) {
+          showToast('Email sent successfully!', 'success');
+          closePopup();
+        } else {
+          showToast("Failed to send email.", "error");
+        }
         } catch (error) {
           console.error("Error sending email:", error);
         }
