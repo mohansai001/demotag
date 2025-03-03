@@ -1,285 +1,263 @@
-
-
 <html>
+
 <head>
-<link href="tag.css" rel="stylesheet" type="text/css">
+    <link href="tag.css" rel="stylesheet" type="text/css">
 </head>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     .sidebar-menu {
-    width: 250px;
-    
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 87%;
-    overflow: auto;
-    transition: transform 0.3s ease;
-    transform: translateX(-100%); /* Initially hidden */
-    margin-top: 74px;
-}
+        width: 250px;
 
-.sidebar-menu.show {
-    transform: translateX(0); /* Show the sidebar */
-}
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 87%;
+        overflow: auto;
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+        /* Initially hidden */
+        margin-top: 74px;
+    }
 
-.hidden {
-    display: none;
-}
-#sidebar {
-    width: 201px;
-    height: 407px;
-    color: black;
-    /* overflow-y: auto; */
-}
+    .sidebar-menu.show {
+        transform: translateX(0);
+        /* Show the sidebar */
+    }
 
-#toggle-sidebar-btn {
-    position: fixed;
-    top: 10px;
-    left: -117px;
-    background-color: white;
-    color: black;
-    border: none;
-    /* padding: 10px 15px; */
-    cursor: pointer;
-    font-size: 18px;
-    width: 93px;
-}
-.dashboard-container {
-            display: flex;
-            gap: 20px;
-            margin-left: 430px;
-	    margin-top: 10px;
-        }
-/*         .card {
+    .hidden {
+        display: none;
+    }
+
+    #sidebar {
+        width: 201px;
+        height: 407px;
+        color: black;
+        /* overflow-y: auto; */
+    }
+
+    #toggle-sidebar-btn {
+        position: fixed;
+        top: 10px;
+        left: -117px;
+        background-color: white;
+        color: black;
+        border: none;
+        /* padding: 10px 15px; */
+        cursor: pointer;
+        font-size: 18px;
+        width: 93px;
+    }
+
+    .dashboard-container {
+        display: flex;
+        gap: 20px;
+        margin-left: 430px;
+        margin-top: 10px;
+    }
+
+    /* .card {
             background-color: #3b3f45;
             border-radius: 10px;
             padding: 20px;
             text-align: center;
             width: 200px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
-        }
-        .card h2 {
-            margin: 0;
-            font-size: 2em;
-        }
-        .card p {
-            margin-top: 10px;
-            font-size: 1.1em;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #555;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #444;
-        }
-        tr:nth-child(even) {
-            background-color: #3b3f45;
-        }
-        .button-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-            margin-left: 157px;
-            color:#818181;
-        }
-        .button-container h3 {
-            margin: 0;
-            margin-right: 20px;
-        }
-        .button {
-            background-color: #dddddd;
-            color: black;
-            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        } */
+    .card h2 {
+        margin: 0;
+        font-size: 2em;
+    }
+
+    .card p {
+        margin-top: 10px;
+        font-size: 1.1em;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th,
+    td {
+        border: 1px solid #555;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #444;
+    }
+
+    tr:nth-child(even) {
+        background-color: #3b3f45;
+    }
+
+    .button-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        margin-left: 157px;
+        color: #818181;
+    }
+
+    .button-container h3 {
+        margin: 0;
+        margin-right: 20px;
+    }
+
+    .button {
+        background-color: #dddddd;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .button:hover {
+        background-color: #45a049;
+    }
+
+    .table-container {
+        margin-left: 224px;
+    }
+
+    /* progress bar */
+    .progress-steps {
+        background: white;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-left: 241px;
+        width: 61%;
+    }
+
+    .steps-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1;
+        width: 120px;
+    }
+
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        margin-bottom: 10px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .step.active .step-circle {
+        background: #DAF7A6;
+        color: black;
+    }
+
+    .step-title {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .progress-line {
+        position: absolute;
+        top: 20px;
+        left: 60px;
+        right: 60px;
+        height: 2px;
+        background: #e0e0e0;
+        z-index: 0;
+    }
+    .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
             padding: 10px 20px;
             border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .table-container{
-            margin-left:224px;
-        }
-        /* progress bar */
-        .progress-steps {
-              background: white;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-left: 241px;
-    width: 61%;
-        }
-
-        .steps-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 1;
-            width: 120px;
-        }
-
-        .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #000000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            margin-bottom: 10px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .step.active .step-circle {
-            background: #DAF7A6;
-            color: black;
-        }
-
-        .step-title {
             font-size: 14px;
-            color: #666;
-            text-align: center;
-            font-weight: 500;
+            display: none;
+            z-index: 9999;
         }
 
-        .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 60px;
-            right: 60px;
-            height: 2px;
-            background: #e0e0e0;
-            z-index: 0;
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #f44336;
         }
 </style>
+
 <body>
+    <div id="toast" class="toast"></div>
+    <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
 
-<button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar-menu hidden">
 
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar-menu hidden">
-  
-    
-       <div class="sidebar-option active" data-target="dashboard" data-tooltip="Dashboard" onclick="navigateTo('Dashboard.html')">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>Dashboard</span>
-    </div>
-    <div class="sidebar-option" data-target="interviews" data-tooltip="Interviews" onclick="navigateTo('Recruitment.html')">
-        <i class="fas fa-users"></i>
-        <span>Recruitment</span>
-    </div>
-    <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('GTPrescreening.html')">
-        <i class="fas fa-tasks"></i><span>GT's Prescreening</span>
-    </div>
-    <!-- <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('L1-ImochaOnline.html')">
+
+        <div class="sidebar-option active" data-target="dashboard" data-tooltip="Dashboard"
+            onclick="navigateTo('Dashboard.html')">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="sidebar-option" data-target="interviews" data-tooltip="Interviews"
+            onclick="navigateTo('Recruitment.html')">
+            <i class="fas fa-users"></i>
+            <span>Recruitment</span>
+        </div>
+        <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo"
+            onclick="navigateTo('GTPrescreening.html')">
+            <i class="fas fa-tasks"></i><span>GT's Prescreening</span>
+        </div>
+        <!-- <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('L1-ImochaOnline.html')">
         <i class="fas fa-tasks"></i><span>L1-ImochaOnline</span>
     </div> -->
 
-    <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('candidatespage.html')">
-        <i class="fas fa-tasks"></i><span>Candidate Status</span>
-    </div>
+        <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo"
+            onclick="navigateTo('candidatespage.html')">
+            <i class="fas fa-tasks"></i><span>Candidate Status</span>
+        </div>
 
-  
-<!--     <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('assessment-form-html.html')">
+
+        <!--     <div class="sidebar-option" data-target="candidateInfo" data-tooltip="candidateInfo" onclick="navigateTo('assessment-form-html.html')">
         <i class="fas fa-tasks"></i><span>Assessment</span>
     </div> -->
-  
-    <div class="sidebar-option logout-option" data-tooltip="Logout" onclick="navigateTo('index.html')"style="
+
+        <div class="sidebar-option logout-option" data-tooltip="Logout" onclick="navigateTo('index.html')" style="
     margin-top: 149px;">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Logout</span>
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </div>
     </div>
-</div>
 
-
-<!-- dashboard -->
-<!-- <div class="dashboard-container" >
-        <div class="card" style="background-color: #3b3f45;text-align: center;
-    padding: 1rem;
-    background: #000000;
-    color: #ffffff;
-    border-radius: 10px;
-    flex: 1;
-    margin: 0 10px;
-    border: 2px solid #808080;
-    max-width: 100px;		">
-            <h2 id="uploadCount">0</h2>
-            <p>Uploads</p>
-        </div>
-        <div class="card" style="background-color: #3b3f45;text-align: center;
-    padding: 1rem;
-    background: #000000;
-    color: #ffffff;
-    border-radius: 10px;
-    flex: 1;
-    margin: 0 10px;
-    border: 2px solid #808080;
-		 max-width: 100px;">
-            <h2 id="shortlistedCount">0</h2>
-            <p>Shortlisted</p>
-        </div>
-        <div class="card" style="background-color: #3b3f45;text-align: center;
-    padding: 1rem;
-    background: #000000;
-    color: #ffffff;
-    border-radius: 10px;
-    flex: 1;
-    margin: 0 10px;
-    border: 2px solid #808080;
-		 max-width: 100px;">
-            <h2 id="rejectedCount">0</h2>
-            <p>Rejected</p>
-        </div>
-    </div>
-    <div class="button-container">
-        
-        <button class="button" onclick="showInterviews()">Cloud</button>
-        <button class="button" onclick="showInterviews()"> APP</button>
-        <button class="button" onclick="showInterviews()">Data</button>
-        <button class="button" onclick="showInterviews()">Core</button>
-    </div>
- 
- 
-   <div class="table-container">
-        <h2>Candidate Details</h2>
-        <table id="candidateTable">
-            <thead>
-                <tr>
-                    <th>Candidate Name</th>
-                    <th>Candidate Email</th>
-                    <th>Status</th>
-                    <th>Role</th>
-                    <th>Recruitment Phase</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-            <tbody>
-            
-            </tbody>
-        </table>
-    </div> -->
     <div class="progress-steps">
         <div class="steps-container">
             <div class="progress-line"></div>
@@ -304,211 +282,234 @@
 
 
 
-<div id="interviews" class="active" >
-<div class="role-selection-container" >
-        <div class="role-selection-header">
-            <h1 style="color:black;">Select Your Role for the Interview</h1>
-        </div>
- 
-        <div class="role-cards">
-            <div class="role-card">
-    <h2 style="color:black">DevOps Engineer</h2>
-    <p style="color:black;">Responsible for overseeing the code releases, combining an understanding of both engineering and coding. DevOps engineers work with various departments to create and develop systems within a company.</p>
-    
-    <h3 style="color:black;">Select Cloud Provider and Level:</h3>
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <!-- Cloud Provider Radio Buttons -->
-        <span class="radio-group">
-            <label>
-                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
-            </label>
-            <label style="margin-left: 10px;">
-                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
-            </label>
-        </span>
-        
-        <!-- Dropdown Field -->
-        <select id="levelDropdown1" style="padding: 5px;background: #E6E6FA;
+    <div id="interviews" class="active">
+        <div class="role-selection-container">
+            <div class="role-selection-header">
+                <h1 style="color:black;">Select Your Role for the Interview</h1>
+            </div>
+
+            <div class="role-cards">
+                <div class="role-card">
+                    <h2 style="color:black">DevOps Engineer</h2>
+                    <p style="color:black;">Responsible for overseeing the code releases, combining an understanding of
+                        both engineering and coding. DevOps engineers work with various departments to create and
+                        develop systems within a company.</p>
+
+                    <h3 style="color:black;">Select Cloud Provider and Level:</h3>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <!-- Cloud Provider Radio Buttons -->
+                        <span class="radio-group">
+                            <label>
+                                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
+                            </label>
+                        </span>
+
+                        <!-- Dropdown Field -->
+                        <select id="levelDropdown1" style="padding: 5px;background: #E6E6FA;
     color: black;">
-			<option >select</option>
-           <option value="Junior">Junior</option>
-            <option value="Senior">Senior</option>
-			   <option value="Lead">Lead</option>
-        </select>
-    </div>
+                            <option>select</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Lead">Lead</option>
+                        </select>
+                    </div>
 
-    <button onclick="selectRoleAndOpenPopup('DevOps Engineer','levelDropdown1')" style="margin-left: 46px; background-color:#DAF7A6; color:black;">Select</button>
-</div>
+                    <button onclick="selectRoleAndOpenPopup('DevOps Engineer','levelDropdown1')"
+                        style="margin-left: 46px; background-color:#DAF7A6; color:black;">Select</button>
+                </div>
 
-            <div class="role-card">
-                <h2 style="color:black;">Platform Engineer</h2>
-                <p style="color:black;">Innovates and builds the underlying systems that power application development and deployment. Focuses on optimizing platform performance and scalability.</p>
-               <h3 style="
+                <div class="role-card">
+                    <h2 style="color:black;">Platform Engineer</h2>
+                    <p style="color:black;">Innovates and builds the underlying systems that power application
+                        development and deployment. Focuses on optimizing platform performance and scalability.</p>
+                    <h3 style="
     margin-top: 42px;color:black; ">Select Cloud Provider and Level:</h3>
-                   <div style="display: flex; align-items: center; gap: 15px;">
-        <!-- Cloud Provider Radio Buttons -->
-        <span class="radio-group">
-            <label>
-                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
-            </label>
-            <label style="margin-left: 10px;">
-                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
-            </label>
-        </span>
-        
-        <!-- Dropdown Field -->
-        <select id="levelDropdown2" style="padding: 5px;background: #E6E6FA;
-    color: black;">
-			<option >select</option>
-             <option value="Junior">Junior</option>
-            <option value="Senior">Senior</option>
-			   <option value="Lead">Lead</option>
-        </select>
-    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <!-- Cloud Provider Radio Buttons -->
+                        <span class="radio-group">
+                            <label>
+                                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
+                            </label>
+                        </span>
 
-                <button onclick="selectRoleAndOpenPopup('Platform Engineer','levelDropdown2')" style="margin-left: 51px;background-color:#DAF7A6; color:black;margin-top: 10px;;margin-inline-start: revert-layer;" >Select</button> 
-            </div>
-            <div class="role-card">
-                <h2 style="color:black;">Cloudops Engineer</h2>
-                <p style="color:black;">Manages cloud infrastructure and services, ensuring smooth deployment, support, and monitoring of cloud environments. Works on automating cloud operations and optimizing costs.</p>
-              <h3 style="
+                        <!-- Dropdown Field -->
+                        <select id="levelDropdown2" style="padding: 5px;background: #E6E6FA;
+    color: black;">
+                            <option>select</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Lead">Lead</option>
+                        </select>
+                    </div>
+
+                    <button onclick="selectRoleAndOpenPopup('Platform Engineer','levelDropdown2')"
+                        style="margin-left: 51px;background-color:#DAF7A6; color:black;margin-top: 10px;;margin-inline-start: revert-layer;">Select</button>
+                </div>
+                <div class="role-card">
+                    <h2 style="color:black;">Cloudops Engineer</h2>
+                    <p style="color:black;">Manages cloud infrastructure and services, ensuring smooth deployment,
+                        support, and monitoring of cloud environments. Works on automating cloud operations and
+                        optimizing costs.</p>
+                    <h3 style="
     margin-top: 40px;color:black;">Select Cloud Provider and Level:</h3>
-                   <div style="display: flex; align-items: center; gap: 15px;">
-        <!-- Cloud Provider Radio Buttons -->
-        <span class="radio-group">
-            <label>
-                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
-            </label>
-            <label style="margin-left: 10px;">
-                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
-            </label>
-        </span>
-        
-        <!-- Dropdown Field -->
-        <select id="levelDropdown3" style="padding: 5px; background: #E6E6FA;
-    color: black;">
-			<option >select</option>
-            <option value="Junior">Junior</option>
-            <option value="Senior">Senior</option>
-			   <option value="Lead">Lead</option>
-        </select>
-    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <!-- Cloud Provider Radio Buttons -->
+                        <span class="radio-group">
+                            <label>
+                                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
+                            </label>
+                        </span>
 
-                <button onclick="selectRoleAndOpenPopup('Cloudops Engineer','levelDropdown3')" style="background-color:#DAF7A6; color:black;" >Select</button>
-            </div>
-            <div class="role-card">
-                <h2 style="color:black">Site Reliability Engineer</h2>
-                <p style="color:black;">Works to create a bridge between development and IT operations, focusing on creating scalable and highly reliable software systems. Monitors system performance and ensures service availability.</p>
-               <h3 style="color:black;">Select Cloud Provider and Level:</h3>
-                  <div style="display: flex; align-items: center; gap: 15px;">
-        <!-- Cloud Provider Radio Buttons -->
-        <span class="radio-group">
-            <label>
-                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
-            </label>
-            <label style="margin-left: 10px;">
-                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
-            </label>
-        </span>
-        
-        <!-- Dropdown Field -->
-        <select id="levelDropdown4" style="padding: 5px;background: #E6E6FA;
+                        <!-- Dropdown Field -->
+                        <select id="levelDropdown3" style="padding: 5px; background: #E6E6FA;
     color: black;">
-		<option >select</option>
-            <option value="Junior">Junior</option>
-            <option value="Senior">Senior</option>
-			   <option value="Lead">Lead</option>
-        </select>
-    </div>
+                            <option>select</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Lead">Lead</option>
+                        </select>
+                    </div>
 
-                 <button onclick="selectRoleAndOpenPopup('Site Reliability Engineer','levelDropdown4')" style="background-color:#DAF7A6; color:black;">Select</button> 
+                    <button onclick="selectRoleAndOpenPopup('Cloudops Engineer','levelDropdown3')"
+                        style="background-color:#DAF7A6; color:black;">Select</button>
+                </div>
+                <div class="role-card">
+                    <h2 style="color:black">Site Reliability Engineer</h2>
+                    <p style="color:black;">Works to create a bridge between development and IT operations, focusing on
+                        creating scalable and highly reliable software systems. Monitors system performance and ensures
+                        service availability.</p>
+                    <h3 style="color:black;">Select Cloud Provider and Level:</h3>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <!-- Cloud Provider Radio Buttons -->
+                        <span class="radio-group">
+                            <label>
+                                <input type="radio" name="cloudProvider" value="Azure" id="azureRadio"> Azure
+                            </label>
+                            <label style="margin-left: 10px;">
+                                <input type="radio" name="cloudProvider" value="AWS" id="awsRadio"> AWS
+                            </label>
+                        </span>
+
+                        <!-- Dropdown Field -->
+                        <select id="levelDropdown4" style="padding: 5px;background: #E6E6FA;
+    color: black;">
+                            <option>select</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Lead">Lead</option>
+                        </select>
+                    </div>
+
+                    <button onclick="selectRoleAndOpenPopup('Site Reliability Engineer','levelDropdown4')"
+                        style="background-color:#DAF7A6; color:black;">Select</button>
+                </div>
             </div>
+
+
         </div>
-
-        
-    </div>
-    <!-- Cloud Provider Reminder Popup -->
-<div id="cloudProviderPopup" class="popupc" style="display:none;">
-    <div class="popup-contentc">
-        <span class="close-btn" onclick="closeCloudProviderPopup()"  style="
+        <!-- Cloud Provider Reminder Popup -->
+        <div id="cloudProviderPopup" class="popupc" style="display:none;">
+            <div class="popup-contentc">
+                <span class="close-btn" onclick="closeCloudProviderPopup()" style="
     margin-left: 389px; cursor: pointer;">&times;</span>
-        <p>Please select a cloud provider before proceeding.</p>
-      
-    </div>
-</div>
+                <p>Please select a cloud provider before proceeding.</p>
 
-
-    <!-- Popup structure -->
-    <div id="successPopup" class="popups" style="animation: fadeOut 2s forwards;">
-<div class="popup-contents">
-<span class="close-btns" onclick="closeSuccessPopup()">&times;</span>
-<p id="popupMessage"></p>
-</div>
-</div>
-<style>
-    @keyframes fadeOut {
-        0% { opacity: 1; }
-        99% { opacity: 1; }
-        100% { opacity: 0; display: none; }
-    }
-    .back-btnss {
-   padding: 10px 20px;
-    font-size: 16px;
-    background-color: #DAF7A6;
-    color: black;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: -309px;
-    width: 14%;
-    margin-top: -13%;
-}
-@keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-</style>
-
-
-    
-
-
-
- 
-<div id="resume-popup" class="popup">
-    <div class="popup-content">
-        <h2 style="color:black;">Upload Your Resume</h2>
-
-     
-        <input type="file" id="resume" accept=".pdf" />
-
-       
-        <div class="progress-container">
-            <div class="progress-bar"></div>
+            </div>
         </div>
-        
-        <br />
-
-    
-        <button onclick="uploadResume()" style="background-color: #DAF7A6;width: 144px;">Upload</button>
-        <button onclick="closePopup()" style="background-color: #DAF7A6; width: 120px;">Cancel</button>
-    </div>
-</div>
 
 
+        <!-- Popup structure -->
+        <div id="successPopup" class="popups" style="animation: fadeOut 2s forwards;">
+            <div class="popup-contents">
+                <span class="close-btns" onclick="closeSuccessPopup()">&times;</span>
+                <p id="popupMessage"></p>
+            </div>
+        </div>
+        <style>
+            @keyframes fadeOut {
+                0% {
+                    opacity: 1;
+                }
 
-    <div class="container" >
-        <div class="header" >
-            
-        <div>
-  
-       
-   
-        <div id="loading-popup" style="
+                99% {
+                    opacity: 1;
+                }
+
+                100% {
+                    opacity: 0;
+                    display: none;
+                }
+            }
+
+            .back-btnss {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #DAF7A6;
+                color: black;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-left: -309px;
+                width: 14%;
+                margin-top: -13%;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+
+
+
+
+
+
+
+        <div id="resume-popup" class="popup">
+            <div class="popup-content">
+                <h2 style="color:black;">Upload Your Resume</h2>
+
+
+                <input type="file" id="resume" accept=".pdf" />
+
+
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+
+                <br />
+
+
+                <button onclick="uploadResume()" style="background-color: #DAF7A6;width: 144px;">Upload</button>
+                <button onclick="closePopup()" style="background-color: #DAF7A6; width: 120px;">Cancel</button>
+            </div>
+        </div>
+
+
+
+        <div class="container">
+            <div class="header">
+
+                <div>
+
+
+
+                    <div id="loading-popup" style="
     display: none;
     position: fixed;
     top: 0;
@@ -526,7 +527,7 @@
     justify-content: center;
     align-items: center;
     display: flex;">
-    <div style="
+                        <div style="
         border: 6px solid rgba(255, 255, 255, 0.3);
         border-top: 6px solid #ffffff;
         border-radius: 50%;
@@ -534,468 +535,460 @@
         height: 50px;
         margin-left:550px;
         animation: spin 1s linear infinite;">
-    </div>
-    <span style="margin-top: 20px;">Please wait while resume is being evaluated!...</span>
-</div>
+                        </div>
+                        <span style="margin-top: 20px;">Please wait while resume is being evaluated!...</span>
+                    </div>
 
 
-    <!-- Container for card sessions -->
-    
-    <div id="evaluation-result-container" class="cards-container" style="
-    margin-top: 55px;">  <h1 style="color: #bb86fc;"></h1></div>
-    <div id="questions-form-container" class="form-container"></div>
-    
+                    <!-- Container for card sessions -->
+
+                    <div id="evaluation-result-container" class="cards-container" style="
+    margin-top: 55px;">
+                        <h1 style="color: #bb86fc;"></h1>
+                    </div>
+                    <div id="questions-form-container" class="form-container"></div>
 
 
-   
 
-</div>
 
-            
+
+                </div>
+
+
+            </div>
+
+
         </div>
-
-      
-    </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
- <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1017.0.min.js"></script>
- 
-    <script>
-          async function loadCandidateCounts() {
-        try {
-            const response = await fetch('https://demotag.vercel.app/api/candidate-counts');
-            const data = await response.json();
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1017.0.min.js"></script>
 
-            // Update the counts on the page
-            document.getElementById('uploadCount').innerText = data.totalCount;
-            document.getElementById('shortlistedCount').innerText = data.shortlistedCount;
-            document.getElementById('rejectedCount').innerText = data.rejectedCount;
-        } catch (error) {
-            console.error('Error fetching candidate counts:', error);
-        }
-    }
+        <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', type);
 
-    // Call the function to load data when the page loads
-    document.addEventListener('DOMContentLoaded', loadCandidateCounts);
-
-    function navigateTo(page) {
-        window.location.href = page;
-    }
-        // AWS S3 configuration
-        
-        AWS.config.update({
-    region: 'us-east-1', // Update with your region
-    credentials: new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-1:583ab747-d668-4305-8c02-0a7e39d4b791' // Update with your Identity Pool ID
-    })
-});
-
-var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: { Bucket: 'tagteam-bucket' } // Update with your bucket name if needed
-});
-
-let selectedRole = '';
-let selectedCloudProvider = '';
-let globalSelectedLevel = '';
-
-function fetchJobDescription(role, cloudProvider,selectedLevel) {
-globalSelectedLevel = selectedLevel;
-    console.log("Selected role:", role);
-    console.log("Cloud Provider:", cloudProvider);
-	 console.log("selected level:", selectedLevel);
-    
-    let fileName = '';
-    switch (role) {
-        case 'DevOps Engineer':
-            fileName = `Job Description/${selectedLevel}_${cloudProvider}_DevOpsEngineer.txt`;
-            break;
-        case 'Platform Engineer':
-            fileName = `Job Description/${selectedLevel}_${cloudProvider}_PlatformEngineer.txt`;
-            break;
-        case 'Cloudops Engineer':
-            fileName = `Job Description/${selectedLevel}_${cloudProvider}_CloudOpsEngineer.txt`;
-            break;
-        case 'Site Reliability Engineer':
-            fileName = `Job Description/${selectedLevel}_${cloudProvider}_SiteReliabilityEngineer.txt`;
-            break;
-        default:
-            console.log("Role not found");
-            return Promise.reject("Role not found");
-    }
-
-    var params = {
-        Bucket: 'tagteam-bucket', // Make sure this matches the bucket name in S3
-        Key: fileName
-    };
-
-    console.log("Fetching file with params:", params); // Debugging info
-
-    return new Promise((resolve, reject) => {
-        s3.getObject(params, function (err, data) {
-            if (err) {
-                console.log("Error fetching file:", err);
-                reject(err);
-            } else {
-                globalJobDescription = data.Body.toString('utf-8');
-                console.log("Fetched Job Description Content:", globalJobDescription);
-                resolve(globalJobDescription);
-            }
-        });
-    });
-}
-
-function selectRoleAndOpenPopup(role, dropdownId) {
-    console.log("Selected role:", role);
-    selectedRole = role;
-
-    // Get the selected cloud provider value
-    var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
-    if (!cloudProvider) {
-        // Show the custom popup if no cloud provider is selected
-        document.getElementById('cloudProviderPopup').style.display = 'block';
-        return; // Stop further execution
-    }
-    selectedCloudProvider = cloudProvider ? cloudProvider.value : null;
-
-    // Log the selected cloud provider
-    console.log("Selected Cloud Provider:", selectedCloudProvider);
-
-    // Get the selected level from the specific dropdown using its id
-    var selectedLevel = document.getElementById(dropdownId).value;
-    console.log("Selected Level:", selectedLevel); // Log the selected dropdown value
-
-    openPopup();  // Open the popup after setting the role and provider
-
-    // Fetch job description after the popup is opened
-    fetchJobDescription(role, selectedCloudProvider, selectedLevel).then(jobDescription => {
-        console.log("Job description fetched:", jobDescription);
-    }).catch(error => {
-        console.error("Error fetching job description:", error);
-    });
-}
-
-function closeCloudProviderPopup() {
-    document.getElementById('cloudProviderPopup').style.display = 'none';
-}
-
-
-
-
-
-     
-
- 
-        function openPopup() {
-            document.getElementById('resume-popup').style.display = 'flex';
-        }
- 
-        function closePopup() {
-            document.getElementById("resume").value = "";
-            document.getElementById('resume-popup').style.display = 'none';
-            var progressBar = document.querySelector('.progress-bar');
-            progressBar.style.width = '0%';
-
-           
+            // Remove the toast after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
+            async function loadCandidateCounts() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/candidate-counts');
+                    const data = await response.json();
 
-
-
-    
- 
-      
- 
-async function uploadResume() {
-    var fileInput = document.getElementById('resume');
-    var file = fileInput.files[0];
-   
-    // Get the selected cloud provider value
-    var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
-    var selectedProvider = cloudProvider ? cloudProvider.value : null;
-    console.log('Selected Cloud Provider:', selectedProvider);
-
-    if (file && file.type === "application/pdf") {
-        var originalFileName = file.name;
-        var timestamp = Date.now();
-        var fileName = timestamp + "_" + originalFileName;
-        var progressBar = document.querySelector('.progress-bar');
-        progressBar.style.width = '0%'; // Reset progress bar
-
-        // Start progress bar animation
-        animateProgressBar(progressBar);
-
-        try {
-            // Simulate upload delay (for demonstration purposes)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Upload the resume to GitHub
-            var githubUrl = await uploadToGitHub(fileName, file);
-            
-            if (githubUrl) {
-                // Resume successfully uploaded
-                progressBar.style.width = '100%'; // Set progress bar to 100% on success
-                displaySuccessPopup('Resume uploaded successfully: ' + file.name);
-                closePopup();  // Assuming this closes another popup or message
-
-                document.querySelector('.role-selection-container').style.display = 'none';
-                document.querySelector('.container').style.display = 'block';
-
-                // Send the resume URL to ChatPDF API for evaluation
-                await evaluateResumeWithChatPDF(githubUrl);
-                // generateQuestions(); // Generate questions based on the role
-
-            } else {
-                // Resume already evaluated, reset the progress bar
-                displaySuccessPopup('Resume already evaluated.');
-                var progressBar = document.querySelector('.progress-bar');
-                progressBar.style.width = '0%';
+                    // Update the counts on the page
+                    document.getElementById('uploadCount').innerText = data.totalCount;
+                    document.getElementById('shortlistedCount').innerText = data.shortlistedCount;
+                    document.getElementById('rejectedCount').innerText = data.rejectedCount;
+                } catch (error) {
+                    console.error('Error fetching candidate counts:', error);
+                }
             }
 
-        } catch (error) {
-            console.error('Error uploading file: ', error);
-            var progressBar = document.querySelector('.progress-bar');
-            progressBar.style.width = '0%'; // Reset progress bar on failure
-            displaySuccessPopup('Failed to upload resume.');
-        }
-    } else {
-        displaySuccessPopup('Please upload a valid PDF file.');
-    }
-}
+            // Call the function to load data when the page loads
+            document.addEventListener('DOMContentLoaded', loadCandidateCounts);
 
-
-
-function displaySuccessPopup(message) {
-    var popup = document.getElementById('successPopup');
-    var popupMessage = document.getElementById('popupMessage');
-    popupMessage.textContent = message;
-    popup.style.display = 'block';
-}
-
-function closeSuccessPopup() {
-    var popup = document.getElementById('successPopup');
-    popup.style.display = 'none';
-}
-
-
- function animateProgressBar(progressBar) {
-    var width = 0;
-    var interval = setInterval(function() {
-        if (width >= 90) { // Stop at 90% until upload finishes
-            clearInterval(interval);
-        } else {
-            width++;
-            progressBar.style.width = width + '%';
-        }
-    }, 20); // Adjust speed as necessary
-	
-}
-async function getGithubToken() {
-    try {
-        const response = await fetch('https://demotag.vercel.app/api/github-token');
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const data = await response.json();
-        return data.token; // Return the GitHub token
-    } catch (error) {
-        console.error('Failed to fetch GitHub token:', error);
-        return null; // Handle the error as needed
-    }
-}	    
-	    
-
-
-async function uploadToGitHub(fileName, file) {
-	const githubToken = await getGithubToken();; // Fetch the GitHub token here
-    if (!githubToken) {
-        console.error('GitHub token is not available.');
-        return null;
-    }
-    const repoOwner = 'MohansaiAnde'; // Your GitHub username
-    const repoName = 'Tagteam'; // Your repository name
-  
-    const folderPath = 'resumes'; // Folder where resumes are stored
-
-    // Sanitize the file name
-    const sanitizedFileName = fileName.includes('_')
-        ? fileName.split('_').slice(1).join('_')
-        : fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-
-    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}/${sanitizedFileName}`;
-
-    try {
-        // Get the total number of resumes in the folder
-        const folderApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
-        const folderResponse = await fetch(folderApiUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${githubToken}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (folderResponse.status === 200) {
-            const folderData = await folderResponse.json();
-            const totalResumes = folderData.length;
-            console.log(`Total resumes before upload: ${totalResumes}`);
-        } else {
-            console.error('Failed to retrieve folder contents:', await folderResponse.text());
-        }
-
-        // Read the file content
-        const fileReader = new FileReader();
-        const base64Content = await new Promise((resolve, reject) => {
-            fileReader.onload = (event) => resolve(event.target.result.split(',')[1]); // Extract base64 content
-            fileReader.onerror = (error) => reject(error);
-            fileReader.readAsDataURL(file);
-        });
-
-        // Check if the file already exists in the GitHub repository
-        const checkFileResponse = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${githubToken}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        let sha = null;
-        if (checkFileResponse.status === 200) {
-            // File exists, get the sha
-            const existingFileData = await checkFileResponse.json();
-            sha = existingFileData.sha;
-
-            // Get existing file's content and compare it with the current file
-            const existingBase64Content = existingFileData.content.replace(/\n/g, ''); // Remove newlines for comparison
-            if (existingBase64Content === base64Content) {
-                console.log('The file content is the same. No upload needed.');
-                return null;
+            function navigateTo(page) {
+                window.location.href = page;
             }
-        }
+            // AWS S3 configuration
 
-        // Proceed with the upload if the file doesn't exist or content has changed
-        const response = await fetch(apiUrl, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${githubToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: `Upload resume: ${sanitizedFileName}`,
-                content: base64Content,
-                sha: sha, // Include the sha if it's an update
-            }),
-        });
-
-        if (response.ok) {
-            const responseData = await response.json();
-            console.log('Resume uploaded successfully.');
-
-            // Get the updated total number of resumes after the upload
-            const updatedFolderResponse = await fetch(folderApiUrl, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${githubToken}`,
-                    'Content-Type': 'application/json',
-                },
+            AWS.config.update({
+                region: 'us-east-1', // Update with your region
+                credentials: new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: 'us-east-1:583ab747-d668-4305-8c02-0a7e39d4b791' // Update with your Identity Pool ID
+                })
             });
 
-            if (updatedFolderResponse.status === 200) {
-                const updatedFolderData = await updatedFolderResponse.json();
-                const count = updatedFolderData.length;
-                console.log(`Total resumes after upload: ${count}`);
+            var s3 = new AWS.S3({
+                apiVersion: '2006-03-01',
+                params: { Bucket: 'tagteam-bucket' } // Update with your bucket name if needed
+            });
 
-                // Send updated count to the database
-                await sendCountToDatabase(count);
-            } else {
-                console.error('Failed to retrieve updated folder contents:', await updatedFolderResponse.text());
+            let selectedRole = '';
+            let selectedCloudProvider = '';
+            let globalSelectedLevel = '';
+
+            function fetchJobDescription(role, cloudProvider, selectedLevel) {
+                globalSelectedLevel = selectedLevel;
+                console.log("Selected role:", role);
+                console.log("Cloud Provider:", cloudProvider);
+                console.log("selected level:", selectedLevel);
+
+                let fileName = '';
+                switch (role) {
+                    case 'DevOps Engineer':
+                        fileName = `Job Description/${selectedLevel}_${cloudProvider}_DevOpsEngineer.txt`;
+                        break;
+                    case 'Platform Engineer':
+                        fileName = `Job Description/${selectedLevel}_${cloudProvider}_PlatformEngineer.txt`;
+                        break;
+                    case 'Cloudops Engineer':
+                        fileName = `Job Description/${selectedLevel}_${cloudProvider}_CloudOpsEngineer.txt`;
+                        break;
+                    case 'Site Reliability Engineer':
+                        fileName = `Job Description/${selectedLevel}_${cloudProvider}_SiteReliabilityEngineer.txt`;
+                        break;
+                    default:
+                        console.log("Role not found");
+                        return Promise.reject("Role not found");
+                }
+
+                var params = {
+                    Bucket: 'tagteam-bucket', // Make sure this matches the bucket name in S3
+                    Key: fileName
+                };
+
+                console.log("Fetching file with params:", params); // Debugging info
+
+                return new Promise((resolve, reject) => {
+                    s3.getObject(params, function (err, data) {
+                        if (err) {
+                            console.log("Error fetching file:", err);
+                            reject(err);
+                        } else {
+                            globalJobDescription = data.Body.toString('utf-8');
+                            console.log("Fetched Job Description Content:", globalJobDescription);
+                            resolve(globalJobDescription);
+                        }
+                    });
+                });
             }
 
-            return responseData.content.download_url; // Return the GitHub download URL
-        } else {
-            console.error('GitHub API error:', await response.text());
-            return null;
-        }
-    } catch (error) {
-        console.error('Error uploading file:', error);
-        return null;
-    }
-}
+            function selectRoleAndOpenPopup(role, dropdownId) {
+                console.log("Selected role:", role);
+                selectedRole = role;
 
-// Function to send resume count to the database
-async function sendCountToDatabase(count) {
-    try {
-        const response = await fetch('https://demotag.vercel.app/send-resumes-count', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ count }),
-        });
+                // Get the selected cloud provider value
+                var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
+                if (!cloudProvider) {
+                    // Show the custom popup if no cloud provider is selected
+                    document.getElementById('cloudProviderPopup').style.display = 'block';
+                    return; // Stop further execution
+                }
+                selectedCloudProvider = cloudProvider ? cloudProvider.value : null;
 
-        if (response.ok) {
-            console.log('Resumes count updated successfully.');
-        } else {
-            console.error('Failed to update count:', await response.text());
-        }
-    } catch (error) {
-        console.error('Error sending count to database:', error);
-    }
-}
+                // Log the selected cloud provider
+                console.log("Selected Cloud Provider:", selectedCloudProvider);
+
+                // Get the selected level from the specific dropdown using its id
+                var selectedLevel = document.getElementById(dropdownId).value;
+                console.log("Selected Level:", selectedLevel); // Log the selected dropdown value
+
+                openPopup();  // Open the popup after setting the role and provider
+
+                // Fetch job description after the popup is opened
+                fetchJobDescription(role, selectedCloudProvider, selectedLevel).then(jobDescription => {
+                    console.log("Job description fetched:", jobDescription);
+                }).catch(error => {
+                    console.error("Error fetching job description:", error);
+                });
+            }
+
+            function closeCloudProviderPopup() {
+                document.getElementById('cloudProviderPopup').style.display = 'none';
+            }
+
+            function openPopup() {
+                document.getElementById('resume-popup').style.display = 'flex';
+            }
+
+            function closePopup() {
+                document.getElementById("resume").value = "";
+                document.getElementById('resume-popup').style.display = 'none';
+                var progressBar = document.querySelector('.progress-bar');
+                progressBar.style.width = '0%';
+
+
+            }
+
+            async function uploadResume() {
+                var fileInput = document.getElementById('resume');
+                var file = fileInput.files[0];
+
+                // Get the selected cloud provider value
+                var cloudProvider = document.querySelector('input[name="cloudProvider"]:checked');
+                var selectedProvider = cloudProvider ? cloudProvider.value : null;
+                console.log('Selected Cloud Provider:', selectedProvider);
+
+                if (file && file.type === "application/pdf") {
+                    var originalFileName = file.name;
+                    var timestamp = Date.now();
+                    var fileName = timestamp + "_" + originalFileName;
+                    var progressBar = document.querySelector('.progress-bar');
+                    progressBar.style.width = '0%'; // Reset progress bar
+
+                    // Start progress bar animation
+                    animateProgressBar(progressBar);
+
+                    try {
+                        // Simulate upload delay (for demonstration purposes)
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        // Upload the resume to GitHub
+                        var githubUrl = await uploadToGitHub(fileName, file);
+
+                        if (githubUrl) {
+                            // Resume successfully uploaded
+                            progressBar.style.width = '100%'; // Set progress bar to 100% on success
+                            displaySuccessPopup('Resume uploaded successfully: ' + file.name);
+                            closePopup();  // Assuming this closes another popup or message
+
+                            document.querySelector('.role-selection-container').style.display = 'none';
+                            document.querySelector('.container').style.display = 'block';
+
+                            // Send the resume URL to ChatPDF API for evaluation
+                            await evaluateResumeWithChatPDF(githubUrl);
+                            // generateQuestions(); // Generate questions based on the role
+
+                        } else {
+                            // Resume already evaluated, reset the progress bar
+                            displaySuccessPopup('Resume already evaluated.');
+                            var progressBar = document.querySelector('.progress-bar');
+                            progressBar.style.width = '0%';
+                        }
+
+                    } catch (error) {
+                        console.error('Error uploading file: ', error);
+                        var progressBar = document.querySelector('.progress-bar');
+                        progressBar.style.width = '0%'; // Reset progress bar on failure
+                        displaySuccessPopup('Failed to upload resume.');
+                    }
+                } else {
+                    displaySuccessPopup('Please upload a valid PDF file.');
+                }
+            }
 
 
 
+            function displaySuccessPopup(message) {
+                var popup = document.getElementById('successPopup');
+                var popupMessage = document.getElementById('popupMessage');
+                popupMessage.textContent = message;
+                popup.style.display = 'block';
+            }
+
+            function closeSuccessPopup() {
+                var popup = document.getElementById('successPopup');
+                popup.style.display = 'none';
+            }
+
+
+            function animateProgressBar(progressBar) {
+                var width = 0;
+                var interval = setInterval(function () {
+                    if (width >= 90) { // Stop at 90% until upload finishes
+                        clearInterval(interval);
+                    } else {
+                        width++;
+                        progressBar.style.width = width + '%';
+                    }
+                }, 20); // Adjust speed as necessary
+
+            }
+            async function getGithubToken() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/github-token');
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const data = await response.json();
+                    return data.token; // Return the GitHub token
+                } catch (error) {
+                    console.error('Failed to fetch GitHub token:', error);
+                    return null; // Handle the error as needed
+                }
+            }
 
 
 
+            async function uploadToGitHub(fileName, file) {
+                const githubToken = await getGithubToken();; // Fetch the GitHub token here
+                if (!githubToken) {
+                    console.error('GitHub token is not available.');
+                    return null;
+                }
+                const repoOwner = 'MohansaiAnde'; // Your GitHub username
+                const repoName = 'Tagteam'; // Your repository name
+
+                const folderPath = 'resumes'; // Folder where resumes are stored
+
+                // Sanitize the file name
+                const sanitizedFileName = fileName.includes('_')
+                    ? fileName.split('_').slice(1).join('_')
+                    : fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+                const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}/${sanitizedFileName}`;
+
+                try {
+                    // Get the total number of resumes in the folder
+                    const folderApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+                    const folderResponse = await fetch(folderApiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${githubToken}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (folderResponse.status === 200) {
+                        const folderData = await folderResponse.json();
+                        const totalResumes = folderData.length;
+                        console.log(`Total resumes before upload: ${totalResumes}`);
+                    } else {
+                        console.error('Failed to retrieve folder contents:', await folderResponse.text());
+                    }
+
+                    // Read the file content
+                    const fileReader = new FileReader();
+                    const base64Content = await new Promise((resolve, reject) => {
+                        fileReader.onload = (event) => resolve(event.target.result.split(',')[1]); // Extract base64 content
+                        fileReader.onerror = (error) => reject(error);
+                        fileReader.readAsDataURL(file);
+                    });
+
+                    // Check if the file already exists in the GitHub repository
+                    const checkFileResponse = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${githubToken}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    let sha = null;
+                    if (checkFileResponse.status === 200) {
+                        // File exists, get the sha
+                        const existingFileData = await checkFileResponse.json();
+                        sha = existingFileData.sha;
+
+                        // Get existing file's content and compare it with the current file
+                        const existingBase64Content = existingFileData.content.replace(/\n/g, ''); // Remove newlines for comparison
+                        if (existingBase64Content === base64Content) {
+                            console.log('The file content is the same. No upload needed.');
+                            return null;
+                        }
+                    }
+
+                    // Proceed with the upload if the file doesn't exist or content has changed
+                    const response = await fetch(apiUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${githubToken}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: `Upload resume: ${sanitizedFileName}`,
+                            content: base64Content,
+                            sha: sha, // Include the sha if it's an update
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        console.log('Resume uploaded successfully.');
+
+                        // Get the updated total number of resumes after the upload
+                        const updatedFolderResponse = await fetch(folderApiUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${githubToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                        });
+
+                        if (updatedFolderResponse.status === 200) {
+                            const updatedFolderData = await updatedFolderResponse.json();
+                            const count = updatedFolderData.length;
+                            console.log(`Total resumes after upload: ${count}`);
+
+                            // Send updated count to the database
+                            await sendCountToDatabase(count);
+                        } else {
+                            console.error('Failed to retrieve updated folder contents:', await updatedFolderResponse.text());
+                        }
+
+                        return responseData.content.download_url; // Return the GitHub download URL
+                    } else {
+                        console.error('GitHub API error:', await response.text());
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    return null;
+                }
+            }
+
+            // Function to send resume count to the database
+            async function sendCountToDatabase(count) {
+                try {
+                    const response = await fetch('http://localhost:3000/send-resumes-count', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ count }),
+                    });
+
+                    if (response.ok) {
+                        console.log('Resumes count updated successfully.');
+                    } else {
+                        console.error('Failed to update count:', await response.text());
+                    }
+                } catch (error) {
+                    console.error('Error sending count to database:', error);
+                }
+            }
+
+            async function evaluateResumeWithChatPDF(resumeUrl) {
+                console.log("Resume URL:", resumeUrl);
+                console.log("Job Description:", globalJobDescription);
+                document.getElementById('loading-popup').style.display = 'block';
 
 
-async function evaluateResumeWithChatPDF(resumeUrl) {
-        console.log("Resume URL:", resumeUrl);
-        console.log("Job Description:", globalJobDescription);
-        document.getElementById('loading-popup').style.display = 'block';
-      
+                if (!globalJobDescription) {
+                    console.error("Job description is empty. Cannot proceed.");
+                    return;
+                }
+                try {
+                    const apiUrl = 'https://api.chatpdf.com/v1/sources/add-url';
+                    const apiKey = 'sec_7mkglslTmIKRUgql1cRl7IddOOmcJFkn'; // Replace with your ChatPDF API key
 
-        if (!globalJobDescription) {
-            console.error("Job description is empty. Cannot proceed.");
-            return;
-        }
-    try {
-        const apiUrl = 'https://api.chatpdf.com/v1/sources/add-url';
-        const apiKey = 'sec_7mkglslTmIKRUgql1cRl7IddOOmcJFkn'; // Replace with your ChatPDF API key
+                    // Send the resume URL to ChatPDF API
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey,
+                        },
+                        body: JSON.stringify({ url: resumeUrl })
+                    });
 
-        // Send the resume URL to ChatPDF API
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-            },
-            body: JSON.stringify({ url: resumeUrl })
-        });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+                    const uploadData = await response.json();
+                    const sourceId = uploadData.sourceId;
 
-        const uploadData = await response.json();
-        const sourceId = uploadData.sourceId;
-
-        // Request for evaluation of the resume with job description
-        const evaluationResponse = await fetch('https://api.chatpdf.com/v1/chats/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-            },
-            body: JSON.stringify({
-                sourceId: sourceId,
-                messages: [{
-                    role: "user",
-                    content: `
+                    // Request for evaluation of the resume with job description
+                    const evaluationResponse = await fetch('https://api.chatpdf.com/v1/chats/message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey,
+                        },
+                        body: JSON.stringify({
+                            sourceId: sourceId,
+                            messages: [{
+                                role: "user",
+                                content: `
 
                     You are an expert HR assistant tasked with pre-screening resumes. Given a resume, analyze it thoroughly and provide a structured evaluation based on the following criteria:
 
@@ -1040,690 +1033,677 @@ ${globalJobDescription}
 
 
 `
-}]
-            
+                            }]
 
-       })
-        });
 
-        if (!evaluationResponse.ok) {
-            const errorText = await evaluationResponse.text();
-            throw new Error(`HTTP error! status: ${evaluationResponse.status}, message: ${errorText}`);
-        }
+                        })
+                    });
 
-        const evaluationData = await evaluationResponse.json();
-        const evaluationContent = evaluationData.content; // Assuming the content is a string with structured evaluation
+                    if (!evaluationResponse.ok) {
+                        const errorText = await evaluationResponse.text();
+                        throw new Error(`HTTP error! status: ${evaluationResponse.status}, message: ${errorText}`);
+                    }
 
-        // Second request for generating multiple-choice questions
-        const questionResponse = await fetch('https://api.chatpdf.com/v1/chats/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-            },
-            body: JSON.stringify({
-                sourceId: sourceId,
-                messages: [{
-                    role: "user",
-                    content: `Analyze the technical skills extracted from the resume and generate multiple-choice questions that assess the candidate's knowledge and expertise in those skills. Focus on the following:
+                    const evaluationData = await evaluationResponse.json();
+                    const evaluationContent = evaluationData.content; // Assuming the content is a string with structured evaluation
+
+                    // Second request for generating multiple-choice questions
+                    const questionResponse = await fetch('https://api.chatpdf.com/v1/chats/message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey,
+                        },
+                        body: JSON.stringify({
+                            sourceId: sourceId,
+                            messages: [{
+                                role: "user",
+                                content: `Analyze the technical skills extracted from the resume and generate multiple-choice questions that assess the candidate's knowledge and expertise in those skills. Focus on the following:
                               1. Core technical skills and tools mentioned in the resume.
                               2. Industry-standard practices related to these skills.
                               3. Technical concepts and their applications.
                               For each skill, generate a question with four answer options (A, B, C, D), including one correct answer. Ensure that questions test the depth of understanding and practical application of each skill.`
-                }]
-            })
-        });
+                            }]
+                        })
+                    });
 
-        if (!questionResponse.ok) {
-            const errorText = await questionResponse.text();
-            throw new Error(`HTTP error! status: ${questionResponse.status}, message: ${errorText}`);
-        }
+                    if (!questionResponse.ok) {
+                        const errorText = await questionResponse.text();
+                        throw new Error(`HTTP error! status: ${questionResponse.status}, message: ${errorText}`);
+                    }
 
-        const questionData = await questionResponse.json();
-        const questionsContent = questionData.content; // Assuming the content is a string with structured questions
+                    const questionData = await questionResponse.json();
+                    const questionsContent = questionData.content; // Assuming the content is a string with structured questions
 
-        document.getElementById('loading-popup').style.display = 'none';
+                    document.getElementById('loading-popup').style.display = 'none';
 
-        // Display evaluation in cards
-        displayEvaluationInCards(evaluationContent,resumeUrl);
+                    // Display evaluation in cards
+                    displayEvaluationInCards(evaluationContent, resumeUrl);
 
-        // Display multiple-choice questions as a form
-        // displayQuestionsForm(questionsContent);
-        console.log(questionsContent)
+                    // Display multiple-choice questions as a form
+                    // displayQuestionsForm(questionsContent);
+                    console.log(questionsContent)
 
-    } catch (error) {
-        document.getElementById('loading-popup').style.display = 'none';
-        document.getElementById('evaluation-result-container').innerHTML = `Error during ChatPDF API request: ${error.message}`;
-    }
-}
-
-async function processResumeEvaluation(resumeUrl, role) {
-    try {
-        const jobDescription = await fetchJobDescription(role);
-        if (jobDescription) {
-            console.log('Job description fetched:', jobDescription); // Log to verify
-            const evaluationResult = await evaluateResumeWithChatPDF(resumeUrl, jobDescription);
-            console.log('Evaluation result:', evaluationResult);
-            // Handle the evaluation result, display it on UI, etc.
-        } else {
-            console.error("Job description is empty after fetching.");
-        }
-    } catch (error) {
-        console.error('Error in processing resume evaluation:', error);
-    }
-} 
-  // Global variable to store the selected role
-
-    function downloadContentAsFile(content, candidateName, selectedRole,globalSelectedLevel, selectedCloudProvider, statusText) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const margin = 15;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const contentWidth = pageWidth - margin * 2;
-    let yPosition = margin + 15;  // Starting yPosition
-    const lineHeight = 8;
-    const maxYPosition = pageHeight - margin;
-   // let suitabilityPercentage = '';  // Define suitabilityPercentage here
- 
-    // Function to add a new page and reset y position
-    function addNewPage() {
-        doc.addPage();
-        yPosition = margin + 15;
-        doc.setFillColor(240, 240, 240);
-        doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'F');
-        doc.setDrawColor(0);
-        doc.setLineWidth(0.5);
-        doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'S');
-    }
- 
-    // Add background and borders for the first page
-    doc.setFillColor(240, 240, 240);
-    doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'F');
-    doc.setDrawColor(0);
-    doc.setLineWidth(0.5);
-    doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'S');
- 
-    // Add the title (Evaluation Report) and candidate name
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.setTextColor(0, 102, 204);
-    doc.text(`Evaluation Report for: ${candidateName.trim()}`, margin, yPosition);
-    yPosition += 10;
- 
-    // Add the role title
-    doc.setFontSize(16);
-    doc.setTextColor(51, 51, 51);
-    doc.text(`Role: ${globalSelectedLevel}_${selectedCloudProvider}_${selectedRole.trim()}`, margin, yPosition);
-    yPosition += 15;
- 
-    // Only include specific sections
-    const sections = [
-        { title: "Candidate Overview", keyword: "Candidate Overview" },
-        { title: "Candidate Stability", keyword: "Candidate Stability" },
-        { title: "Result", keyword: "Result" }
-    ];
- 
-    sections.forEach((section) => {
-        const startIndex = content.indexOf(section.keyword);
-        const endIndex = content.indexOf('\n\n', startIndex);
- 
-        if (startIndex !== -1) {
-            let sectionContent = content.substring(startIndex, endIndex).trim().replace(/[#*]/g, '');
- 
-            // Remove the section keyword from the content
-            sectionContent = sectionContent.replace(new RegExp(`${section.keyword}\\s*:?`), '').trim();
- 
-            // Add the section title to the PDF
-            doc.setFontSize(14);
-            doc.setTextColor(0, 102, 204);
-            doc.setFont('helvetica', 'bold');
-            if (yPosition + 15 > maxYPosition) {
-                addNewPage();
+                } catch (error) {
+                    document.getElementById('loading-popup').style.display = 'none';
+                    document.getElementById('evaluation-result-container').innerHTML = `Error during ChatPDF API request: ${error.message}`;
+                }
             }
-            doc.text(section.title, margin, yPosition);
-            yPosition += 10;
- 
-            // Add section content to the PDF
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.setFont('helvetica', 'normal');
-            const lines = doc.splitTextToSize(sectionContent, contentWidth);
- 
-            lines.forEach(line => {
+
+            async function processResumeEvaluation(resumeUrl, role) {
+                try {
+                    const jobDescription = await fetchJobDescription(role);
+                    if (jobDescription) {
+                        console.log('Job description fetched:', jobDescription); // Log to verify
+                        const evaluationResult = await evaluateResumeWithChatPDF(resumeUrl, jobDescription);
+                        console.log('Evaluation result:', evaluationResult);
+                        // Handle the evaluation result, display it on UI, etc.
+                    } else {
+                        console.error("Job description is empty after fetching.");
+                    }
+                } catch (error) {
+                    console.error('Error in processing resume evaluation:', error);
+                }
+            }
+            // Global variable to store the selected role
+
+            function downloadContentAsFile(content, candidateName, selectedRole, globalSelectedLevel, selectedCloudProvider, statusText) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const margin = 15;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const contentWidth = pageWidth - margin * 2;
+                let yPosition = margin + 15;  // Starting yPosition
+                const lineHeight = 8;
+                const maxYPosition = pageHeight - margin;
+                // let suitabilityPercentage = '';  // Define suitabilityPercentage here
+
+                // Function to add a new page and reset y position
+                function addNewPage() {
+                    doc.addPage();
+                    yPosition = margin + 15;
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'F');
+                    doc.setDrawColor(0);
+                    doc.setLineWidth(0.5);
+                    doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'S');
+                }
+
+                // Add background and borders for the first page
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'F');
+                doc.setDrawColor(0);
+                doc.setLineWidth(0.5);
+                doc.rect(margin - 5, margin - 5, contentWidth + 10, pageHeight - margin, 'S');
+
+                // Add the title (Evaluation Report) and candidate name
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(20);
+                doc.setTextColor(0, 102, 204);
+                doc.text(`Evaluation Report for: ${candidateName.trim()}`, margin, yPosition);
+                yPosition += 10;
+
+                // Add the role title
+                doc.setFontSize(16);
+                doc.setTextColor(51, 51, 51);
+                doc.text(`Role: ${globalSelectedLevel}_${selectedCloudProvider}_${selectedRole.trim()}`, margin, yPosition);
+                yPosition += 15;
+
+                // Only include specific sections
+                const sections = [
+                    { title: "Candidate Overview", keyword: "Candidate Overview" },
+                    { title: "Candidate Stability", keyword: "Candidate Stability" },
+                    { title: "Result", keyword: "Result" }
+                ];
+
+                sections.forEach((section) => {
+                    const startIndex = content.indexOf(section.keyword);
+                    const endIndex = content.indexOf('\n\n', startIndex);
+
+                    if (startIndex !== -1) {
+                        let sectionContent = content.substring(startIndex, endIndex).trim().replace(/[#*]/g, '');
+
+                        // Remove the section keyword from the content
+                        sectionContent = sectionContent.replace(new RegExp(`${section.keyword}\\s*:?`), '').trim();
+
+                        // Add the section title to the PDF
+                        doc.setFontSize(14);
+                        doc.setTextColor(0, 102, 204);
+                        doc.setFont('helvetica', 'bold');
+                        if (yPosition + 15 > maxYPosition) {
+                            addNewPage();
+                        }
+                        doc.text(section.title, margin, yPosition);
+                        yPosition += 10;
+
+                        // Add section content to the PDF
+                        doc.setFontSize(12);
+                        doc.setTextColor(0);
+                        doc.setFont('helvetica', 'normal');
+                        const lines = doc.splitTextToSize(sectionContent, contentWidth);
+
+                        lines.forEach(line => {
+                            if (yPosition + lineHeight > maxYPosition) {
+                                addNewPage();
+                            }
+                            doc.text(line, margin, yPosition);
+                            yPosition += lineHeight;
+                        });
+
+                        yPosition += 5;  // Spacing between sections
+
+                        // Check if the section is the "Result" section to extract statusText and suitabilityPercentage
+                        if (section.title === "Result") {
+                            if (sectionContent.includes("Shortlisted for the next round")) {
+                                statusText = "Shortlisted";
+                            } else if (sectionContent.includes("Rejected")) {
+                                statusText = "Rejected";
+                            }
+
+                            // Always extract the suitability percentage
+                            const percentageMatch = sectionContent.match(/Suitability Percentage:\s*(\d+)%/);
+                            suitabilityPercentage = percentageMatch ? percentageMatch[1] : '';
+
+                            if (suitabilityPercentage >= 75) {
+                                statusText = "Shortlisted";
+                            }
+
+                            console.log('Candidate Status:', statusText);
+                        }
+                    }
+                });
+
+                // Set default for statusText if undefined
+                statusText = statusText || "Rejected";
+
+                // Append the status text in the PDF
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor(statusText === "Shortlisted" ? 'green' : 'red');
+
+                // Construct status message
+                let statusTextWithPercentage = `Status: ${statusText}`;
+                if (suitabilityPercentage) {
+                    statusTextWithPercentage += ` (${suitabilityPercentage}% Matching With JD)`;
+                }
+
+                // Add status to the PDF
                 if (yPosition + lineHeight > maxYPosition) {
                     addNewPage();
                 }
-                doc.text(line, margin, yPosition);
-                yPosition += lineHeight;
-            });
- 
-            yPosition += 5;  // Spacing between sections
- 
-            // Check if the section is the "Result" section to extract statusText and suitabilityPercentage
-            if (section.title === "Result") {
-                if (sectionContent.includes("Shortlisted for the next round")) {
-                    statusText = "Shortlisted";
-                } else if (sectionContent.includes("Rejected")) {
-                    statusText = "Rejected";
+                doc.text(statusTextWithPercentage, margin, yPosition);
+
+                // Save the PDF with the file name
+                const currentDate = new Date().toISOString().split('T')[0];
+                const fileName = `${candidateName.trim()}_${globalSelectedLevel}_${selectedCloudProvider}_${selectedRole.trim()}_${currentDate}.pdf`;
+                doc.save(fileName);
+            }
+
+
+
+            // Function to display evaluation content in card format and allow downloading as PDF
+
+            function displayEvaluationInCards(content, resumeUrl) {
+
+
+                console.log("Evaluation Content:", content);
+
+                const container = document.getElementById('evaluation-result-container');
+                container.innerHTML = '';  // Clear any previous content
+                //let selectedLevel = document.getElementById(dropdownId) ? document.getElementById(dropdownId).value : "Unknown Level"; // Ensure selectedLevel is captured
+
+
+                const nameKeyword = "Full Name:";
+                let candidateName = '';
+                let role = (globalSelectedLevel || "Unknown Level") + " " +
+                    (selectedCloudProvider || "Unknown Provider") + " " +
+                    (selectedRole || "Unknown Role");
+                let candidateEmail = '';  // To store the candidate's email for the invitation
+                let candidateStatus = '';  // To store the candidate status (Shortlisted or Rejected)
+                let cloudProvider = selectedCloudProvider || "Unknown provider";
+                let candidatePhoneNumber = '';
+
+                // Extract the candidate name for UI display
+                if (content.includes(nameKeyword)) {
+                    const startIndex = content.indexOf(nameKeyword) + nameKeyword.length;
+                    const endIndex = content.indexOf('\n', startIndex);
+                    candidateName = content.substring(startIndex, endIndex).trim();
                 }
- 
-                // Always extract the suitability percentage
-                const percentageMatch = sectionContent.match(/Suitability Percentage:\s*(\d+)%/);
-                suitabilityPercentage = percentageMatch ? percentageMatch[1] : '';
-				
-				 if (suitabilityPercentage >= 75) {
-                statusText = "Shortlisted";
+
+                // Extract the email from the content (assuming it follows a specific format)
+                // Extract the email from the content (assuming it follows a specific format)
+                const emailKeyword = "Email:";  // Change as per actual content format
+                if (content.includes(emailKeyword)) {
+                    const startIndex = content.indexOf(emailKeyword) + emailKeyword.length;
+                    const endIndex = content.indexOf('\n', startIndex);
+                    candidateEmail = content.substring(startIndex, endIndex).trim();
+
+                    // Remove any "**" characters from the email
+                    candidateEmail = candidateEmail.replace(/\*\*/g, '');
+
+                    // Remove any spaces inside the email
+                    candidateEmail = candidateEmail.replace(/\s+/g, '');
+                }
+
+                const phonekeyword = "Phone Number:"
+                if (content.includes(phonekeyword)) {
+                    const startIndex = content.indexOf(phonekeyword) + phonekeyword.length;
+                    const endIndex = content.indexOf('\n', startIndex);
+                    candidatePhoneNumber = content.substring(startIndex, endIndex).trim();
+
+                    // Remove any "**" characters from the email
+                    candidatePhoneNumber = candidatePhoneNumber.replace(/\*\*/g, '');
+
+                    // Remove any spaces inside the email
+                    candidatePhoneNumber = candidatePhoneNumber.replace(/\s+/g, '');
+                }
+
+
+                const roleKeyword = "Job Role Retrieval";
+                if (content.includes(roleKeyword)) {
+                    const startIndex = content.indexOf(roleKeyword) + roleKeyword.length;
+                    const endIndex = content.indexOf('\n', startIndex);
+                    role = content.substring(startIndex, endIndex).trim();
+                }
+
+                // Display the candidate name in the UI if available
+                if (candidateName) {
+                    candidateName = candidateName.replace(/\*\*/g, '');
+                    candidateName = candidateName.replace(/\s+/g, '');
+                    const nameHeading = document.createElement('h2');
+                    nameHeading.textContent = `Candidate: ${candidateName}`;
+                    nameHeading.classList.add('hidden');
+                    container.appendChild(nameHeading);
+                }
+
+                if (role) {
+                    const roleHeading = document.createElement('h3');
+                    roleHeading.textContent = `Role: ${role}`;
+                    roleHeading.classList.add('hidden');
+                    container.appendChild(roleHeading);
+                }
+
+                const sections = [
+                    { title: "Job Role Retrieval", keyword: "Job Role Retrieval" },
+                    { title: "Candidate Overview", keyword: "Candidate Overview" },
+                    { title: "Contact Information", keyword: "Contact Information" },
+                    { title: "Education", keyword: "Education" },
+                    { title: "Work Experience", keyword: "Work Experience" },
+                    { title: "Skills", keyword: "Skills" },
+                    { title: "Achievements", keyword: "Achievements" },
+                    { title: "Candidate Stability", keyword: "Candidate Stability" },
+                    { title: "Skill Gaps", keyword: "Skill Gaps" },
+                    { title: "Result", keyword: "Result" }
+                ];
+
+                let textContent = '';  // Do not include candidate name here
+                let anyContentDisplayed = false;  // Flag to check if any content is added
+                let isShortlisted = false;  // Flag to determine if the candidate is shortlisted
+                let statusText = '';  // To store status (shortlisted or rejected)
+                let suitabilityPercentage = '';  // Store percentage of matching suitability
+
+                sections.forEach((section, index) => {
+                    const startIndex = content.indexOf(section.keyword);
+                    const nextIndex = index < sections.length - 1 ? content.indexOf(sections[index + 1].keyword) : content.length;
+
+                    if (startIndex !== -1) {
+                        anyContentDisplayed = true;  // Set flag to true if any section is displayed
+
+                        let sectionContent = content.substring(startIndex, nextIndex).trim();
+                        sectionContent = sectionContent.replace(/[#*]/g, '');
+
+                        // Remove the section title from the content
+                        sectionContent = sectionContent.replace(new RegExp(`${section.keyword}\\s*:?`), '').trim();
+
+                        // Shorten the content to a preview
+                        const previewContent = sectionContent.split('\n').slice(0, 3).join('\n');  // Show only the first 3 lines
+
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+                        card.style.color = '#b0b0b0';
+
+                        const heading = document.createElement('h2');
+                        heading.textContent = section.title;
+                        card.appendChild(heading);
+
+                        const p = document.createElement('p');
+                        p.textContent = previewContent;
+                        card.appendChild(p);
+
+                        container.appendChild(card);
+
+                        // Add the section content to the downloadable text (without candidate name)
+                        textContent += `${section.title}\n${sectionContent}\n\n`;
+
+                        if (section.title === "Result") {
+                            if (sectionContent.includes("Shortlisted for the next round")) {
+                                statusText = "Shortlisted";
+                                suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1]; // Extract percentage
+                                isShortlisted = true;  // Mark as shortlisted
+                            } else if (sectionContent.includes("Rejected")) {
+                                statusText = "Rejected";
+                                suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1];
+                            }
+
+                            // Print status in the console
+                            console.log('Candidate Status:', statusText);  // Prints Shortlisted or Rejected
+
+                            // Send the status to the database based on the result
+                            const updateField = statusText === "Rejected" ? "rejected" : "shortlisted";
+
+                            // API call to update the relevant column in resume_counts
+                            fetch('http://localhost:3000/update-resume-count', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    field: updateField,
+                                    value: 1,  // Increment the count by 1
+                                }),
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Database update successful:', data);
+                                })
+                                .catch(error => {
+                                    console.error('Error updating database:', error);
+                                });
+                        }
+
+                    }
+                });
+
+                // Find the "Recommendation" heading and append status text next to it
+                const headings = document.querySelectorAll('h2');  // Get all h2 elements
+                headings.forEach(heading => {
+                    if (heading.textContent.trim() === "Result") {
+                        const statusSpan = document.createElement('span');
+                        statusSpan.textContent = statusText ? ` - ${statusText} (${suitabilityPercentage}% Matching With JD)` : '';
+                        statusSpan.style.color = statusText === "Shortlisted" ? 'green' : 'red';
+                        heading.appendChild(statusSpan);
+                    }
+                });
+
+                // If no valid content was displayed, show an error popup
+                if (!anyContentDisplayed) {
+                    displayInvalidFormatPopup("The content format is invalid or the required sections are missing.");
+                    return;
+                }
+
+                sendCandidateInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl);
+                sendPrescreeningInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl);
+
+                // Create a unique container for inputs and button
+                const feedbackContainer = document.createElement('div');
+                feedbackContainer.classList.add('feedback-container');
+
+                // Create email input field
+                const emailInput = document.createElement('input');
+                emailInput.type = 'email';
+                emailInput.placeholder = 'Enter Email';
+                emailInput.value = candidateEmail; // Prefill with candidateEmail value
+                emailInput.classList.add('editable-field');
+                emailInput.style.marginBottom = '10px'; // Add spacing
+                feedbackContainer.appendChild(emailInput);
+
+                // Create phone number input field
+                const phoneInput = document.createElement('input');
+                phoneInput.type = 'tel';
+                phoneInput.placeholder = 'Enter Phone Number';
+                phoneInput.value = candidatePhoneNumber; // Prefill with candidatePhoneNumber value
+                phoneInput.classList.add('editable-field');
+                phoneInput.style.marginBottom = '20px'; // Add spacing
+                feedbackContainer.appendChild(phoneInput);
+
+
+                document.body.appendChild(feedbackContainer);
+
+                // Create a download button
+                const downloadButton = document.createElement('button');
+                downloadButton.classList.add('download-btn');
+                downloadButton.innerHTML = '<i class="fas fa-download"></i> Download Feedback';
+                downloadButton.onclick = () => downloadContentAsFile(textContent, candidateName, selectedRole, globalSelectedLevel, selectedCloudProvider);
+                container.appendChild(downloadButton);
+                const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
+
+
+                // ... rest of your code with the updated URL
+
+                if (isShortlisted) {
+                    const nextButton = document.createElement('button');
+                    nextButton.classList.add('next-btn');
+                    nextButton.textContent = 'Next';
+
+                    const inviteCandidate = async () => {
+                        nextButton.textContent = 'Inviting...';
+                        nextButton.disabled = true;
+
+                        const roleToInviteIdMap = {
+                            "Junior Azure DevOps Engineer": 1292765,
+                            "Senior Azure DevOps Engineer": 1292976,
+                            "Junior AWS DevOps Engineer": 1292733,
+
+                            "Senior AWS DevOps Engineer": 1292950,
+
+                            "Junior Azure Platform Engineer": 1292775,
+
+                            "Junior AWS Platform Engineer": 1292769,
+                            "Senior AWS Platform Engineer": 1292990,
+                            "Lead AWS Platform Engineer": 1295883,
+
+
+                            "Junior Azure Cloudops Engineer": 1292781,
+
+                            "Junior AWS Cloudops Engineer": 1292779
+
+                        };
+
+                        // Get the invite ID for the selected role
+                        const inviteId = roleToInviteIdMap[role]; // Assume `selectedRole` contains the role name
+                        if (!inviteId) {
+                            showToast("Invalid role selected. Please check the role.", "error");
+                            nextButton.textContent = 'Next';
+                            nextButton.disabled = false;
+                            return;
+                        }
+
+                        const targetUrl = `http://localhost:3000/api/invite-candidate`; // Your backend API
+                        const requestData = {
+                            email: candidateEmail,
+                            name: candidateName,
+                            sendEmail: "yes",
+                            callbackURL: "https://www.imocha.io/",
+                            redirectURL: "https://www.imocha.io/",
+                            disableMandatoryFields: 0,
+                            hideInstruction: 0
+                        };
+
+                        try {
+                            const response = await fetch(targetUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    ...requestData,
+                                    inviteId // Include the selected invite ID
+                                })
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`Request failed with status ${response.status}`);
+                            }
+
+                            const data = await response.json();
+                            console.log('Request sent successfully:', data);
+                            nextButton.textContent = 'Invite Sent';
+                            showToast('Invite request sent. Please check the iMocha dashboard for confirmation.', 'success');
+                        } catch (error) {
+                            console.error('Error sending invite request:', error);
+                            showToast("Failed to send invite request. Please try again.", "error");
+                            nextButton.textContent = 'Next';
+                            nextButton.disabled = false;
+                        }
+                    };
+
+                    nextButton.onclick = inviteCandidate; // Set the click event to call inviteCandidate
+                    container.appendChild(nextButton); // Append the button to the container
+                }
+
+
+                // Create a wrapper div for the back button
+                const backButtonWrapper = document.createElement('div');
+                backButtonWrapper.classList.add('back-button-wrapper'); // Add a class for styling
+
+                const backButton = document.createElement('button');
+                backButton.classList.add('back-btnss');
+                backButton.innerHTML = 'Back';
+                backButton.onclick = () => {
+                    // Navigate to the next step in the process, e.g., scheduling an interview
+                    document.querySelector('.role-selection-container').style.display = 'block';
+                    document.getElementById('evaluation-result-container').innerHTML = '';
+                    var progressBar = document.querySelector('.progress-bar');
+                    progressBar.style.width = '0%'; // Reset progress bar
+                    location.reload();
+
+                };
+                backButtonWrapper.appendChild(backButton);
+
+                container.appendChild(backButtonWrapper);
             }
- 
-                console.log('Candidate Status:', statusText);
+            function sendCandidateInfoToDB(name, email, status, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl) {
+                // Determine the recruitment phase based on the status
+                let recruitmentPhase;
+
+                if (status.toLowerCase() === 'rejected') {
+                    recruitmentPhase = 'prescreening';
+                } else if (status.toLowerCase() === 'shortlisted') {
+                    recruitmentPhase = 'Move to L1';
+                }
+
+                // The reason column will now store the suitability percentage
+                const reason = `${suitabilityPercentage}% Matching With JD`;
+
+                fetch('http://localhost:3000/api/add-candidate-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        resume: resumeUrl,
+                        candidate_name: name,
+                        candidate_email: email,
+                        candidate_status: status,
+                        candidate_phone: candidatePhoneNumber,
+                        role: role,
+                        recruitment_phase: recruitmentPhase,  // Add the recruitment_phase value
+                        reason: reason // Add the suitability percentage as the reason
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Candidate information saved successfully:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error saving candidate information:', error);
+                    });
             }
-        }
-    });
- 
-    // Set default for statusText if undefined
-    statusText = statusText || "Rejected";
- 
-    // Append the status text in the PDF
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(statusText === "Shortlisted" ? 'green' : 'red');
- 
-    // Construct status message
-    let statusTextWithPercentage = `Status: ${statusText}`;
-    if (suitabilityPercentage) {
-        statusTextWithPercentage += ` (${suitabilityPercentage}% Matching With JD)`;
-    }
- 
-    // Add status to the PDF
-    if (yPosition + lineHeight > maxYPosition) {
-        addNewPage();
-    }
-    doc.text(statusTextWithPercentage, margin, yPosition);
- 
-    // Save the PDF with the file name
-    const currentDate = new Date().toISOString().split('T')[0];
-    const fileName = `${candidateName.trim()}_${globalSelectedLevel}_${selectedCloudProvider}_${selectedRole.trim()}_${currentDate}.pdf`;
-    doc.save(fileName);
-}
 
-
-
-// Function to display evaluation content in card format and allow downloading as PDF
-
-function displayEvaluationInCards(content,resumeUrl) {
-
-
-    console.log("Evaluation Content:", content);
-
-    const container = document.getElementById('evaluation-result-container');
-    container.innerHTML = '';  // Clear any previous content
-	//let selectedLevel = document.getElementById(dropdownId) ? document.getElementById(dropdownId).value : "Unknown Level"; // Ensure selectedLevel is captured
-	
-
-    const nameKeyword = "Full Name:";
-    let candidateName = '';
-    let role = (globalSelectedLevel || "Unknown Level") + " " + 
-           (selectedCloudProvider || "Unknown Provider") + " " + 
-           (selectedRole || "Unknown Role");
-    let candidateEmail = '';  // To store the candidate's email for the invitation
-    let candidateStatus = '';  // To store the candidate status (Shortlisted or Rejected)
-    let cloudProvider = selectedCloudProvider || "Unknown provider";
-    let candidatePhoneNumber='';
-
-    // Extract the candidate name for UI display
-    if (content.includes(nameKeyword)) {
-        const startIndex = content.indexOf(nameKeyword) + nameKeyword.length;
-        const endIndex = content.indexOf('\n', startIndex);
-        candidateName = content.substring(startIndex, endIndex).trim();
-    }
-
-    // Extract the email from the content (assuming it follows a specific format)
-   // Extract the email from the content (assuming it follows a specific format)
-   const emailKeyword = "Email:";  // Change as per actual content format
-if (content.includes(emailKeyword)) {
-    const startIndex = content.indexOf(emailKeyword) + emailKeyword.length;
-    const endIndex = content.indexOf('\n', startIndex);
-    candidateEmail = content.substring(startIndex, endIndex).trim();
-
-    // Remove any "**" characters from the email
-    candidateEmail = candidateEmail.replace(/\*\*/g, '');
-
-    // Remove any spaces inside the email
-    candidateEmail = candidateEmail.replace(/\s+/g, '');
-}
-
-const phonekeyword = "Phone Number:"
-if (content.includes(phonekeyword)) {
-    const startIndex = content.indexOf(phonekeyword) + phonekeyword.length;
-    const endIndex = content.indexOf('\n', startIndex);
-    candidatePhoneNumber = content.substring(startIndex, endIndex).trim();
-
-    // Remove any "**" characters from the email
-    candidatePhoneNumber = candidatePhoneNumber.replace(/\*\*/g, '');
-
-    // Remove any spaces inside the email
-    candidatePhoneNumber = candidatePhoneNumber.replace(/\s+/g, '');
-}
-
-
-
-    // Extract the role from the content if it's there, otherwise use the selectedRole
-    const roleKeyword = "Job Role Retrieval";
-    if (content.includes(roleKeyword)) {
-        const startIndex = content.indexOf(roleKeyword) + roleKeyword.length;
-        const endIndex = content.indexOf('\n', startIndex);
-        role = content.substring(startIndex, endIndex).trim();
-    }
-
-    // Display the candidate name in the UI if available
-    if (candidateName) {
-        candidateName = candidateName.replace(/\*\*/g, '');
-        candidateName = candidateName.replace(/\s+/g, '');
-        const nameHeading = document.createElement('h2');
-        nameHeading.textContent = `Candidate: ${candidateName}`;
-        nameHeading.classList.add('hidden');
-        container.appendChild(nameHeading);
-    }
-
-    if (role) {
-        const roleHeading = document.createElement('h3');
-        roleHeading.textContent = `Role: ${role}`;
-        roleHeading.classList.add('hidden');
-        container.appendChild(roleHeading);
-    }
-
-    const sections = [
-        { title: "Job Role Retrieval", keyword: "Job Role Retrieval" },
-        { title: "Candidate Overview", keyword: "Candidate Overview" },
-        { title: "Contact Information", keyword: "Contact Information" },
-        { title: "Education", keyword: "Education" },
-        { title: "Work Experience", keyword: "Work Experience" },
-        { title: "Skills", keyword: "Skills" },
-        { title: "Achievements", keyword: "Achievements" },
-        { title: "Candidate Stability", keyword: "Candidate Stability" },
-        { title: "Skill Gaps", keyword: "Skill Gaps" },
-        { title: "Result", keyword: "Result" }
-    ];
-
-    let textContent = '';  // Do not include candidate name here
-    let anyContentDisplayed = false;  // Flag to check if any content is added
-    let isShortlisted = false;  // Flag to determine if the candidate is shortlisted
-    let statusText = '';  // To store status (shortlisted or rejected)
-    let suitabilityPercentage = '';  // Store percentage of matching suitability
-
-    sections.forEach((section, index) => {
-        const startIndex = content.indexOf(section.keyword);
-        const nextIndex = index < sections.length - 1 ? content.indexOf(sections[index + 1].keyword) : content.length;
-
-        if (startIndex !== -1) {
-            anyContentDisplayed = true;  // Set flag to true if any section is displayed
-
-            let sectionContent = content.substring(startIndex, nextIndex).trim();
-            sectionContent = sectionContent.replace(/[#*]/g, '');
-
-            // Remove the section title from the content
-            sectionContent = sectionContent.replace(new RegExp(`${section.keyword}\\s*:?`), '').trim();
-
-            // Shorten the content to a preview
-            const previewContent = sectionContent.split('\n').slice(0, 3).join('\n');  // Show only the first 3 lines
-
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.style.color = '#b0b0b0';
-
-            const heading = document.createElement('h2');
-            heading.textContent = section.title;
-            card.appendChild(heading);
-
-            const p = document.createElement('p');
-            p.textContent = previewContent;
-            card.appendChild(p);
-
-            container.appendChild(card);
-
-            // Add the section content to the downloadable text (without candidate name)
-            textContent += `${section.title}\n${sectionContent}\n\n`;
-
-            // Check if the recommendation section includes "Shortlisted" or "Rejected"
-           // Check if the recommendation section includes "Shortlisted" or "Rejected"
-if (section.title === "Result") {
-    if (sectionContent.includes("Shortlisted for the next round")) {
-        statusText = "Shortlisted";
-        suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1]; // Extract percentage
-        isShortlisted = true;  // Mark as shortlisted
-    } else if (sectionContent.includes("Rejected")) {
-        statusText = "Rejected";
-        suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1];
-    }
-
-    // Print status in the console
-    console.log('Candidate Status:', statusText);  // Prints Shortlisted or Rejected
-
-    // Send the status to the database based on the result
-    const updateField = statusText === "Rejected" ? "rejected" : "shortlisted";
-    
-    // API call to update the relevant column in resume_counts
-    fetch('https://demotag.vercel.app/update-resume-count', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            field: updateField,
-            value: 1,  // Increment the count by 1
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Database update successful:', data);
-    })
-    .catch(error => {
-        console.error('Error updating database:', error);
-    });
-}
-
-        }
-    });
-
-    // Find the "Recommendation" heading and append status text next to it
-    const headings = document.querySelectorAll('h2');  // Get all h2 elements
-    headings.forEach(heading => {
-        if (heading.textContent.trim() === "Result") {
-            const statusSpan = document.createElement('span');
-            statusSpan.textContent = statusText ? ` - ${statusText} (${suitabilityPercentage}% Matching With JD)` : '';
-            statusSpan.style.color = statusText === "Shortlisted" ? 'green' : 'red';
-            heading.appendChild(statusSpan);
-        }
-    });
-
-    // If no valid content was displayed, show an error popup
-    if (!anyContentDisplayed) {
-        displayInvalidFormatPopup("The content format is invalid or the required sections are missing.");
-        return;
-    }
-	
-	 sendCandidateInfoToDB(candidateName, candidateEmail, statusText, role,suitabilityPercentage,candidatePhoneNumber,resumeUrl);
-     sendPrescreeningInfoToDB(candidateName,candidateEmail,statusText,role,suitabilityPercentage,candidatePhoneNumber,resumeUrl);
-
-// Create a unique container for inputs and button
-const feedbackContainer = document.createElement('div');
-feedbackContainer.classList.add('feedback-container');
-
-// Create email input field
-const emailInput = document.createElement('input');
-emailInput.type = 'email';
-emailInput.placeholder = 'Enter Email';
-emailInput.value = candidateEmail; // Prefill with candidateEmail value
-emailInput.classList.add('editable-field');
-emailInput.style.marginBottom = '10px'; // Add spacing
-feedbackContainer.appendChild(emailInput);
-
-// Create phone number input field
-const phoneInput = document.createElement('input');
-phoneInput.type = 'tel';
-phoneInput.placeholder = 'Enter Phone Number';
-phoneInput.value = candidatePhoneNumber; // Prefill with candidatePhoneNumber value
-phoneInput.classList.add('editable-field');
-phoneInput.style.marginBottom = '20px'; // Add spacing
-feedbackContainer.appendChild(phoneInput);
-
-
-document.body.appendChild(feedbackContainer);
-
-    // Create a download button
-    const downloadButton = document.createElement('button');
-    downloadButton.classList.add('download-btn');
-    downloadButton.innerHTML = '<i class="fas fa-download"></i> Download Feedback';
-    downloadButton.onclick = () => downloadContentAsFile(textContent, candidateName, selectedRole,globalSelectedLevel, selectedCloudProvider);
-    container.appendChild(downloadButton);
-    const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
-
-
-// ... rest of your code with the updated URL
-
-if (isShortlisted) {
-    const nextButton = document.createElement('button');
-    nextButton.classList.add('next-btn');
-    nextButton.textContent = 'Next';
-
-      const inviteCandidate = async () => {
-    nextButton.textContent = 'Inviting...';
-    nextButton.disabled = true;
-
-    const roleToInviteIdMap = {
-        "Junior Azure DevOps Engineer":1292765,
-      "Senior Azure DevOps Engineer":1292976,
-    "Junior AWS DevOps Engineer":1292733,
- 
-    "Senior AWS DevOps Engineer":1292950,
-
-  "Junior Azure Platform Engineer":1292775, 
-
- "Junior AWS Platform Engineer":1292769, 
-                    "Senior AWS Platform Engineer":1292990,
-                     "Lead AWS Platform Engineer":1295883,
-
-
- "Junior Azure Cloudops Engineer":1292781,
-
-                    "Junior AWS Cloudops Engineer":1292779
-                  
-    };
-
-    // Get the invite ID for the selected role
-    const inviteId = roleToInviteIdMap[role]; // Assume `selectedRole` contains the role name
-    if (!inviteId) {
-        alert('Invalid role selected. Please check the role.');
-        nextButton.textContent = 'Next';
-        nextButton.disabled = false;
-        return;
-    }
-
-    const targetUrl = `https://demotag.vercel.app/api/invite-candidate`; // Your backend API
-    const requestData = {
-        email: candidateEmail,
-        name: candidateName,
-        sendEmail: "yes",
-        callbackURL: "https://www.imocha.io/",
-        redirectURL: "https://www.imocha.io/",
-        disableMandatoryFields: 0,
-        hideInstruction: 0
-    };
-
-    try {
-        const response = await fetch(targetUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                ...requestData,
-                inviteId // Include the selected invite ID
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Request sent successfully:', data);
-        nextButton.textContent = 'Invite Sent';
-        alert('Invite request sent. Please check the iMocha dashboard for confirmation.');
-    } catch (error) {
-        console.error('Error sending invite request:', error);
-        alert('Failed to send invite request. Please try again.');
-        nextButton.textContent = 'Next';
-        nextButton.disabled = false;
-        }
-    };
-
-    nextButton.onclick = inviteCandidate; // Set the click event to call inviteCandidate
-    container.appendChild(nextButton); // Append the button to the container
-}
-
-
-    // Create a wrapper div for the back button
-    const backButtonWrapper = document.createElement('div');
-    backButtonWrapper.classList.add('back-button-wrapper'); // Add a class for styling
-
-    const backButton = document.createElement('button');
-    backButton.classList.add('back-btnss');
-    backButton.innerHTML = 'Back';
-    backButton.onclick = () => {
-        // Navigate to the next step in the process, e.g., scheduling an interview
-        document.querySelector('.role-selection-container').style.display = 'block';
-        document.getElementById('evaluation-result-container').innerHTML = '';
-        var progressBar = document.querySelector('.progress-bar');
-        progressBar.style.width = '0%'; // Reset progress bar
-	    location.reload();
-
-
-        // Adjust the URL as needed
-    };
-    backButtonWrapper.appendChild(backButton);
-
-    // Add the wrapper div to the container
-    container.appendChild(backButtonWrapper);
-}
-function sendCandidateInfoToDB(name, email, status, role, suitabilityPercentage,candidatePhoneNumber,resumeUrl) {
-    // Determine the recruitment phase based on the status
-    let recruitmentPhase;
-
-    if (status.toLowerCase() === 'rejected') {
-        recruitmentPhase = 'prescreening';
-    } else if (status.toLowerCase() === 'shortlisted') {
-        recruitmentPhase = 'Move to L1';
-    }
-
-    // The reason column will now store the suitability percentage
-    const reason = `${suitabilityPercentage}% Matching With JD`;
-
-    fetch('https://demotag.vercel.app/api/add-candidate-info', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            resume:resumeUrl,
-            candidate_name: name,
-            candidate_email: email,
-            candidate_status: status,
-            candidate_phone: candidatePhoneNumber,
-            role: role,
-            recruitment_phase: recruitmentPhase,  // Add the recruitment_phase value
-            reason: reason // Add the suitability percentage as the reason
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Candidate information saved successfully:', data);
-    })
-    .catch(error => {
-        console.error('Error saving candidate information:', error);
-    });
-}
-
-function sendPrescreeningInfoToDB(name, email, status, role, suitabilityPercentage,candidatePhoneNumber,resumeUrl) {
-    // Determine the recruitment phase based on the status
-    let recruitmentPhase;
-
-    if (status.toLowerCase() === 'rejected') {
-        recruitmentPhase = 'Rejected';
-    } else if (status.toLowerCase() === 'shortlisted') {
-        recruitmentPhase = 'Move to L1';
-    }
-
-    // The reason column will now store the suitability percentage
-    const reason = `${suitabilityPercentage}% Matching With JD`;
-
-    fetch('https://demotag.vercel.app/api/add-prescreening-info', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            resume: resumeUrl,
-            candidate_name: name,
-            candidate_email: email,
-            candidate_status: status,
-            role: role,
-            recruitment_phase: recruitmentPhase,
-            candidate_phone: candidatePhoneNumber,  // Add the recruitment_phase value
-            reason: reason // Add the suitability percentage as the reason
-
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Candidate information saved successfully:', data);
-    })
-    .catch(error => {
-        console.error('Error saving candidate information:', error);
-    });
-}
-
-
-
-
-
-
-
-function displayInvalidFormatPopup(message) {
-    console.log("Displaying invalid format popup");
-
-    // Create a popup container
-    const popup = document.createElement('div');
-    popup.classList.add('popup');
-    popup.style.position = 'fixed';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.padding = '20px';
-    popup.style.backgroundColor = 'white';
-    popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-    popup.style.zIndex = 1000;
-
-    // Create a message element
-    const messageElement = document.createElement('p');
-    messageElement.textContent = message;
-    popup.appendChild(messageElement);
-
-    // Create a close button
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.onclick = () => document.body.removeChild(popup);
-    popup.appendChild(closeButton);
-
-    // Add popup to the body
-    document.body.appendChild(popup);
-}
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('show');
-}
-function showInterviews() {
-            // Hide the dashboard and table containers
-            document.querySelector('.dashboard-container').style.display = 'none';
-            document.querySelector('.table-container').style.display = 'none';
-            document.querySelector('.button-container').style.display = 'none';
-            
-
-            // Show the interviews section
-            document.getElementById('interviews').style.display = 'block';
-        }
-async function fetchCandidates() {
-            try {
-                const response = await fetch('https://demotag.vercel.app/api/candidates');
-                const data = await response.json();
-
-                const tableBody = document.querySelector('#candidateTable tbody');
-                tableBody.innerHTML = ''; // Clear existing rows
-
-                data.forEach(candidate => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+            function sendPrescreeningInfoToDB(name, email, status, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl) {
+                // Determine the recruitment phase based on the status
+                let recruitmentPhase;
+
+                if (status.toLowerCase() === 'rejected') {
+                    recruitmentPhase = 'Rejected';
+                } else if (status.toLowerCase() === 'shortlisted') {
+                    recruitmentPhase = 'Move to L1';
+                }
+
+                // The reason column will now store the suitability percentage
+                const reason = `${suitabilityPercentage}% Matching With JD`;
+
+                fetch('http://localhost:3000/api/add-prescreening-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        resume: resumeUrl,
+                        candidate_name: name,
+                        candidate_email: email,
+                        candidate_status: status,
+                        role: role,
+                        recruitment_phase: recruitmentPhase,
+                        candidate_phone: candidatePhoneNumber,  // Add the recruitment_phase value
+                        reason: reason // Add the suitability percentage as the reason
+
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Candidate information saved successfully:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error saving candidate information:', error);
+                    });
+            }
+
+            function displayInvalidFormatPopup(message) {
+                console.log("Displaying invalid format popup");
+
+                // Create a popup container
+                const popup = document.createElement('div');
+                popup.classList.add('popup');
+                popup.style.position = 'fixed';
+                popup.style.top = '50%';
+                popup.style.left = '50%';
+                popup.style.transform = 'translate(-50%, -50%)';
+                popup.style.padding = '20px';
+                popup.style.backgroundColor = 'white';
+                popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+                popup.style.zIndex = 1000;
+
+                // Create a message element
+                const messageElement = document.createElement('p');
+                messageElement.textContent = message;
+                popup.appendChild(messageElement);
+
+                // Create a close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = 'Close';
+                closeButton.onclick = () => document.body.removeChild(popup);
+                popup.appendChild(closeButton);
+
+                // Add popup to the body
+                document.body.appendChild(popup);
+            }
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('show');
+            }
+            function showInterviews() {
+                // Hide the dashboard and table containers
+                document.querySelector('.dashboard-container').style.display = 'none';
+                document.querySelector('.table-container').style.display = 'none';
+                document.querySelector('.button-container').style.display = 'none';
+
+
+                // Show the interviews section
+                document.getElementById('interviews').style.display = 'block';
+            }
+            async function fetchCandidates() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/candidates');
+                    const data = await response.json();
+
+                    const tableBody = document.querySelector('#candidateTable tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach(candidate => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
                         <td>${candidate.candidate_name}</td>
                         <td>${candidate.candidate_email}</td>
                         <td>${candidate.candidate_status}</td>
@@ -1731,23 +1711,16 @@ async function fetchCandidates() {
                         <td>${candidate.recruitment_phase}</td>
                         <td>${candidate.reason || '-'}</td>
                     `;
-                    tableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error fetching candidate data:', error);
+                        tableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error('Error fetching candidate data:', error);
+                }
             }
-        }
 
-        // Fetch candidates on page load
-        window.onload = fetchCandidates;
-
-
-
-
-
-
-
-
-</script>
+            // Fetch candidates on page load
+            window.onload = fetchCandidates;
+        </script>
 </body>
+
 </html>
