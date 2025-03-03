@@ -643,7 +643,7 @@ app.get('/api/reactjs-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior ReactJS Developer', 'Lead ReactJS Developer','Senior ReactJS Developer')
+      WHERE role IN ('Junior Java Cloud Native Application Engineer - Backend', 'Senior Java Cloud Native Application Engineer - Backend','Junior .Net Cloud Native Application Engineer - Backend','Senior .Net Cloud Native Application Engineer - Backend')
       AND visible = TRUE;
     `);
     const count = result.rows[0].count;
@@ -660,7 +660,7 @@ app.get('/api/snow-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Snowflake Developer', 'Lead Snowflake Developer','Senior Snowflake Developer')
+      WHERE role IN ('Junior Angular Cloud Native Application Engineer - Frontend', 'Senior Angular Cloud Native Application Engineer - Frontend','Junior React Cloud Native Application Engineer - Frontend','Senior React Cloud Native Application Engineer - Frontend')
       AND visible = TRUE;
     `);
     const count = result.rows[0].count;
@@ -675,7 +675,7 @@ app.get('/api/java-resume-count', async (req, res) => {
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Java Fullstack Developer', 'Lead Java Fullstack Developer','Senior Java Fullstack Developer')
+      WHERE role IN ('Junior Mendix LCNC Platform Engineer', 'Senior Mendix LCNC Platform Engineer')
       AND visible = TRUE;
     `);
     const count = result.rows[0].count;
@@ -685,7 +685,6 @@ app.get('/api/java-resume-count', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
- 
  
 app.get('/api/hadoop-resume-count', async (req, res) => {
   try {
