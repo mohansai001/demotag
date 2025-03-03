@@ -1,3 +1,14 @@
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show', type);
+
+    // Remove the toast after 4 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
@@ -1128,7 +1139,7 @@ ${globalJobDescription}
         const loggedInUserEmail = localStorage.getItem("userEmail");
    
         if (!loggedInUserEmail) {
-            alert("User is not logged in. Please log in again.");
+            showToast("User is not logged in. Please log in again.", "error");
             return;
         }
                    
@@ -1203,15 +1214,15 @@ ${globalJobDescription}
             }
    
             console.log('Email sent successfully');
-            alert('Email sent successfully!');
+            showToast('Email sent successfully!', 'success');
    
         } catch (error) {
             console.error('Error:', error);
-            alert(`Failed to send email: ${error.message}`);
+            showToast(`Failed to send email: ${error.message}`, "error");
            
             // If there's a permission error, let the user know they need admin consent
             if (error.message?.includes('permission')) {
-                alert('This app needs permission to send emails. Please contact your administrator to grant the necessary permissions.');
+                showToast("This app needs permission to send emails. Please contact your administrator to grant the necessary permissions.", "error");
             }
         }
     }
