@@ -203,6 +203,43 @@
         }
       };
 
+      function skipEmailInvite() {
+        const recruitmentPhase = "No iMocha Exam";
+    
+        // Update recruitment phase in the database
+        fetch('https://demotag.vercel.app/api/update-candidate-recruitment-phase', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: candidateId,
+                recruitment_phase: recruitmentPhase
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Recruitment phase updated to 'No iMocha Exam'");
+            } else {
+                console.log("Error updating recruitment phase");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            console.log("Error updating recruitment phase");
+        });
+  
+    
+        setTimeout(() => {
+            showToast("Skipping iMocha exam", "success");
+        }, 0);
+    
+        setTimeout(() => {
+            window.location.href = "candidatespage.html";
+        }, 3000);
+    }
+
 document.getElementById('addStepButton').addEventListener('click', function () {
   document.getElementById('popupForm').style.display = 'flex';
 });
