@@ -121,10 +121,10 @@ const newRoleCtx = document.getElementById('newRoleChart').getContext('2d');
 const newStatusChart = new Chart(newStatusCtx, {
     type: 'doughnut',
     data: {
-        labels: ['React JS', 'Snowflake', 'Hadoop Engineer', 'Java FullStack' ,'.Net Fullstack'],
+       labels: ['Cloud Native Application Engineer - Front End', 'Cloud Native Application Engineer - Backend', 'LCNC Platform Engineer', 'Integration Engineer' ],
         datasets: [{
-            data: [0, 0, 0, 0,0], // Replace with actual data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f']
+            data: [0, 0, 0, 0], // Replace with actual data
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4']
         }]
     },
     options: {
@@ -157,11 +157,11 @@ const newStatusChart = new Chart(newStatusCtx, {
 const newRoleChart = new Chart(newRoleCtx, {
     type: 'bar',
     data: {
-        labels: ['React JS', 'Snowflake', 'Hadoop Engineer', 'Java FullStack' ,'.Net Fullstack'],
+     labels: ['Cloud Native Application Engineer - Front End', 'Cloud Native Application Engineer - Backend', 'LCNC Platform Engineer', 'Integration Engineer' ],
         datasets: [{
             label: 'Applicants',
-            data: [0, 0, 0, 0,0], // Initial placeholder data
-            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4','#f9e79f']
+            data: [0, 0, 0, 0], // Initial placeholder data
+            backgroundColor: ['#d7bde2', '#7fb3d5', '#f5cba7', '#76d7c4']
         }]
     },
     options: {
@@ -201,13 +201,13 @@ const newRoleChart = new Chart(newRoleCtx, {
 });
 
 // Function to update the new charts
-function updateNewChartData(teamACount, teamBCount, teamCCount, teamDCount,teamECount) {
-    newStatusChart.data.datasets[0].data = [teamACount, teamBCount, teamCCount, teamDCount,teamECount];
+function updateNewChartData(teamACount, teamBCount, teamCCount, teamDCount) {
+    newStatusChart.data.datasets[0].data = [teamACount, teamBCount, teamCCount, teamDCount];
     newStatusChart.update();
 }
 
-function updateNewBarChartData(teamACount, teamBCount, teamCCount, teamDCount,teamECount) {
-    newRoleChart.data.datasets[0].data = [teamACount, teamBCount, teamCCount, teamDCount,teamECount];
+function updateNewBarChartData(teamACount, teamBCount, teamCCount, teamDCount) {
+    newRoleChart.data.datasets[0].data = [teamACount, teamBCount, teamCCount, teamDCount];
     newRoleChart.update();
 }
 
@@ -218,11 +218,11 @@ async function fetchNewCountsAndUpdateChart() {
         const teamBCount = await fetch('https://demotag.vercel.app/api/snow-resume-count').then(res => res.json()).then(data => data.count || 0);
         const teamCCount = await fetch('https://demotag.vercel.app/api/hadoop-resume-count').then(res => res.json()).then(data => data.count || 0);
         const teamDCount = await fetch('https://demotag.vercel.app/api/java-resume-count').then(res => res.json()).then(data => data.count || 0);
-        const teamECount = await fetch('https://demotag.vercel.app/api/.net-resume-count').then(res => res.json()).then(data => data.count || 0);
+      //  const teamECount = await fetch('https://demotag.vercel.app/api/.net-resume-count').then(res => res.json()).then(data => data.count || 0);
 
         // Update the charts with the fetched counts
-        updateNewChartData(teamACount, teamBCount, teamCCount, teamDCount,teamECount);
-        updateNewBarChartData(teamACount, teamBCount, teamCCount, teamDCount,teamECount);
+        updateNewChartData(teamACount, teamBCount, teamCCount, teamDCount);
+        updateNewBarChartData(teamACount, teamBCount, teamCCount, teamDCount);
     } catch (error) {
         console.error('Error updating new chart data:', error);
     }
