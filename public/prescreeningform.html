@@ -250,6 +250,30 @@
             background-color: red;
             color: white;
         }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #f44336;
+        }
     </style>
 </head>
 
@@ -666,10 +690,21 @@
                 style="background-color: #1f4e79; color: #ffffff; height: 25px; width: 200px; border-radius: 5px">Submit</button>
         </div>
     </div>
-
+    <div id="toast" class="toast"></div>
     <br>
 
     <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', type);
+
+            // Remove the toast after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
         // Initial color application based on the default selected value
         document.addEventListener('DOMContentLoaded', function () {
             const summaryBox = document.getElementById('status-dropdown');
@@ -738,7 +773,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        alert(data.error);
+                        showToast(data.error, 'error');
                     } else {
                         // Populate the dropdown with emails
                         const emailDropdown = document.getElementById('candidate-email-dropdown');
@@ -780,7 +815,7 @@
                     .then(data => {
                         // Check if the data is returned successfully
                         if (data.error) {
-                            alert(data.error);
+                            showToast(data.error, 'error');
                         } else {
                             // Populate the form fields with the returned data
                             document.getElementById('candidate-name').value = data.candidate_name;
@@ -882,13 +917,13 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.message) {
-                        alert(data.message);
+                        showToast(data.message, 'error');
                         window.location.href = 'l1-imocha.html';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Failed to submit form');
+                    showToast("Failed to submit form.", "error");
                 });
         });
 
