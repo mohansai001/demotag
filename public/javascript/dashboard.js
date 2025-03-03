@@ -1,4 +1,13 @@
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show', type);
 
+    // Remove the toast after 4 seconds
+    setTimeout(() => {
+	toast.classList.remove('show');
+    }, 3000);
+}
     // Navigate to index.html on clicking the button
     
    
@@ -1831,7 +1840,7 @@ async function updateFilter() {
         endDate = document.getElementById('endDate').value;
 
         if (!startDate || !endDate) {
-            alert("Please select both start and end dates.");
+	    showToast("Please select both start and end dates.", "error");
             return;
         }
 
