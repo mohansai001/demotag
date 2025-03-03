@@ -1,4 +1,13 @@
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show', type);
 
+  // Remove the toast after 4 seconds
+  setTimeout(() => {
+      toast.classList.remove('show');
+  }, 3000);
+}
 function navigateTo(page) {
   window.location.href = page;
 }
@@ -191,7 +200,7 @@ async function sendEmailsForCompletedCandidates(candidates) {
       console.error(`Error sending email for candidate ${candidate.candidate_name}:`, error);
     }
   }
-  alert("Emails processed for all completed iMocha candidates (if any).");
+  showToast('Emails processed for all completed iMocha candidates (if any).', 'success');
 }
 
 /**
