@@ -422,15 +422,26 @@
         <option value="not-completed">Imocha Pending</option>
       </select>
       <div style="margin-top: 10px;">
-        <form id="dateRangeForm">
-          <label for="startDate">Start Date:</label>
-          <input type="date" id="startDate" name="startDate" required />
+  
+  <form id="dateRangeForm">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required />
+        
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required />
+        
+        <label for="ecCategory">Select EC Category:</label>
+        <select id="ecCategory" name="ecCategory" required>
+            <option value="">-- Select --</option>
+            <option value="cloudEC">Cloud EC</option>
+            <option value="dataEC">Data EC</option>
+            <option value="appEC">App EC</option>
+        </select>
+        
+        <button type="submit">Submit</button>
+    </form>
 
-          <label for="endDate">End Date:</label>
-          <input type="date" id="endDate" name="endDate" required />
-
-          <button type="submit">Submit</button>
-        </form>
+    <p id="statusMessage"></p>
       </div>
   </div>
   </header>
