@@ -984,20 +984,21 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-
-const testIds = ["1292180", "1293122", "1292779", "1292781", "1295883", "1292990", "1292769", "1292775", "1292950", "1292733", "1292976", "1292765", "1292203","1303946","1293813","1293971","1263132","1304065","1233151","1294495","1302835","1294495","1304066","1304100","1292173","1293822","1303985","1303999","1304109","1304111","1304149"];
-
-// Set Axios timeout (60 seconds)
-axios.defaults.timeout = 60000;
+const testIds = {
+  cloudEC: ["1292779","1292781","1295883","1292990","1292769","1292775","1292733","1292976","1292950","1292733","1292976","1292765"],
+  dataEC: ["1303946","1293813","1293971","1263132","1304065","1233151","1294495","1302835","1294495","1304066","1304100","1292173","1293822","1303985","1303999","1304109","1304111","1304149"],
+  appEC: ["1229987","1228853","1288123","1228781","1228715","1228712","1302022","1228695","1304441"],
+};
 
 // Function to fetch completed test attempts
-async function getCompletedTestAttempts(startDateTime, endDateTime) {
+async function getCompletedTestAttempts(testIds, startDateTime, endDateTime) {
   try {
     const requests = testIds.map((testId) => {
-      const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
-      return axios.post(`${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, requestBody, {
-        headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-      });
+      return axios.post(
+        `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
+        { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
+        { headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" } }
+      );
     });
 
     const responses = await Promise.allSettled(requests);
@@ -1033,11 +1034,11 @@ async function getReport(invitationId) {
 }
 
 // Function to fetch and save test results in DB
-async function fetchAndSaveTestResults(startDateTime, endDateTime) {
+async function fetchAndSaveTestResults(testIdsArray, startDateTime, endDateTime) {
   console.log("Fetching test results...");
 
   try {
-    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
+    const testAttempts = await getCompletedTestAttempts(testIdsArray, startDateTime, endDateTime);
 
     for (const attempt of testAttempts) {
       const report = await getReport(attempt.testInvitationId);
@@ -1057,6 +1058,7 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
             attempted_date = EXCLUDED.attempted_date,
             pdf_report_url = EXCLUDED.pdf_report_url;
         `;
+
         const values = [
           report.candidateEmail,
           report.score,
@@ -1079,41 +1081,46 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
   }
 }
 
-// API endpoint to fetch completed test attempts
-app.post("/api/callTestAttempts", async (req, res) => {
-  let { startDate, endDate } = req.body;
+// API endpoints to fetch completed test attempts for different categories
+app.post("/api/callTestAttempts/cloudEC", async (req, res) => {
+  const { startDate, endDate } = req.body;
+  const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
+  const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
 
-  const today = new Date();
-  const last7Days = new Date();
-  last7Days.setDate(today.getDate() - 7);
-
-  const formatDate = (date) => date.toISOString().split("T")[0];
-
-  startDate = startDate || formatDate(last7Days);
-  endDate = endDate || formatDate(today);
-
-  try {
-    const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
-    const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
-
-    const testAttempts = await getCompletedTestAttempts(startDateTime, endDateTime);
-    await fetchAndSaveTestResults(startDateTime, endDateTime);
-
-    res.json(testAttempts);
-  } catch (error) {
-    console.error("Error fetching test attempts:", error.message);
-    res.status(500).json({ message: "Error fetching test attempts." });
-  }
+  await fetchAndSaveTestResults(testIds.cloudEC, startDateTime, endDateTime);
+  res.json({ message: "Cloud EC test attempts processed" });
 });
 
-// Run fetchAndSaveTestResults every 5 minutes
+app.post("/api/callTestAttempts/dataEC", async (req, res) => {
+  const { startDate, endDate } = req.body;
+  const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
+  const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
+
+  await fetchAndSaveTestResults(testIds.dataEC, startDateTime, endDateTime);
+  res.json({ message: "Data EC test attempts processed" });
+});
+
+app.post("/api/callTestAttempts/appEC", async (req, res) => {
+  const { startDate, endDate } = req.body;
+  const startDateTime = new Date(`${startDate}T00:00:00Z`).toISOString();
+  const endDateTime = new Date(`${endDate}T23:59:59Z`).toISOString();
+
+  await fetchAndSaveTestResults(testIds.appEC, startDateTime, endDateTime);
+  res.json({ message: "App EC test attempts processed" });
+});
+
+// Run fetchAndSaveTestResults every 5 minutes for each category
 setInterval(() => {
   console.log("Scheduled task running...");
-  fetchAndSaveTestResults(
-    new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
-    new Date().toISOString()
-  );
+  const now = new Date();
+  const last7Days = new Date(now.setDate(now.getDate() - 7)).toISOString();
+  const today = new Date().toISOString();
+
+  fetchAndSaveTestResults(testIds.cloudEC, last7Days, today);
+  fetchAndSaveTestResults(testIds.dataEC, last7Days, today);
+  fetchAndSaveTestResults(testIds.appEC, last7Days, today);
 }, 300000); // 5 minutes
+
 
 app.get('/api/test-counts', async (req, res) => {
   try {
