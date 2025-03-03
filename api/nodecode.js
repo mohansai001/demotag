@@ -986,41 +986,31 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
-const testIds = [
-  "1292180", "1293122", "1292779", "1292781", "1295883", "1292990", "1292769", "1292775",
-  "1292950", "1292733", "1292976", "1292765", "1292203", "1303946", "1293813", "1293971",
-  "1263132", "1304065", "1233151", "1294495", "1302835", "1294495", "1304066", "1304100",
-  "1292173", "1293822", "1303985", "1303999", "1304109", "1304111", "1304149"
-];
+const testIds = ["1292180", "1293122", "1292779", "1292781", "1295883", "1292990", "1292769", "1292775", "1292950", "1292733", "1292976", "1292765", "1292203"];
 
-// Function to fetch completed test attempts (Chunked requests with delay)
+// Set Axios timeout (60 seconds)
+axios.defaults.timeout = 60000;
+
+// Function to fetch completed test attempts
 async function getCompletedTestAttempts(startDateTime, endDateTime) {
   try {
+    const requests = testIds.map((testId) => {
+      const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
+      return axios.post(`${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`, requestBody, {
+        headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
+      });
+    });
+
+    const responses = await Promise.allSettled(requests);
     const allTestAttempts = [];
 
-    for (const testId of testIds) {
-      const requestBody = { testId, StartDateTime: startDateTime, EndDateTime: endDateTime };
-
-      try {
-        const response = await axios.post(
-          `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
-          requestBody,
-          {
-            headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-            timeout: 30000, // 30 seconds timeout
-          }
-        );
-
-        if (response.data?.result?.testAttempts) {
-          allTestAttempts.push(...response.data.result.testAttempts);
-        }
-
-        // Delay between requests (1 second)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      } catch (error) {
-        console.error(`Failed to fetch test attempts for testId ${testId}:`, error.message);
+    responses.forEach((response) => {
+      if (response.status === "fulfilled") {
+        allTestAttempts.push(...response.value.data.result.testAttempts);
+      } else {
+        console.error("Failed to fetch test attempts:", response.reason.message);
       }
-    }
+    });
 
     return allTestAttempts;
   } catch (error) {
@@ -1029,19 +1019,12 @@ async function getCompletedTestAttempts(startDateTime, endDateTime) {
   }
 }
 
-// Function to fetch report for an invitation ID (With JSON validation)
+// Function to fetch report for an invitation ID
 async function getReport(invitationId) {
   try {
     const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
       headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-      timeout: 30000, // 30 seconds timeout
     });
-
-    // Validate if the response is JSON
-    if (typeof response.data !== "object") {
-      console.error(`Invalid response for invitation ID ${invitationId}:`, response.data);
-      return null;
-    }
 
     return response.data;
   } catch (error) {
@@ -1075,7 +1058,6 @@ async function fetchAndSaveTestResults(startDateTime, endDateTime) {
             attempted_date = EXCLUDED.attempted_date,
             pdf_report_url = EXCLUDED.pdf_report_url;
         `;
-
         const values = [
           report.candidateEmail,
           report.score,
@@ -1125,7 +1107,7 @@ app.post("/api/callTestAttempts", async (req, res) => {
   }
 });
 
-// Run fetchAndSaveTestResults every 5 minutes (300,000ms)
+// Run fetchAndSaveTestResults every 5 minutes
 setInterval(() => {
   console.log("Scheduled task running...");
   fetchAndSaveTestResults(
