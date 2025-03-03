@@ -345,10 +345,35 @@
         transform: rotate(360deg);
       }
     }
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        z-index: 9999;
+    }
+
+    .toast.show {
+        display: block;
+    }
+
+    .toast.success {
+        background-color: #4CAF50;
+    }
+
+    .toast.error {
+        background-color: #f44336;
+    }
   </style>
 </head>
 
 <body>
+  <div id="toast" class="toast"></div>
   <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰Menu</button>
   <!-- Sidebar -->
   <div id="sidebar" class="sidebar-menu hidden">
