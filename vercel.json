@@ -12,5 +12,9 @@
     },
     { "src": "/(.*)", "dest": "/public/$1" },
     { "src": "/javascript/(.*)", "dest": "/public/javascript/$1" }
-  ]
+  ],
+  "functions": {
+    "api/nodecode": { "maxDuration": 60 },
+    "api/callTestAttempts": { "maxDuration": 60 }
+  }
 }
