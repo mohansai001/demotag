@@ -1,309 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Candidate Report</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f6fa;
-        margin: 0;
-        padding: 0;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
 
-      .container {
-        padding: 20px;
-        max-width: 1200px;
-        margin: auto;
-      }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
 
-      .search-bar {
-        display: flex;
-        margin-bottom: 20px;
-      }
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
 
-      .search-input {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-      .search-btn {
-        background-color: #0069d9;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+        .search-btn {
+            background-color: #0069d9;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-      .table {
-        width: 100%;
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
+        .table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
 
-      .table-header,
-      .table-row {
-        display: grid;
-        grid-template-columns: 2.5fr 1fr 0.5fr 1fr 1fr 1fr 1fr; /* Added space for the test name */
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-      }
+        .table-header,
+        .table-row {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 0.5fr 1fr 1fr 1fr 1fr; /* Added space for the test name */
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
 
-      .table-header {
-        background: #f0f0f0;
-        font-weight: bold;
-      }
+        .table-header {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
 
-      .table-row:nth-child(even) {
-        background-color: #f9f9f9;
-      }
+        .table-row:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-      .col {
-        padding: 10px;
-      }
+        .col {
+            padding: 10px;
+        }
 
-      .email,
-      .score,
-      .timestamp,
-      .time {
-        color: #777;
-        font-size: 12px;
-      }
+        .email,
+        .score,
+        .timestamp,
+        .time {
+            color: #777;
+            font-size: 12px;
+        }
 
-      .actions {
-        text-align: center;
-      }
+        .actions {
+            text-align: center;
+        }
 
-      .filter-section {
-        margin-top: 20px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
+        .filter-section {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-      select {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: white;
-      }
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+        }
 
-      .filter-buttons {
-        display: flex;
-        gap: 10px;
-      }
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
 
-      .apply-btn {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+        .apply-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-      .clear-btn {
-        background-color: white;
-        color: #e74c3c;
-        border: 1px solid #e74c3c;
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+        .clear-btn {
+            background-color: white;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #f44336;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <!-- Search Bar -->
-      <div class="search-bar">
-        <input
-          type="text"
-          placeholder="Candidate name or e-mail"
-          class="search-input"
-        />
-        <button class="search-btn">🔍</button>
-      </div>
-      <div class="filter-section">
-        <select>
-          <option value="all">All Reports</option>
-          <option value="last-7-days">Last 7 days</option>
-          <option value="last-30-days">Last 30 days</option>
-          <option value="last-60-days">Last 60 days</option>
-        </select>
-        <select>
-          <option value="all">Status (All)</option>
-          <option value="completed">Completed</option>
-          <option value="test-left">Test Left</option>
-          <option value="terminated">Terminated</option>
-        </select>
-        <select>
-          <option value="all">Candidate Status (All)</option>
-          <option value="not-assigned">Not Assigned</option>
-          <option value="shortlisted">Shortlisted</option>
-          <option value="rejected">Rejected</option>
-        </select>
-        <div class="filter-buttons">
-          <button class="apply-btn">Apply</button>
-          <button class="clear-btn">Clear</button>
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" placeholder="Candidate name or e-mail" class="search-input" />
+            <button class="search-btn">🔍</button>
         </div>
-      </div>
+        <div class="filter-section">
+            <select>
+                <option value="all">All Reports</option>
+                <option value="last-7-days">Last 7 days</option>
+                <option value="last-30-days">Last 30 days</option>
+                <option value="last-60-days">Last 60 days</option>
+            </select>
+            <select>
+                <option value="all">Status (All)</option>
+                <option value="completed">Completed</option>
+                <option value="test-left">Test Left</option>
+                <option value="terminated">Terminated</option>
+            </select>
+            <select>
+                <option value="all">Candidate Status (All)</option>
+                <option value="not-assigned">Not Assigned</option>
+                <option value="shortlisted">Shortlisted</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <div class="filter-buttons">
+                <button class="apply-btn">Apply</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+        </div>
     </div>
 
     <!-- Candidate Table -->
     <div class="table">
-      <div class="table-header">
-        <div class="col">Candidate Email</div>
-        <div class="col">Test Name</div>
-        <div class="col">Score</div>
-        <div class="col">Test Status</div>
-        <div class="col">Appeared On</div>
-        <div class="col">Candidate Status</div>
-        <div class="col">Actions</div>
-      </div>
+        <div class="table-header">
+            <div class="col">Candidate Email</div>
+            <div class="col">Test Name</div>
+            <div class="col">Score</div>
+            <div class="col">Test Status</div>
+            <div class="col">Appeared On</div>
+            <div class="col">Candidate Status</div>
+            <div class="col">Actions</div>
+        </div>
     </div>
-
-    <!-- Filter Section -->
 
     <!-- Email Popup -->
     <div id="emailPopup" style="display: none">
-      <div class="popup-content">
-        <input type="email" id="emailInput" placeholder="Enter email address" />
-        <button onclick="sendEmail()">Send Email</button>
-        <button onclick="closePopup()">Cancel</button>
-      </div>
+        <div class="popup-content">
+            <input type="email" id="emailInput" placeholder="Enter email address" />
+            <button onclick="sendEmail()">Send Email</button>
+            <button onclick="closePopup()">Cancel</button>
+        </div>
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <script>
-      let currentRowData = null;
+        let currentRowData = null;
 
-      // Fetch test results (dummy data for now)
-      async function fetchTestResults() {
-        try {
-          const response = await fetch(
-            "https://demotag.vercel.app/api/fetch-results"
-          );
-          const results = await response.json();
+        // Function to show toast notifications
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show', type);
 
-          if (!results || results.length === 0) {
-            console.error("No results found.");
-            return;
-          }
+            // Remove the toast after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
 
-          results.forEach((report) => {
-            const {
-              candidate_email,
-              score,
-              total_test_points,
-              score_percentage,
-              performance_category,
-              test_name,
-              pdf_report_url,
-              attempted_date,
-            } = report;
+        // Fetch test results (dummy data for now)
+        async function fetchTestResults() {
+            try {
+                const response = await fetch("http://localhost:3000/api/fetch-results");
+                const results = await response.json();
 
-            // Format the attempted_date to display only the date
-            const formattedDate = attempted_date
-              ? new Date(attempted_date).toLocaleDateString()
-              : "N/A";
+                if (!results || results.length === 0) {
+                    showToast("No results found.", "error");
+                    return;
+                }
 
-            // Determine candidate status based on score percentage
-            let candidateStatus = "Needs Improvement";
-            if (score_percentage > 60) {
-              candidateStatus = "Shortlisted";
-            } else if (score_percentage < 40) {
-              candidateStatus = "Failed";
+                results.forEach((report) => {
+                    const {
+                        candidate_email,
+                        score,
+                        total_test_points,
+                        score_percentage,
+                        performance_category,
+                        test_name,
+                        pdf_report_url,
+                        attempted_date,
+                    } = report;
+
+                    // Format the attempted_date to display only the date
+                    const formattedDate = attempted_date
+                        ? new Date(attempted_date).toLocaleDateString()
+                        : "N/A";
+
+                    // Determine candidate status based on score percentage
+                    let candidateStatus = "Needs Improvement";
+                    if (score_percentage > 60) {
+                        candidateStatus = "Shortlisted";
+                    } else if (score_percentage < 40) {
+                        candidateStatus = "Failed";
+                    }
+
+                    // Create a new row
+                    const row = document.createElement("div");
+                    row.classList.add("table-row");
+
+                    row.innerHTML = `
+                        <div class="col">${candidate_email || "N/A"}</div>
+                        <div class="col">${test_name || "N/A"}</div>
+                        <div class="col">${score} / ${total_test_points}</div>
+                        <div class="col">${score_percentage || "N/A"}%</div>
+                        <div class="col">${formattedDate}</div>
+                        <div class="col">${performance_category || "N/A"}</div>
+                        <div class="col actions">
+                            <a href="${pdf_report_url || "#"}" target="_blank" class="buttondownload">📊 Report</a>
+                        </div>
+                    `;
+
+                    // Append the row to the table
+                    document.querySelector(".table").appendChild(row);
+                });
+
+                showToast('Test results fetched successfully!', 'success');
+            } catch (error) {
+                console.error("Error fetching test results:", error);
+                showToast("Failed to fetch test results.", "error");
+            }
+        }
+
+        // Call the function on page load
+        document.addEventListener("DOMContentLoaded", fetchTestResults);
+
+        // Download PDF for the given email
+        function downloadPDF(email) {
+            const report = { email };
+            fetch(`http://localhost:3000/api/download-pdf?email=${email}`)
+                .then((response) => response.blob())
+                .then((blob) => {
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${email}_report.pdf`;
+                    link.click();
+                    showToast("PDF downloaded successfully!", "success");
+                })
+                .catch((error) => {
+                    console.error("Error downloading PDF:", error);
+                    showToast("Error downloading PDF.", "error");
+                });
+        }
+
+        // Show the email popup
+        function showEmailPopup(email) {
+            currentRowData = email;
+            document.getElementById("emailPopup").style.display = "flex";
+        }
+
+        // Close the popup
+        function closePopup() {
+            document.getElementById("emailPopup").style.display = "none";
+            currentRowData = null;
+        }
+
+        // Send email
+        function sendEmail() {
+            const email = document.getElementById("emailInput").value;
+            if (!email) {
+                showToast("Please enter an email address.", "error");
+                return;
             }
 
-            // Create a new row
-            const row = document.createElement("div");
-            row.classList.add("table-row");
-
-            row.innerHTML = `
-        <div class="col">${candidate_email || "N/A"}</div>
-        <div class="col">${test_name || "N/A"}</div>
-        <div class="col">${score} / ${total_test_points}</div>
-        <div class="col">${score_percentage || "N/A"}%</div>
-        <div class="col">${formattedDate}</div>
-        <div class="col">${performance_category || "N/A"}</div>
-        <div class="col actions">
-          <a href="${
-            pdf_report_url || "#"
-          }" target="_blank" class="buttondownload">📊 Report</a>
-        </div>
-      `;
-
-            // Append the row to the table
-            document.querySelector(".table").appendChild(row);
-          });
-        } catch (error) {
-          console.error("Error fetching test results:", error);
-        }
-      }
-
-      // Call the function on page load
-      document.addEventListener("DOMContentLoaded", fetchTestResults);
-
-      // Download PDF for the given email
-      function downloadPDF(email) {
-        const report = { email };
-        fetch(`https://demotag.vercel.app/api/download-pdf?email=${email}`)
-          .then((response) => response.blob())
-          .then((blob) => {
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `${email}_report.pdf`;
-            link.click();
-          })
-          .catch((error) => console.error("Error downloading PDF:", error));
-      }
-
-      // Show the email popup
-      function showEmailPopup(email) {
-        currentRowData = email;
-        document.getElementById("emailPopup").style.display = "flex";
-      }
-
-      // Close the popup
-      function closePopup() {
-        document.getElementById("emailPopup").style.display = "none";
-        currentRowData = null;
-      }
-
-      // Send email
-      function sendEmail() {
-        const email = document.getElementById("emailInput").value;
-        if (!email) {
-          alert("Please enter an email address.");
-          return;
+            fetch(`http://localhost:3000/api/send-email`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    recipient: email,
+                    subject: "Test Report",
+                    body: "Your test report is attached.",
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    showToast("Email sent successfully!", "success");
+                    closePopup();
+                })
+                .catch((error) => {
+                    console.error("Error sending email:", error);
+                    showToast("Failed to send email.", "error");
+                });
         }
 
-        fetch(`https://demotag.vercel.app/api/send-email`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            recipient: email,
-            subject: "Test Report",
-            body: "Your test report is attached.",
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            alert("Email sent successfully!");
-            closePopup();
-          })
-          .catch((error) => console.error("Error sending email:", error));
-      }
-
-      // Call fetchTestResults when the page is ready
-      window.onload = fetchTestResults;
+        // Call fetchTestResults when the page is ready
+        window.onload = fetchTestResults;
     </script>
-  </body>
+</body>
+
 </html>
