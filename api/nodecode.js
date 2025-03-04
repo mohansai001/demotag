@@ -1112,13 +1112,14 @@ app.post("/api/callTestAttempts/appEC", async (req, res) => {
 // Run fetchAndSaveTestResults every 5 minutes for each category
 setInterval(() => {
   console.log("Scheduled task running...");
+  
   const now = new Date();
-  const last7Days = new Date(now.setDate(now.getDate() - 7)).toISOString();
-  const today = new Date().toISOString();
+  const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+  const currentTime = new Date().toISOString();
 
-  fetchAndSaveTestResults(testIds.cloudEC, last7Days, today);
-  fetchAndSaveTestResults(testIds.dataEC, last7Days, today);
-  fetchAndSaveTestResults(testIds.appEC, last7Days, today);
+  fetchAndSaveTestResults(testIds.cloudEC, last24Hours, currentTime);
+  fetchAndSaveTestResults(testIds.dataEC, last24Hours, currentTime);
+  fetchAndSaveTestResults(testIds.appEC, last24Hours, currentTime);
 }, 300000); // 5 minutes
 
 
