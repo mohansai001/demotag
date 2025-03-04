@@ -1120,7 +1120,7 @@ setInterval(() => {
   fetchAndSaveTestResults(testIds.cloudEC, last24Hours, currentTime);
   fetchAndSaveTestResults(testIds.dataEC, last24Hours, currentTime);
   fetchAndSaveTestResults(testIds.appEC, last24Hours, currentTime);
-}, 300000); // 5 minutes
+}, 10000); // 5 minutes
 
 
 app.get('/api/test-counts', async (req, res) => {
