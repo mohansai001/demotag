@@ -148,6 +148,9 @@
 
         .feedback-section-text {
             margin-top: 5px;
+            height: 100px; 
+            width: 100%; 
+            font-family: Arial, sans-serif;
         }
 
         .feedback-section label {
@@ -250,6 +253,7 @@
             background-color: red;
             color: white;
         }
+
         .toast {
             position: fixed;
             top: 20px;
@@ -362,7 +366,9 @@
             <div class="candidate-photo">
                 <input type="file" id="imageUpload" accept="image/*" style="display:none;">
                 <div class="image-container" id="imageContainer">
-                    <label for="imageUpload" id="uploadLabel" class="upload-label"><center>Upload</center><br>Candidate Image</label>
+                    <label for="imageUpload" id="uploadLabel" class="upload-label">
+                        <center>Upload</center><br>Candidate Image
+                    </label>
                     <img id="imagePreview" style="display:none;">
                 </div>
             </div>
@@ -381,7 +387,7 @@
                             <option value="not-shortlisted">Not Shortlisted</option>
                         </select>
                     </td>
-                    <td><input type="text" id="summary"></td>
+                    <td><textarea id="summary" style="height: 100px; width: 100%; font-family: Arial, sans-serif;"></textarea></td>
                 </tr>
             </table>
 
@@ -677,18 +683,19 @@
                 </table>
             </div>
         </div>
-        
+
         <div id="data-section" style="display: none;">
             <div class="section">
-                <h1><center>Coming Soon</center></h1>
+                <h1>
+                    <center>Coming Soon</center>
+                </h1>
             </div>
         </div>
 
         <!-- Feedback Section -->
         <div class="feedback-section">
             <label for="detailed-feedback">Detailed Feedback: *</label>
-            <textarea id="detailed-feedback" class="feedback-section-text"
-                placeholder="Enter your detailed feedback here..." required></textarea>
+            <textarea id="detailed-feedback" class="feedback-section-text" placeholder="Enter your detailed feedback here..." required></textarea>
         </div>
 
         <div style="display: flex; justify-content: center;">
@@ -704,26 +711,25 @@
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show', type);
-
-            // Remove the toast after 4 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
-        
-        // Initial color application based on the default selected value
+
         document.addEventListener('DOMContentLoaded', function () {
             const summaryBox = document.getElementById('status-dropdown');
             const selectedValue = summaryBox.value;
-
-            // Reset background color before applying new styles
             summaryBox.classList.remove('green-background', 'red-background');
-
-            // Apply the appropriate background color based on the default selected value
             if (selectedValue === 'shortlisted') {
                 summaryBox.classList.add('green-background');
             } else if (selectedValue === 'not-shortlisted') {
                 summaryBox.classList.add('red-background');
+            }
+
+            // Retrieve candidate details from localStorage
+            const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
+            if (candidateDetails && candidateDetails.finalSummary) {
+                document.getElementById('summary').value = candidateDetails.finalSummary;
             }
         });
 
@@ -731,11 +737,8 @@
         document.getElementById('status-dropdown').addEventListener('change', function () {
             const summaryBox = document.getElementById('status-dropdown');
             const selectedValue = this.value;
-
-            // Reset background color before applying new styles
             summaryBox.classList.remove('green-background', 'red-background');
 
-            // Apply the appropriate background color based on selection
             if (selectedValue === 'shortlisted') {
                 summaryBox.classList.add('green-background');
             } else if (selectedValue === 'not-shortlisted') {
@@ -743,8 +746,6 @@
             }
         });
 
-
-        // Trigger the file input when clicking on the container or image
         document.getElementById('imageContainer').addEventListener('click', function () {
             document.getElementById('imageUpload').click();
         });
@@ -767,12 +768,11 @@
             } else {
                 image.src = "";
                 image.style.display = 'none';
-                label.style.display = 'block'; // Show the label again if no image is selected or it's not an image
+                label.style.display = 'block';
             }
         });
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Retrieve candidate details from localStorage
             const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
 
             // Fetch all candidate emails from the server
@@ -782,7 +782,6 @@
                     if (data.error) {
                         showToast(data.error, 'error');
                     } else {
-                        // Populate the dropdown with emails
                         const emailDropdown = document.getElementById('candidate-email-dropdown');
                         data.emails.forEach(email => {
                             const option = document.createElement('option');
@@ -791,13 +790,15 @@
                             emailDropdown.appendChild(option);
                         });
 
-                        // Set the email from localStorage after options are populated
                         if (candidateDetails && candidateDetails.candidateEmail) {
                             console.log("Candidate email found in localStorage:", candidateDetails.candidateEmail);
                             emailDropdown.value = candidateDetails.candidateEmail;
 
-                            // Fetch candidate details based on the email from localStorage
                             fetchCandidateData(candidateDetails.candidateEmail);
+                            const finalSummary = localStorage.getItem('finalSummary');
+                            if (finalSummary) {
+                                document.getElementById('summary').value = finalSummary;
+                            }
                         }
                     }
                 })
@@ -806,25 +807,25 @@
                     showToast("Failed to load candidate emails.", "error");
                 });
 
-            // Event listener to fetch candidate details when an email is selected
             const emailDropdown = document.getElementById('candidate-email-dropdown');
             emailDropdown.addEventListener('change', function (event) {
                 const selectedEmail = event.target.value;
                 if (selectedEmail) {
                     fetchCandidateData(selectedEmail);
+                    const finalSummary = localStorage.getItem('finalSummary');
+                    if (finalSummary) {
+                        document.getElementById('summary').value = finalSummary;
+                    }
                 }
             });
 
-            // Function to fetch candidate details based on the selected email
             function fetchCandidateData(email) {
                 fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Check if the data is returned successfully
                         if (data.error) {
                             showToast(data.error, 'error');
                         } else {
-                            // Populate the form fields with the returned data
                             document.getElementById('candidate-name').value = data.candidate_name;
                             document.getElementById('position').value = data.role;
                             document.getElementById('rrf-id').value = data.rrf_id;
@@ -837,7 +838,6 @@
                     });
             }
         });
-
 
         document.getElementById('ec-select').addEventListener('change', function () {
             const selectedValue = this.value;
@@ -859,14 +859,25 @@
                 document.getElementById('app-section').style.display = 'none';
                 document.getElementById('data-section').style.display = 'none';
             }
-
         });
 
-        // Trigger the change event to handle initial state with no selection
         document.getElementById('ec-select').dispatchEvent(new Event('change'));
 
+        function validateWordCount(feedback) {
+            const wordCount = feedback.trim().split(/\s+/).filter(Boolean).length;
+            return wordCount >= 100;
+        }
 
         document.getElementById('submit-button').addEventListener('click', function () {
+            const feedbackTextarea = document.getElementById('detailed-feedback');
+            const feedbackText = feedbackTextarea.value;
+
+            if (!validateWordCount(feedbackText)) {
+                event.preventDefault();
+                showToast('Please provide at least 100 words of feedback.', 'error');
+                return;
+            }
+
             // Collect all form data
             const formData = {
                 candidate_email: document.getElementById('candidate-email-dropdown').value,
@@ -941,9 +952,6 @@
                     showToast("Failed to submit form.", "error");
                 });
         });
-
     </script>
-
 </body>
-
 </html>
