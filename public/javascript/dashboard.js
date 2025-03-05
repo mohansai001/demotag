@@ -863,6 +863,8 @@ async function fetchgetCandidates() {
      await fetchPrescreeningCount();
      await fetchL1Count();
      await fetchL2Count();
+	    await fetchImocha();
+	    
         // await fetchCounts();
         // await fetchCounts1();
     } catch (error) {
