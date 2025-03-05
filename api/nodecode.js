@@ -2313,6 +2313,32 @@ app.post('/api/update-visibility', async (req, res) => {
   }
 });
 
+app.get("/api/shortlisted-count", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE prescreening_status = 'Shortlisted'"
+    );
+    
+    res.json({ inviteCount: result.rows[0].shortlisted_count });
+  } catch (error) {
+    console.error("Error fetching shortlisted count:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/available-score-count", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT COUNT(*) AS available_score_count FROM candidate_info WHERE l_1_score IS NOT NULL"
+    );
+
+    res.json({ availableScoreCount: result.rows[0].available_score_count });
+  } catch (error) {
+    console.error("Error fetching available score count:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 // Start the server
