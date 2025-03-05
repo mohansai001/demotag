@@ -586,9 +586,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, {});
  
         // Update the total applicants count
-        const totalApplicants = Object.values(aggregatedData).reduce((total, count) => total + count, 0);
-        const totalApplicantsStr = totalApplicants.toString().replace(/^0+/, '');
-        document.querySelector('.center-circle p').textContent = totalApplicantsStr;
+        const totalApplicants = Object.values(aggregatedData).reduce((total, count) => total + Number(count), 0);
+        document.querySelector('.center-circle p').textContent = totalApplicants;
  
         // Update individual metrics
         Object.entries(aggregatedData).forEach(([eng_center, resume_count]) => {
