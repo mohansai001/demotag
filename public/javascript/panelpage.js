@@ -6,6 +6,9 @@ const monthSelector = document.getElementById("monthSelector");
 const yearSelector = document.getElementById("yearSelector");
 const meetingContainer = document.getElementById("meeting-container");
 const calendarMonthYearElement = document.getElementById("calendarMonthYear");
+const feedbackModal = document.getElementById("feedbackModal");
+const feedbackFormIframe = document.getElementById('feedbackFormIframe');
+const feedbackCloseBtn = document.querySelector(".close-btn");
 
 function logout() {
     window.location.href = 'index.html';
@@ -176,7 +179,9 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
         meetingContainer.innerHTML = '<p>Error fetching meetings.</p>';
     }
 }
-
+function closeFeedbackModal() {
+    document.getElementById('feedbackModal').style.display = 'none';
+}
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
