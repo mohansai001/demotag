@@ -1858,6 +1858,25 @@ async function updateFilter() {
     window.location.reload(); // Reload to reflect changes
 }
 
+async function fetchImocha() {
+    try {
+      // Fetch Shortlisted Count
+      const shortlistedRes = await fetch("https://demotag.vercel.app/api/shortlisted-count");
+      const shortlistedData = await shortlistedRes.json();
+      document.getElementById("inviteCount").innerText = shortlistedData.inviteCount;
+
+      // Fetch Available Score Count
+      const scoreRes = await fetch("https://demotag.vercel.app/api/available-score-count");
+      const scoreData = await scoreRes.json();
+      document.getElementById("availableScoreCount").innerText = scoreData.availableScoreCount;
+
+    } catch (error) {
+      console.error("Error fetching counts:", error);
+      document.getElementById("inviteCount").innerText = "Error";
+      document.getElementById("availableScoreCount").innerText = "Error";
+    }
+  }
+
 
 
 
