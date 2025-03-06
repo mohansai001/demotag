@@ -664,29 +664,29 @@
                 redirectUri: "https://demotag.vercel.app", // Must match the redirect URI registered in Azure AD
             }
         };
-    
+
         const msalInstance = new msal.PublicClientApplication(msalConfig);
         const loggedInUserEmail = localStorage.getItem("userEmail");
-    
+
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.remove('success', 'error');
-            
+
             toast.classList.add('show');
             toast.classList.add(type);
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
-    
+
         function downloadPDF() {
             const formContainer = document.querySelector('.form-container');
-    
+
             // Temporarily remove positioning styles    
             formContainer.style.marginLeft = '0';
             formContainer.style.marginTop = '0';
-    
+
             const options = {
                 margin: 1,
                 filename: 'Interview_Feedback_Form.pdf',
@@ -694,23 +694,23 @@
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
-    
+
             html2pdf().set(options).from(formContainer).save().then(() => {
                 // Restore the original styles after generating the PDF
                 formContainer.style.marginLeft = '22%';
                 formContainer.style.marginTop = '-41%';
             });
         }
-    
+
         function navigateTo(page) {
             window.location.href = page;
         }
-    
+
         document.addEventListener("DOMContentLoaded", function () {
             // Get the candidate email from the URL
             const urlParams = new URLSearchParams(window.location.search);
             const candidateEmail = urlParams.get('candidateEmail');
-    
+
             if (candidateEmail) {
                 // Fetch candidate data from the server based on the email
                 fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
@@ -737,36 +737,50 @@
                     });
             }
         });
-    
+
         document.getElementById('submit-button').addEventListener('click', function (e) {
             e.preventDefault(); // Prevent the default form submission
-    
+
             // Get the required field values
             const feedback = document.getElementById('detailed-feedback').value;
             const result = document.getElementById('result').value;
             const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
-            const requiredFields = [
-                'candidate-name', 'position', 'interviewer-name', 'interview-date',
-                'detailed-feedback', 'result', 'core-cloud-concepts-deployment',
-                'networking-security-deployment', 'infrastructure-management-deployment',
-                'scalability-high-avail-deployment', 'automation-deployment', 'observability-deployment'
-            ];
-    
-            let allFieldsValid = true;
-    
-            // Loop through the required fields to check if they are filled
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (!field || !field.value.trim()) {
-                    allFieldsValid = false;
-                    showToast(`Please fill all the fields`, "error");
-                }
-            });
-    
-            if (!allFieldsValid) {
-                return; // Prevent submission if any required field is empty
+            if (!feedback || !result) {
+                showToast("Please fill in all required fields.", "error");
+                return;
             }
-    
+
+            // Send the data to the backend for updating the database
+            fetch('https://demotag.vercel.app/api/updateCandidateFeedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    candidateEmail: candidateEmail,
+                    feedback: feedback,
+                    result: result,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Feedback and result updated successfully.');
+                        window.close();
+
+                    } else {
+                        showToast('Error updating the feedback and result.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('An error occurred while submitting the feedback.', 'error');
+                });
+        });
+
+
+        document.getElementById('submit-button').addEventListener('click', function (e) {
+            e.preventDefault();
             // Prepare the form data
             const formData = {
                 rrf_id: document.getElementById('rrf-id').value,
@@ -776,61 +790,61 @@
                 interviewer_name: document.getElementById('interviewer-name').value,
                 hr_email: document.getElementById('hr-email').value,
                 candidate_email: document.getElementById('candidate-email').textContent,
-    
+
                 // Core Cloud Concepts
                 core_cloud_concepts_deployment: document.getElementById('core-cloud-concepts-deployment').value,
                 core_cloud_concepts_configuration: document.getElementById('core-cloud-concepts-configuration').value,
                 core_cloud_concepts_troubleshooting: document.getElementById('core-cloud-concepts-troubleshooting').value,
                 core_cloud_concepts_justification: document.getElementById('core-cloud-concepts-justification').value,
                 core_cloud_concepts_improvements: document.getElementById('core-cloud-concepts-improvements').value,
-    
+
                 // Networking & Security
                 networking_security_deployment: document.getElementById('networking-security-deployment').value,
                 networking_security_configuration: document.getElementById('networking-security-configuration').value,
                 networking_security_troubleshooting: document.getElementById('networking-security-troubleshooting').value,
                 networking_security_justification: document.getElementById('networking-security-justification').value,
                 networking_security_improvements: document.getElementById('networking-security-improvements').value,
-    
+
                 // Infrastructure Management
                 infrastructure_management_deployment: document.getElementById('infrastructure-management-deployment').value,
                 infrastructure_management_configuration: document.getElementById('infrastructure-management-configuration').value,
                 infrastructure_management_troubleshooting: document.getElementById('infrastructure-management-troubleshooting').value,
                 infrastructure_management_justification: document.getElementById('infrastructure-management-justification').value,
                 infrastructure_management_improvements: document.getElementById('infrastructure-management-improvements').value,
-    
+
                 // Scalability & High Availability
                 scalability_high_avail_deployment: document.getElementById('scalability-high-avail-deployment').value,
                 scalability_high_avail_configuration: document.getElementById('scalability-high-avail-configuration').value,
                 scalability_high_avail_troubleshooting: document.getElementById('scalability-high-avail-troubleshooting').value,
                 scalability_high_avail_justification: document.getElementById('scalability-high-avail-justification').value,
                 scalability_high_avail_improvements: document.getElementById('scalability-high-avail-improvements').value,
-    
+
                 // Automation
                 automation_deployment: document.getElementById('automation-deployment').value,
                 automation_configuration: document.getElementById('automation-configuration').value,
                 automation_troubleshooting: document.getElementById('automation-troubleshooting').value,
                 automation_justification: document.getElementById('automation-justification').value,
                 automation_improvements: document.getElementById('automation-improvements').value,
-    
+
                 // Observability
                 observability_deployment: document.getElementById('observability-deployment').value,
                 observability_configuration: document.getElementById('observability-configuration').value,
                 observability_troubleshooting: document.getElementById('observability-troubleshooting').value,
                 observability_justification: document.getElementById('observability-justification').value,
                 observability_improvements: document.getElementById('observability-improvements').value,
-    
+
                 // Additional fields for Detailed Feedback and Result
                 detailed_feedback: document.getElementById('detailed-feedback').value,
                 result: document.getElementById('result').value
             };
-    
+
             // Step 1: Generate PDF
             const formContainer = document.querySelector('.form-container');
             const originalMarginLeft = formContainer.style.marginLeft;
             const originalMarginTop = formContainer.style.marginTop;
             formContainer.style.marginLeft = '0';
             formContainer.style.marginTop = '0';
-    
+
             setTimeout(() => {
                 html2pdf()
                     .set({
@@ -845,20 +859,20 @@
                     .get('pdf')
                     .then(async (pdf) => {
                         const pdfBlob = pdf.output('blob');
-    
+
                         // Restore original styles after PDF generation
                         formContainer.style.marginLeft = originalMarginLeft;
                         formContainer.style.marginTop = originalMarginTop;
-    
+
                         // Convert Blob to Base64
                         const base64PDF = await convertBlobToBase64(pdfBlob);
-    
+
                         // Acquire Microsoft Graph API Token
                         const tokenRequest = {
                             scopes: ["Mail.Send"],
                             account: msalInstance.getAllAccounts()[0]
                         };
-    
+
                         let tokenResponse;
                         try {
                             tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
@@ -866,9 +880,9 @@
                             console.warn("Silent token acquisition failed; trying popup.", silentError);
                             tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
                         }
-    
+
                         const accessToken = tokenResponse.accessToken;
-    
+
                         // Prepare Email Data
                         const emailContent = {
                             message: {
@@ -890,7 +904,7 @@
                                 ]
                             }
                         };
-    
+
                         // Send Email via Microsoft Graph API
                         fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
                             method: "POST",
@@ -900,37 +914,37 @@
                             },
                             body: JSON.stringify(emailContent)
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            showToast("Email sent successfully with attachment!", "success");
-                        })
-                        .catch(error => {
-                            console.error("Error sending email:", error);
-                        });
-    
+                            .then(response => response.json())
+                            .then(data => {
+                                showToast("Email sent successfully with attachment!", "success");
+                            })
+                            .catch(error => {
+                                console.error("Error sending email:", error);
+                            });
+
                         // Submit Form Data to Backend
                         fetch('https://demotag.vercel.app/api/add-feedback', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(formData)
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showToast("Feedback submitted successfully!", "success");
-                                window.parent.closeFeedbackModal();
-                            } else {
-                                showToast("Error submitting feedback", "error");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            showToast("An error occurred while submitting the feedback", "error");
-                        });
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showToast("Feedback submitted successfully!", "success");
+                                    window.parent.closeFeedbackModal();
+                                } else {
+                                    showToast("Error submitting feedback", "error");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                showToast("An error occurred while submitting the feedback", "error");
+                            });
                     });
             }, 500);
         });
-    
+
         async function convertBlobToBase64(blob) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -943,4 +957,5 @@
         }
     </script>
 </body>
+
 </html>
