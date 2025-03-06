@@ -15,8 +15,7 @@
             padding: 0;
             background: linear-gradient(120deg, #e6e6fa, #daf7a6);
             color: #e0e0e0;
-            height: 100%;
-            overflow: hidden;
+            height: fit-content;
         }
 
         :root {
@@ -293,7 +292,7 @@
             auth: {
                 clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
                 authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
-                redirectUri: "https://demotag.vercel.app", // Must match the redirect URI registered in Azure AD
+                redirectUri: "http://localhost:3000", // Must match the redirect URI registered in Azure AD
             }
         };
 
@@ -339,13 +338,14 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the candidate email from the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const candidateEmail = urlParams.get('candidateEmail');
+            // Retrieve candidate details from localStorage
+            const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
 
-            if (candidateEmail) {
+            if (candidateDetails) {
+                const candidateEmail = candidateDetails.candidateEmail; // Get the candidate email from the stored details
+
                 // Fetch candidate data from the server based on the email
-                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+                fetch(`http://localhost:3000/api/getCandidateData?candidateEmail=${candidateEmail}`)
                     .then(response => response.json())
                     .then(data => {
                         // Check if the data is returned successfully
@@ -358,7 +358,7 @@
                             document.getElementById('interviewer-name').value = data.panel_name;
                             document.getElementById('interview-date').value = data.l_2_interviewdate;
                             document.getElementById('imocha-score').textContent = data.l_1_score;
-                            document.getElementById('candidate-email').textContent = candidateEmail;
+                            document.getElementById('candidate-email').textContent = candidateEmail; // Use email from localStorage
                             document.getElementById('rrf-id').value = data.rrf_id;
                             document.getElementById('hr-email').value = data.hr_email;
                         }
@@ -367,48 +367,52 @@
                         console.error('Error fetching candidate data:', error);
                         showToast("Failed to load candidate data.", "error");
                     });
+            } else {
+                // Handle the case where no candidate details are found in localStorage
+                showToast("No candidate details found in localStorage.", "error");
             }
         });
 
-        document.getElementById('submit-button').addEventListener('click', function (e) {
-            e.preventDefault(); // Prevent the default form submission
 
-            // Get the required field values
-            const feedback = document.getElementById('detailed-feedback').value;
-            const result = document.getElementById('result').value;
-            const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
-            if (!feedback || !result) {
-                showToast("Please fill in all required fields.", "error");
-                return;
-            }
+        // document.getElementById('submit-button').addEventListener('click', function (e) {
+        //     e.preventDefault(); // Prevent the default form submission
 
-            // Send the data to the backend for updating the database
-            fetch('https://demotag.vercel.app/api/updateCandidateFeedback', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    candidateEmail: candidateEmail,
-                    feedback: feedback,
-                    result: result,
-                }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Feedback and result updated successfully.');
-                        window.close();
+        //     // Get the required field values
+        //     const feedback = document.getElementById('detailed-feedback').value;
+        //     const result = document.getElementById('result').value;
+        //     const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
+        //     if (!feedback || !result) {
+        //         showToast("Please fill in all required fields.", "error");
+        //         return;
+        //     }
 
-                    } else {
-                        showToast('Error updating the feedback and result.', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('An error occurred while submitting the feedback.', 'error');
-                });
-        });
+        //     // Send the data to the backend for updating the database
+        //     fetch('http://localhost:3000/api/updateCandidateFeedback', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             candidateEmail: candidateEmail,
+        //             feedback: feedback,
+        //             result: result,
+        //         }),
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 showToast('Feedback and result updated successfully.');
+        //                 window.close();
+
+        //             } else {
+        //                 showToast('Error updating the feedback and result.', 'error');
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error:', error);
+        //             showToast('An error occurred while submitting the feedback.', 'error');
+        //         });
+        // });
 
     </script>
 </body>
