@@ -2347,12 +2347,18 @@ app.post("/api/saveRounds", async (req, res) => {
   }
 
   try {
-    const newRounds = [];
+    let newRounds = [];
+    let hasFitment = false;
 
     for (const round of rounds) {
       const { rrf_id, recruitment_rounds } = round;
 
-      // Check if the round already exists for the given rrf_id
+      if (recruitment_rounds.toLowerCase() === "fitment round") {
+        hasFitment = true; // Mark fitment round presence
+        continue; // Skip adding it for now
+      }
+
+      // Check if the round already exists
       const checkQuery = "SELECT COUNT(*) FROM rrf_rounds WHERE rrf_id = $1 AND recruitment_rounds = $2";
       const { rows } = await pool.query(checkQuery, [rrf_id, recruitment_rounds]);
 
@@ -2362,19 +2368,47 @@ app.post("/api/saveRounds", async (req, res) => {
     }
 
     if (newRounds.length > 0) {
-      // Insert only new rounds
+      // Get current rounds (excluding "Fitment Round") for order calculation
+      const orderQuery = `
+        SELECT recruitment_rounds, round_order 
+        FROM rrf_rounds WHERE rrf_id = $1 
+        AND LOWER(recruitment_rounds) != 'fitment round' 
+        ORDER BY round_order ASC
+      `;
+      const orderResult = await pool.query(orderQuery, [newRounds[0].rrf_id]);
+      let currentMaxOrder = orderResult.rows.length; // Get the count of non-fitment rounds
+
+      // Insert new rounds
       const insertQuery = `
         INSERT INTO rrf_rounds (rrf_id, recruitment_rounds, round_order) 
         VALUES ${newRounds.map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`).join(", ")}
       `;
 
-      const values = newRounds.flatMap((round, i) => [round.rrf_id, round.recruitment_rounds, i + 1]); // Assign order
+      const values = newRounds.flatMap((round) => {
+        currentMaxOrder += 1; // Increment order number
+        return [round.rrf_id, round.recruitment_rounds, currentMaxOrder];
+      });
 
       await pool.query(insertQuery, values);
-      return res.json({ success: true, message: "New rounds added successfully" });
     }
 
-    res.json({ success: false, message: "No new rounds to add" });
+    // Ensure "Fitment Round" is always last
+    if (hasFitment) {
+      // Remove existing Fitment Round if present
+      await pool.query("DELETE FROM rrf_rounds WHERE rrf_id = $1 AND LOWER(recruitment_rounds) = 'fitment round'", [rounds[0].rrf_id]);
+
+      // Reinsert Fitment Round as the last round
+      const finalOrderQuery = "SELECT COUNT(*) AS total FROM rrf_rounds WHERE rrf_id = $1";
+      const finalOrderResult = await pool.query(finalOrderQuery, [rounds[0].rrf_id]);
+      const lastOrder = parseInt(finalOrderResult.rows[0].total) + 1; // Next available order
+
+      await pool.query(
+        "INSERT INTO rrf_rounds (rrf_id, recruitment_rounds, round_order) VALUES ($1, $2, $3)",
+        [rounds[0].rrf_id, "Fitment Round", lastOrder]
+      );
+    }
+
+    res.json({ success: true, message: "Rounds added successfully" });
   } catch (error) {
     console.error("Error saving rounds:", error);
     res.status(500).json({ success: false, message: "Database error" });
