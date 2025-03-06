@@ -362,6 +362,7 @@
       position: relative;
       max-width: 800px;
       margin: 0 auto;
+      z-index: 0;
     }
 
     .step {
@@ -442,6 +443,35 @@
       width: 300px;
       text-align: center;
     }
+
+    .popup-feedback {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 95%;
+      height: 95%;
+      text-align: center;
+      z-index: 9999;
+      position: fixed;
+      top: 2.5%;
+      left: 2.5%;
+    }
+
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close-btn:hover,
+      .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
 
     .popup-content input,
     .popup-content select {
