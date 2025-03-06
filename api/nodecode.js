@@ -2339,7 +2339,67 @@ app.get("/api/available-score-count", async (req, res) => {
   }
 });
 
+app.post("/api/saveRounds", async (req, res) => {
+  const { rounds } = req.body;
 
+  if (!rounds || rounds.length === 0) {
+    return res.status(400).json({ success: false, message: "No rounds provided" });
+  }
+
+  try {
+    const newRounds = [];
+
+    for (const round of rounds) {
+      const { rrf_id, recruitment_rounds } = round;
+
+      // Check if the round already exists for the given rrf_id
+      const checkQuery = "SELECT COUNT(*) FROM rrf_rounds WHERE rrf_id = $1 AND recruitment_rounds = $2";
+      const { rows } = await pool.query(checkQuery, [rrf_id, recruitment_rounds]);
+
+      if (parseInt(rows[0].count) === 0) {
+        newRounds.push(round);
+      }
+    }
+
+    if (newRounds.length > 0) {
+      // Insert only new rounds
+      const insertQuery = `
+        INSERT INTO rrf_rounds (rrf_id, recruitment_rounds, round_order) 
+        VALUES ${newRounds.map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`).join(", ")}
+      `;
+
+      const values = newRounds.flatMap((round, i) => [round.rrf_id, round.recruitment_rounds, i + 1]); // Assign order
+
+      await pool.query(insertQuery, values);
+      return res.json({ success: true, message: "New rounds added successfully" });
+    }
+
+    res.json({ success: false, message: "No new rounds to add" });
+  } catch (error) {
+    console.error("Error saving rounds:", error);
+    res.status(500).json({ success: false, message: "Database error" });
+  }
+});
+
+
+
+app.get("/api/getRounds", async (req, res) => {
+  const { rrf_id } = req.query;
+
+  if (!rrf_id) {
+    return res.status(400).json({ success: false, message: "Missing rrf_id" });
+  }
+
+  try {
+    const query = "SELECT recruitment_rounds, round_order FROM rrf_rounds WHERE rrf_id = $1 ORDER BY round_order";
+    const { rows } = await pool.query(query, [rrf_id]);
+
+    res.json({ success: true, rounds: rows });
+  } catch (error) {
+    console.error("Error fetching rounds:", error);
+    res.status(500).json({ success: false, message: "Database error" });
+  }
+});
 
 // Start the server
 app.listen(PORT, () => {
