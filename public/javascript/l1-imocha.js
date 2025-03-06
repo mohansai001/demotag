@@ -327,9 +327,6 @@ function saveRoundsToDB() {
     });
 }
 
-
-
-
 function displayRounds(rounds) {
   const stepsContainer = document.querySelector(".steps-container");
 
@@ -341,18 +338,55 @@ function displayRounds(rounds) {
 
   rounds.forEach((round, index) => {
     const stepDiv = document.createElement("div");
-    stepDiv.classList.add("step");
-    if (index < 2) stepDiv.classList.add("active"); // Set first 2 rounds as active by default
+    if (index < 3) {
+      stepDiv.classList.add("step"); // For rounds 1, 2, 3, regular step
+    } else {
+      stepDiv.classList.add("step", "feedback"); // For rounds 4 and above, add feedback class
+    }
 
     stepDiv.innerHTML = `
       <div class="step-circle">${index + 1}</div>
       <div class="step-title">${round.recruitment_rounds}</div>
     `;
 
+    // Add event listener to steps 4 and above for opening the feedback form popup
+    if (index >= 3) {
+      stepDiv.addEventListener("click", function () {
+        openFeedbackFormPopup(round);
+      });
+    }
+
     stepsContainer.appendChild(stepDiv);
   });
 }
 
+function openFeedbackFormPopup(round) {
+  // Create and show a modal or popup with the feedback form
+  const popupForm = document.createElement("div");
+  popupForm.classList.add("popup-form");
+
+  // Add the content of the feedback form
+  popupForm.innerHTML = `
+    <div class="popup-feedback">
+      <span class="close-btn" onclick="closePopupForm()">&times;</span>
+      <h2>Feedback for Round: ${round.recruitment_rounds}</h2>
+      <iframe src="feedbackform.html" width="100%" height="90%"></iframe>
+    </div>
+  `;
+
+  // Append to the body or a specific container
+  document.body.appendChild(popupForm);
+  popupForm.style.display = "block";
+}
+
+function closePopupForm() {
+  // Close the feedback form popup
+  const popupForm = document.querySelector(".popup-form");
+  if (popupForm) {
+    popupForm.style.display = "none";
+    popupForm.remove();
+  }
+}
 function fetchRoundsFromDB(globalRrfId) {
   fetch(`https://demotag.vercel.app/api/getRounds?rrf_id=${globalRrfId}`)
     .then((response) => response.json())
