@@ -1939,7 +1939,7 @@ app.put("/api/update-status", async (req, res) => {
     `;
 
     await pool.query(updateQuery, [
-      "L2 Scheduled",
+      status,
       meetingLink, // Use meetingLink from frontend
       dateTime.split("T")[0],
       dateTime.split("T")[1].split(".")[0],
