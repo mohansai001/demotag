@@ -1,11 +1,11 @@
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
   toast.textContent = message;
-  toast.classList.add('show', type);
+  toast.classList.add("show", type);
 
   // Remove the toast after 4 seconds
   setTimeout(() => {
-      toast.classList.remove('show');
+    toast.classList.remove("show");
   }, 3000);
 }
 function navigateTo(page) {
@@ -120,12 +120,17 @@ async function getNextRound(rrf_id, recruitment_Phase) {
   }
 }
 
+
+
+
+
 const msalConfig = {
   auth: {
     clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
-    authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
+    authority:
+      "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
     redirectUri: "https://demotag.vercel.app", // Must match the redirect URI registered in Azure AD
-  }
+  },
 };
 
 // Initialize MSAL instance
@@ -145,15 +150,17 @@ async function sendEmailForCandidate(candidate) {
 
   // Check if an email has already been sent for this candidate by calling your API.
   const emailStatus = await getCandidateEmailStatus(candidate.candidate_email);
-  if (emailStatus === 'emailsent') {
-    console.log(`Email already sent for candidate ${candidate.candidate_name} (${candidate.candidate_email}). Skipping email.`);
+  if (emailStatus === "emailsent") {
+    console.log(
+      `Email already sent for candidate ${candidate.candidate_name} (${candidate.candidate_email}). Skipping email.`
+    );
     return;
   }
 
   // Prepare the token request for Mail.Send
   const tokenRequest = {
     scopes: ["Mail.Send"],
-    account: msalInstance.getAllAccounts()[0]
+    account: msalInstance.getAllAccounts()[0],
   };
 
   // Acquire an access token (try silently, then fallback to popup)
@@ -169,8 +176,7 @@ async function sendEmailForCandidate(candidate) {
   // Construct the email message payload for Graph API
   const emailData = {
     message: {
-     subject: `iMocha Assessment Completed: RRFID-${candidate.rrf_id} | Role: ${candidate.role} | Candidate: ${candidate.candidate_name}`
-,
+      subject: `iMocha Assessment Completed: RRFID-${candidate.rrf_id} | Role: ${candidate.role} | Candidate: ${candidate.candidate_name}`,
       body: {
         contentType: "HTML",
         content: `
@@ -179,46 +185,57 @@ async function sendEmailForCandidate(candidate) {
           <p><strong>Email:</strong> ${candidate.candidate_email}</p>
           <p><strong>Phone:</strong> ${candidate.candidate_phone}</p>
           <p><strong>Role:</strong> ${candidate.role}</p>
-          <p><strong>Score:</strong> ${candidate.score || 'N/A'}</p>
+          <p><strong>Score:</strong> ${candidate.score || "N/A"}</p>
           <p><strong>Status:</strong> ${candidate.l_1_status}</p>
-          <p><strong>Recruitment Phase:</strong> ${candidate.recruitment_phase}</p>
-          <p><strong>PDF Report:</strong> <a href="${candidate.imocha_report}" target="_blank">View Report</a></p>
+          <p><strong>Recruitment Phase:</strong> ${
+            candidate.recruitment_phase
+          }</p>
+          <p><strong>PDF Report:</strong> <a href="${
+            candidate.imocha_report
+          }" target="_blank">View Report</a></p>
           <p>Sent from: ${loggedInUserEmail}</p>
-        `
+        `,
       },
       toRecipients: [
         {
           emailAddress: {
-            address: candidate.hr_email
-          }
-        }
-      ]
+            address: candidate.hr_email,
+          },
+        },
+      ],
     },
-    saveToSentItems: "true"
+    saveToSentItems: "true",
   };
 
   // Send the email via Microsoft Graph API
   const response = await fetch("https://graph.microsoft.com/v1.0/me/sendMail", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${accessToken}`,
-      "Content-Type": "application/json"
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(emailData)
+    body: JSON.stringify(emailData),
   });
 
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(`Error sending email: ${errorData.error.message}`);
   }
-  console.log(`Email sent for candidate ${candidate.candidate_name} to ${candidate.hr_email}`);
+  console.log(
+    `Email sent for candidate ${candidate.candidate_name} to ${candidate.hr_email}`
+  );
 
   // Update email status in the candidate_info table to "emailsent"
   try {
-    await updateEmailStatus(candidate.candidate_email, 'emailsent');
-    console.log(`Email status updated to 'emailsent' for candidate ${candidate.candidate_name}`);
+    await updateEmailStatus(candidate.candidate_email, "emailsent");
+    console.log(
+      `Email status updated to 'emailsent' for candidate ${candidate.candidate_name}`
+    );
   } catch (updateError) {
-    console.error(`Failed to update email status for candidate ${candidate.candidate_name}:`, updateError);
+    console.error(
+      `Failed to update email status for candidate ${candidate.candidate_name}:`,
+      updateError
+    );
   }
 }
 
@@ -232,10 +249,16 @@ async function sendEmailsForCompletedCandidates(candidates) {
     try {
       await sendEmailForCandidate(candidate);
     } catch (error) {
-      console.error(`Error sending email for candidate ${candidate.candidate_name}:`, error);
+      console.error(
+        `Error sending email for candidate ${candidate.candidate_name}:`,
+        error
+      );
     }
   }
-  showToast('Emails processed for all completed iMocha candidates (if any).', 'success');
+  showToast(
+    "Emails processed for all completed iMocha candidates (if any).",
+    "success"
+  );
 }
 
 /**
@@ -246,7 +269,11 @@ async function sendEmailsForCompletedCandidates(candidates) {
  */
 async function getCandidateEmailStatus(candidateEmail) {
   try {
-    const response = await fetch(`https://demotag.vercel.app/api/get-email-status?candidate_email=${encodeURIComponent(candidateEmail)}`);
+    const response = await fetch(
+      `https://demotag.vercel.app/api/get-email-status?candidate_email=${encodeURIComponent(
+        candidateEmail
+      )}`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch email status for ${candidateEmail}`);
     }
@@ -266,13 +293,16 @@ async function getCandidateEmailStatus(candidateEmail) {
  */
 async function updateEmailStatus(candidateEmail, status) {
   try {
-    const response = await fetch('https://demotag.vercel.app/api/update-email-status', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ candidate_email: candidateEmail, status })
-    });
+    const response = await fetch(
+      "https://demotag.vercel.app/api/update-email-status",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ candidate_email: candidateEmail, status }),
+      }
+    );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`Failed to update email status: ${errorData.message}`);
@@ -283,10 +313,8 @@ async function updateEmailStatus(candidateEmail, status) {
   }
 }
 
-
 // Example: Assume you have fetched candidate details from your API.
 // Here is a sample candidate array (replace with your actual data from the API):
-
 
 // Attach an event listener to a button to send emails for all candidates with completed iMocha.
 // document.getElementById("sendEmailsBtn").addEventListener("click", async () => {
@@ -306,41 +334,48 @@ async function updateEmailStatus(candidateEmail, status) {
 // });
 
 // Call fetch function when the page loads
-document.addEventListener('DOMContentLoaded', fetchCandidatesInfo);
+document.addEventListener("DOMContentLoaded", fetchCandidatesInfo);
 // Function to filter candidates based on search and status
 function filterCandidates() {
-  const searchInput = document.getElementById('search-input').value.toLowerCase();
-  const filterStatus = document.getElementById('filter-status').value;
-  const candidates = document.querySelectorAll('.candidate');
+  const searchInput = document
+    .getElementById("search-input")
+    .value.toLowerCase();
+  const filterStatus = document.getElementById("filter-status").value;
+  const candidates = document.querySelectorAll(".candidate");
 
   candidates.forEach((candidate) => {
     const name = candidate.cells[0].innerText.toLowerCase();
     const email = candidate.cells[1].innerText.toLowerCase();
-    const status = candidate.getAttribute('data-status');
-    const matchSearch = name.includes(searchInput) || email.includes(searchInput);
-    const matchStatus = filterStatus === 'all' || filterStatus === status;
+    const status = candidate.getAttribute("data-status");
+    const matchSearch =
+      name.includes(searchInput) || email.includes(searchInput);
+    const matchStatus = filterStatus === "all" || filterStatus === status;
 
     if (matchSearch && matchStatus) {
-      candidate.style.display = '';
+      candidate.style.display = "";
     } else {
-      candidate.style.display = 'none';
+      candidate.style.display = "none";
     }
   });
 }
 
-document.querySelector('#candidates-table tbody').addEventListener('click', function (event) {
-  const button = event.target.closest('button.schedule-btn');
-  if (button) {
-    handleScheduleClick(event);
-  }
-});
+document
+  .querySelector("#candidates-table tbody")
+  .addEventListener("click", function (event) {
+    const button = event.target.closest("button.schedule-btn");
+    if (button) {
+      handleScheduleClick(event);
+    }
+  });
 
 // Function to handle the modal for scheduling
 async function handleScheduleClick(event) {
   try {
-    const candidateRow = event.target.closest('tr');
+    const candidateRow = event.target.closest("tr");
     if (!candidateRow) {
-      throw new Error('Table row not found. Ensure the button is inside a <tr> element.');
+      throw new Error(
+        "Table row not found. Ensure the button is inside a <tr> element."
+      );
     }
 
     const candidateName = candidateRow.cells[0].innerText;
@@ -355,22 +390,23 @@ async function handleScheduleClick(event) {
 
     scheduleBtn.onclick = async () => {
       try {
-        const candidate_name= candidateRow.cells[1].innerText;
+        const candidate_name = candidateRow.cells[1].innerText;
         const hr_email = candidateRow.cells[2].innerText;
-      
         const candidateEmail = candidateRow.cells[3].innerText;
-        const panelEmail = document.getElementById('panel-select').value;
-        const dateTime = document.getElementById('datetime-input').value;
-
+        const panelEmail = document.getElementById("panel-select").value;
+        const dateTime = document.getElementById("datetime-input").value;
+        
+        const nextRound = candidateRow.cells[9].innerText; // Fetch next round name dynamically
+    
         const date = new Date(dateTime);
         const startDateTime = date.toISOString();
         const endDateTime = new Date(date.getTime() + 30 * 60 * 1000).toISOString();
-
+    
         const tokenRequest = {
           scopes: ["OnlineMeetings.ReadWrite", "Calendars.ReadWrite"],
-          account: msalInstance.getAllAccounts()[0]
+          account: msalInstance.getAllAccounts()[0],
         };
-
+    
         let tokenResponse;
         try {
           tokenResponse = await msalInstance.acquireTokenSilent(tokenRequest);
@@ -378,55 +414,58 @@ async function handleScheduleClick(event) {
           console.warn("Silent token acquisition failed; trying popup.", silentError);
           tokenResponse = await msalInstance.acquireTokenPopup(tokenRequest);
         }
-
+    
         const accessToken = tokenResponse.accessToken;
-
+    
         // 1️⃣ **Create Teams Meeting**
         const meetingRequest = {
           startDateTime,
           endDateTime,
-          subject: `L2 Interview: ${candidate_name}`,
+          subject: `${nextRound}: ${candidate_name}`, // Use nextRound dynamically
           participants: {
             organizer: { upn: hr_email },
             attendees: [
               { upn: candidateEmail, role: "attendee" },
-              { upn: panelEmail, role: "attendee" }
-            ]
-          }
-        };
-
-        const meetingResponse = await fetch("https://graph.microsoft.com/v1.0/me/onlineMeetings", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
+              { upn: panelEmail, role: "attendee" },
+            ],
           },
-          body: JSON.stringify(meetingRequest)
-        });
-
+        };
+    
+        const meetingResponse = await fetch(
+          "https://graph.microsoft.com/v1.0/me/onlineMeetings",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(meetingRequest),
+          }
+        );
+    
         if (!meetingResponse.ok) {
           throw new Error("Failed to create Teams meeting");
         }
-
+    
         const meetingData = await meetingResponse.json();
         const meetingLink = meetingData.joinWebUrl;
-
+    
         // 2️⃣ **Create Calendar Event with Meeting Details**
         const eventRequest = {
-          subject: `L2 Interview: ${candidate_name}`,
+          subject: `${nextRound}: ${candidate_name}`, // Use nextRound dynamically
           start: { dateTime: startDateTime, timeZone: "UTC" },
           end: { dateTime: endDateTime, timeZone: "UTC" },
           location: { displayName: "Microsoft Teams Meeting" },
           attendees: [
             {
               emailAddress: { address: candidateEmail, name: candidate_name },
-              type: "required"
+              type: "required",
             },
             {
               emailAddress: { address: panelEmail, name: "Panel Member" },
-              type: "required"
+              type: "required",
             },
-        
+         
           ],
           isOnlineMeeting: true,
           onlineMeetingProvider: "teamsForBusiness",
@@ -435,7 +474,7 @@ async function handleScheduleClick(event) {
             contentType: "HTML",
             content: `
               <p>Dear ${candidate_name},</p>
-              <p>You have been scheduled for your <b>L2 Interview</b>.</p>
+              <p>You have been scheduled for your <b>${nextRound}</b>.</p>
               <p><b>Interview Details:</b></p>
               <ul>
                 <li><b>Date & Time:</b> ${date.toUTCString()}</li>
@@ -445,138 +484,151 @@ async function handleScheduleClick(event) {
               <p>Please ensure you join on time and have a stable internet connection.</p>
               <p>Best Regards,</p>
               <p><b>TAG Assist Team</b></p>
-            `
-          }
-        };
-
-        const calendarResponse = await fetch("https://graph.microsoft.com/v1.0/me/events", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
+            `,
           },
-          body: JSON.stringify(eventRequest)
-        });
-
+        };
+    
+        const calendarResponse = await fetch(
+          "https://graph.microsoft.com/v1.0/me/events",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(eventRequest),
+          }
+        );
+    
         if (!calendarResponse.ok) {
           throw new Error("Failed to create calendar event");
         }
-
+    
         // 3️⃣ **Update Status in Backend**
         await fetch("https://demotag.vercel.app/api/update-status", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: candidateEmail,
-            status: "L2 Scheduled",
+            status: `${nextRound} Round Scheduled`, // Use nextRound dynamically
             panel: panelEmail,
             dateTime: startDateTime,
-            meetingLink
+            meetingLink,
           }),
         });
-
+    
         // 4️⃣ **Success Message & UI Update**
         const successMessage = document.getElementById("success-message");
-        successMessage.innerText = `Interview for ${candidateName} scheduled successfully! Meeting link sent to ${candidateEmail} and ${panelEmail}.`;
+        successMessage.innerText = `Interview for ${candidate_name} scheduled successfully! Meeting link sent to ${candidateEmail} and ${panelEmail}.`;
         successMessage.style.display = "block";
-
-        candidateRow.cells[7].innerText = "L2 Scheduled";
+    
+        candidateRow.cells[7].innerText = nextRound; // Update UI with next round name
         button.disabled = true;
-
+    
         setTimeout(() => {
           modal.classList.remove("active");
           overlay.classList.remove("active");
           successMessage.style.display = "none";
         }, 3000);
-
       } catch (error) {
         console.error("Error scheduling Teams meeting:", error);
       }
     };
+    
   } catch (error) {
     console.error("Error in handleScheduleClick:", error);
   }
 }
 
-
 // Close modal functionality
-document.getElementById('close-modal-btn').addEventListener('click', () => {
+document.getElementById("close-modal-btn").addEventListener("click", () => {
   document.getElementById("schedule-modal").classList.remove("active");
   document.getElementById("modal-overlay").classList.remove("active");
 });
 
 // Event listeners for search and filter
-document.getElementById('search-input').addEventListener('input', filterCandidates);
-document.getElementById('filter-status').addEventListener('change', filterCandidates);
+document
+  .getElementById("search-input")
+  .addEventListener("input", filterCandidates);
+document
+  .getElementById("filter-status")
+  .addEventListener("change", filterCandidates);
 
 // Adding event listener for the schedule buttons
-document.querySelectorAll('schedule-btn').forEach(button => {
+document.querySelectorAll("schedule-btn").forEach((button) => {
   if (!button.disabled) {
-    button.addEventListener('click', handleScheduleClick);
+    button.addEventListener("click", handleScheduleClick);
   }
 });
 
-document.getElementById('domain-select').addEventListener('change', function() {
-  var selectedDomain = this.value;
-  fetchPanelEmails(selectedDomain);
-});
+document
+  .getElementById("domain-select")
+  .addEventListener("change", function () {
+    var selectedDomain = this.value;
+    fetchPanelEmails(selectedDomain);
+  });
 
 function fetchPanelEmails(domain) {
   // Fetch the emails for the selected domain from the backend
   fetch(`/api/get-panel-emails?domain=${domain}`)
-      .then(response => response.json())
-      .then(data => {
-          const panelSelect = document.getElementById('panel-select');
-          panelSelect.innerHTML = '<option value="">Select Panel</option>';  // Clear previous options
+    .then((response) => response.json())
+    .then((data) => {
+      const panelSelect = document.getElementById("panel-select");
+      panelSelect.innerHTML = '<option value="">Select Panel</option>'; // Clear previous options
 
-          // If no emails were returned
-          if (Array.isArray(data) && data.length > 0) {
-              data.forEach(email => {
-                  let option = document.createElement('option');
-                  option.value = email;
-                  option.textContent = email;
-                  panelSelect.appendChild(option);
-              });
-          } else {
-              let option = document.createElement('option');
-              option.textContent = "No panels available for this domain";
-              panelSelect.appendChild(option);
-          }
-      })
-      .catch(error => {
-          console.error('Error fetching panel emails:', error);
-      });
+      // If no emails were returned
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach((email) => {
+          let option = document.createElement("option");
+          option.value = email;
+          option.textContent = email;
+          panelSelect.appendChild(option);
+        });
+      } else {
+        let option = document.createElement("option");
+        option.textContent = "No panels available for this domain";
+        panelSelect.appendChild(option);
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching panel emails:", error);
+    });
 }
 
+document
+  .getElementById("dateRangeForm")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-document.getElementById('dateRangeForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const selectedEC = document.getElementById("ecCategory").value;
 
-  const startDate = document.getElementById('startDate').value;
-  const endDate = document.getElementById('endDate').value;
-  const selectedEC = document.getElementById('ecCategory').value;
-
-  if (!startDate || !endDate || !selectedEC) {
+    if (!startDate || !endDate || !selectedEC) {
       alert("Please select all required fields.");
       return;
-  }
+    }
 
-  document.getElementById('statusMessage').innerText = "Processing, please wait...";
+    document.getElementById("statusMessage").innerText =
+      "Processing, please wait...";
 
-  const apiUrl = `https://demotag.vercel.app/api/callTestAttempts/${selectedEC}`;
+    const apiUrl = `https://demotag.vercel.app/api/callTestAttempts/${selectedEC}`;
 
-  try {
+    try {
       const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ startDate, endDate }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startDate, endDate }),
       });
 
       const data = await response.json();
       console.log("API Response:", data);
-      document.getElementById('statusMessage').innerText = `Success: ${selectedEC} test attempts processed!`;
-  } catch (error) {
+      document.getElementById(
+        "statusMessage"
+      ).innerText = `Success: ${selectedEC} test attempts processed!`;
+    } catch (error) {
       console.error("Error:", error);
-      document.getElementById('statusMessage').innerText = "Error processing test attempts!";
-  }
-});
+      document.getElementById("statusMessage").innerText =
+        "Error processing test attempts!";
+    }
+  });
