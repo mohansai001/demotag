@@ -426,10 +426,7 @@ async function handleScheduleClick(event) {
               emailAddress: { address: panelEmail, name: "Panel Member" },
               type: "required"
             },
-            {
-              emailAddress: { address: "Tagassistdemo@valuemomentum.com", name: "TAG Assist" },
-              type: "optional"
-            }
+        
           ],
           isOnlineMeeting: true,
           onlineMeetingProvider: "teamsForBusiness",
