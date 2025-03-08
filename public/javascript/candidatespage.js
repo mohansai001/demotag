@@ -20,68 +20,103 @@ function toggleSidebar() {
 }
 // Fetch candidates info from the API and populate the table
 async function fetchCandidatesInfo() {
-  const loadingOverlay = document.getElementById('loading-overlay');
-  loadingOverlay.style.display = 'flex'; // Show the loading overlay
+  const loadingOverlay = document.getElementById("loading-overlay");
+  loadingOverlay.style.display = "flex"; // Show the loading overlay
 
   try {
-    const response = await fetch('https://demotag.vercel.app/api/get-shortlisted-candidates');
+    const response = await fetch("https://demotag.vercel.app/api/get-shortlisted-candidates");
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('API Response:', data); // Debugging line
+    console.log("API Response:", data);
 
     const candidates = Array.isArray(data) ? data : data.candidates || [];
+    const tableBody = document.querySelector("#candidates-table tbody");
+    tableBody.innerHTML = "";
 
-    const tableBody = document.querySelector('#candidates-table tbody');
-    tableBody.innerHTML = ''; // Clear existing table rows
-
-    candidates.forEach(candidate => {
-      const row = document.createElement('tr');
-      row.classList.add('candidate');
-      row.dataset.status = candidate.recruitment_phase === 'Imocha Completed' ? 'completed' : 'not-completed';
+    for (const candidate of candidates) {
+      const row = document.createElement("tr");
+      row.classList.add("candidate");
+      row.dataset.status =
+        candidate.recruitment_phase === "Imocha Completed"
+          ? "completed"
+          : "not-completed";
 
       const formattedDate = candidate.date
-        ? new Date(candidate.date).toISOString().split('T')[0]
-        : 'N/A';
+        ? new Date(candidate.date).toISOString().split("T")[0]
+        : "N/A";
 
-      const isEligibleForScheduling = candidate.recruitment_phase === 'Moved to L2' || candidate.recruitment_phase === 'No iMocha Exam';
-      const showPendingText = (!candidate.score || candidate.score === 'N/A') && candidate.recruitment_phase === 'Move to L1';
+      // Determine next round logic
+      let nextRound;
+      if (candidate.recruitment_phase === "Moved to L2" || candidate.recruitment_phase ==="No iMocha Exam" ) {
+        nextRound = "L2 Technical"; // Button should show L2 Technical
+      } else {
+        nextRound = await getNextRound(candidate.rrf_id, candidate.recruitment_phase);
+      }
+
+      console.log(`Final Next Round for ${candidate.rrf_id}:`, nextRound);
+
+      // Determine button visibility and text
+      const showPendingText =
+        (!candidate.score || candidate.score === "N/A") &&
+        candidate.recruitment_phase === "Move to L1";
 
       row.innerHTML = `
         <td>${candidate.rrf_id}</td>
         <td>${candidate.candidate_name}</td>
         <td>${candidate.hr_email}</td>
-        
         <td>${candidate.candidate_email}</td>
         <td>${candidate.candidate_phone}</td>
         <td>${candidate.role}</td>
-        <td>${candidate.score || 'N/A'}</td>
+        <td>${candidate.score || "N/A"}</td>
         <td>${candidate.recruitment_phase}</td>
         <td>${formattedDate}</td>
         <td>
-          ${showPendingText 
-            ? '<span class="pending-text">Pending iMocha Exam</span>' 
-            : `<button class="schedule-btn" ${isEligibleForScheduling ? '' : 'disabled'}>Schedule L2</button>`}
+          ${
+            showPendingText
+              ? '<span class="pending-text">Pending iMocha Exam</span>'
+              : nextRound
+              ? `<button class="schedule-btn"> ${nextRound}</button>`
+              : '<span class="no-next-round">No further rounds</span>'
+          }
         </td>
       `;
 
-      const button = row.querySelector('.schedule-btn');
-      if (button && isEligibleForScheduling) {
-        button.addEventListener('click', handleScheduleClick);
+      const button = row.querySelector(".schedule-btn");
+      if (button && nextRound) {
+        button.addEventListener("click", () => handleScheduleClick(candidate.rrf_id, nextRound));
       }
 
       tableBody.appendChild(row);
-    });
+    }
 
-    // Automatically send emails for completed candidates after loading data
     await sendEmailsForCompletedCandidates(candidates);
-
   } catch (error) {
-    console.error('Error fetching candidates:', error);
+    console.error("Error fetching candidates:", error);
   } finally {
-    loadingOverlay.style.display = 'none'; // Hide the loading overlay
+    loadingOverlay.style.display = "none";
+  }
+}
+
+async function getNextRound(rrf_id, recruitment_Phase) {
+  try {
+    const response = await fetch(
+      `https://demotag.vercel.app/api/get-next-round?rrf_id=${rrf_id}&recruitment_phase=${recruitment_Phase}`
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch next round: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log(`Next round data for RRF_ID ${rrf_id}:`, data);
+
+    // Extracting the next round correctly
+    return data && data.nextRound ? data.nextRound : null;
+  } catch (error) {
+    console.error("Error fetching next round:", error);
+    return null;
   }
 }
 
