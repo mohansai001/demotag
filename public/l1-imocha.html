@@ -561,22 +561,27 @@
 
 
   <!-- Popup Form -->
-  <div id="popupForm" class="popup-form">
-    <div class="popup-content">
-      <h3>Add New Step</h3>
-      <label for="name">Name:</label>
-      <input type="text" id="name" placeholder="Enter name">
+ <div id="popupForm" class="popup-form">
+      <div class="popup-content">
+        <h3>Add New Step</h3>
 
-      <label for="position">Position:</label>
-      <select id="position">
-        <option value="before">Before Fitment Round</option>
-        <option value="after">After Fitment Round</option>
-      </select>
+        <label for="name">Select Step:</label>
+        <select id="name">
+          <option value="EC Fitment">EC Fitment</option>
+          <option value="Project Fitment">Project Fitment</option>
+          <option value="Client Fitment">Client Fitment</option>
+        </select>
 
-      <button id="saveButton">Save</button>
-      <button id="closeButton">Close</button>
+        <label for="position">Position:</label>
+        <select id="position">
+          <option value="before">Before Fitment Round</option>
+          <option value="after">After Fitment Round</option>
+        </select>
+
+        <button id="saveButton">Save</button>
+        <button id="closeButton">Close</button>
+      </div>
     </div>
-  </div>
 
   <div class="container">
     <!-- Progress Bar -->
