@@ -1412,7 +1412,7 @@ app.get('/api/get-shortlisted-candidates', async (req, res) => {
     WHERE 
       candidate_info.candidate_email = ir.candidate_email
       AND candidate_info.prescreening_status = 'Shortlisted'
-      AND candidate_info.recruitment_phase NOT IN ('L2 Scheduled', 'Shortlisted in L2', 'Rejected in L2', 'On Hold in L2', 'No iMocha Exam');
+      AND candidate_info.recruitment_phase NOT IN ('L2 Technical Round Scheduled','EC Fitment Round Scheduled','Shortlisted in EC Fitment Round','Shortlisted in Client','Fitment Round Scheduled','Project Fitment Round Scheduled','Shortlisted in Project Fitment Round','Client Fitment Round Scheduled','Shortlisted in Client Fitment Round','Shortlisted in L2', 'Rejected in L2', 'On Hold in L2', 'No iMocha Exam','Schedule L2 Technical','Client Round Scheduled','Rejected in Client','Rejected in Client Fitment Round','Rejected in Project Fitment Round');
     
     `;
 
@@ -2434,6 +2434,56 @@ app.get("/api/getRounds", async (req, res) => {
     res.status(500).json({ success: false, message: "Database error" });
   }
 });
+app.get("/api/get-next-round", async (req, res) => {
+  try {
+    const { rrf_id, recruitment_phase } = req.query;
+
+    if (!rrf_id || !recruitment_phase) {
+      return res.status(400).json({ error: "Missing rrf_id or recruitment_phase" });
+    }
+
+    // If candidate is "Shortlisted in L2", treat it as "L2 Technical" completed
+    const currentPhase =
+  recruitment_phase === "Shortlisted in L2" ? "L2 Technical" :
+  recruitment_phase === "Shortlisted in EC Fitment Round" ? "EC Fitment" :
+  recruitment_phase === "Shortlisted in Project Fitment Round" ? "Project Fitment" :
+  recruitment_phase === "Shortlisted in Client Fitment Round" ? "Client Fitment" :
+  recruitment_phase === "Shortlisted in Client" ? "Client" :
+  recruitment_phase;
+
+
+    // Fetch all rounds for the given rrf_id ordered by round_order
+    const roundsQuery = `
+      SELECT recruitment_rounds, round_order
+      FROM rrf_rounds
+      WHERE rrf_id = $1
+      ORDER BY round_order ASC
+    `;
+
+    const roundsResult = await pool.query(roundsQuery, [rrf_id]);
+    const rounds = roundsResult.rows;
+
+    if (rounds.length === 0) {
+      return res.status(404).json({ error: "No rounds found for this RRF ID" });
+    }
+
+    // Find the index of the current round
+    const currentRoundIndex = rounds.findIndex(
+      (round) => round.recruitment_rounds === currentPhase
+    );
+
+    // If there's a next round, return it
+    if (currentRoundIndex !== -1 && currentRoundIndex + 1 < rounds.length) {
+      return res.json({ nextRound: rounds[currentRoundIndex + 1].recruitment_rounds });
+    }
+
+    res.json({ nextRound: null }); // No next round found
+  } catch (error) {
+    console.error("Error fetching next round:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 // Start the server
 app.listen(PORT, () => {
