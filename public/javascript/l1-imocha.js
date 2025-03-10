@@ -317,9 +317,9 @@ function saveRoundsToDB() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        showToast("New rounds saved successfully!");
+        showToast("New rounds saved successfully!", "success");
       } else {
-        showToast("No new rounds added. Duplicates were ignored.");
+        showToast("No new rounds added. Duplicates were ignored.", "error");
       }
     })
     .catch(error => {
