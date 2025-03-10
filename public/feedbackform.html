@@ -224,6 +224,7 @@
 
     <div class="form-container" id="form-container">
         <div style="color: #000000">
+            <p>Round Details: <span id="round-details"></span></p>
             <p>Email: <span id="candidate-email"></span></p>
             <p>iMocha Score: <span id="imocha-score"></span></p>
         </div>
@@ -368,51 +369,69 @@
                         showToast("Failed to load candidate data.", "error");
                     });
             } else {
-                // Handle the case where no candidate details are found in localStorage
                 showToast("No candidate details found in localStorage.", "error");
             }
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const roundDetails = localStorage.getItem('roundDetails');
+            if (roundDetails) {
+                document.getElementById('round-details').textContent = roundDetails;
+            } else {
+                document.getElementById('round-details').textContent = 'No round details available';
+            }
+        });
 
-        // document.getElementById('submit-button').addEventListener('click', function (e) {
-        //     e.preventDefault(); // Prevent the default form submission
 
-        //     // Get the required field values
-        //     const feedback = document.getElementById('detailed-feedback').value;
-        //     const result = document.getElementById('result').value;
-        //     const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
-        //     if (!feedback || !result) {
-        //         showToast("Please fill in all required fields.", "error");
-        //         return;
-        //     }
+        document.getElementById('submit-button').addEventListener('click', function () {
+            // Collecting form data
+            const roundDetails = localStorage.getItem('roundDetails');
+            const candidateEmail = document.getElementById('candidate-email').textContent;
+            const imochaScore = document.getElementById('imocha-score').textContent;
+            const rrfId = document.getElementById('rrf-id').value;
+            const position = document.getElementById('position').value;
+            const candidateName = document.getElementById('candidate-name').value;
+            const interviewDate = document.getElementById('interview-date').value;
+            const interviewerName = document.getElementById('interviewer-name').value;
+            const hrEmail = document.getElementById('hr-email').value;
+            const detailedFeedback = document.getElementById('detailed-feedback').value;
+            const result = document.getElementById('result').value;
 
-        //     // Send the data to the backend for updating the database
-        //     fetch('http://localhost:3000/api/updateCandidateFeedback', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             candidateEmail: candidateEmail,
-        //             feedback: feedback,
-        //             result: result,
-        //         }),
-        //     })
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             if (data.success) {
-        //                 showToast('Feedback and result updated successfully.');
-        //                 window.close();
+            // Creating the formData object
+            const formData = {
+                candidateEmail,
+                imochaScore,
+                rrfId,
+                position,
+                candidateName,
+                interviewDate,
+                interviewerName,
+                hrEmail,
+                detailedFeedback,
+                result
+            };
 
-        //             } else {
-        //                 showToast('Error updating the feedback and result.', 'error');
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error('Error:', error);
-        //             showToast('An error occurred while submitting the feedback.', 'error');
-        //         });
-        // });
+            // Send data to backend
+            fetch('https://demotag.vercel.app/api/submitFeedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ formData, roundDetails })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Feedback submitted successfully', 'success');
+                    } else {
+                        showToast('Error submitting feedback', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error submitting feedback', 'error');
+                });
+        });
 
     </script>
 </body>
