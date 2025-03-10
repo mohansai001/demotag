@@ -79,7 +79,7 @@ async function fetchCandidatesInfo() {
               ? '<span class="pending-text">Pending iMocha Exam</span>'
               : nextRound
               ? `<button class="schedule-btn"> ${nextRound}</button>`
-              : '<span class="no-next-round">No further rounds</span>'
+              : '<span class="no-next-round">Waiting For Response</span>'
           }
         </td>
       `;
