@@ -70,7 +70,7 @@ window.location.href = "ECselection.html";
                 fileName = `Job Description/${selectedLevel}_DataOpsEngineer.txt`;
                 break;
            case 'Data – BI Visualization Engineer':
-                fileName = `Job Description/${selectedLevel}_Data-BIVisualizationEngineer.txt`;
+                fileName = `Job Description/${selectedLevel}_Data BI - Vizualization.txt`;
                 break;
             case 'Data Modeller':
                 fileName = `Job Description/DataModeller.txt`;
