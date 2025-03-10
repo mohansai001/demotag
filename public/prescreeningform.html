@@ -707,12 +707,13 @@
     <br>
 
     <script>
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
+        function showToast(message, type) {
+            const toast = document.getElementById("toast");
+            toast.className = `toast ${type}`; // success, error
             toast.textContent = message;
-            toast.classList.add('show', type);
+            toast.style.display = "block";
             setTimeout(() => {
-                toast.classList.remove('show');
+                toast.style.display = "none";
             }, 3000);
         }
 
