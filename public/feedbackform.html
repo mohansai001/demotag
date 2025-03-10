@@ -339,27 +339,21 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Retrieve candidate details from localStorage
-            const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
+            const candidateEmail = localStorage.getItem('emailcandidate');
 
-            if (candidateDetails) {
-                const candidateEmail = candidateDetails.candidateEmail; // Get the candidate email from the stored details
-
-                // Fetch candidate data from the server based on the email
+            if (candidateEmail) {
                 fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Check if the data is returned successfully
                         if (data.error) {
                             showToast(data.error, "error");
                         } else {
-                            // Populate the form fields with the returned data
                             document.getElementById('candidate-name').value = data.candidate_name;
                             document.getElementById('position').value = data.role;
                             document.getElementById('interviewer-name').value = data.panel_name;
                             document.getElementById('interview-date').value = data.l_2_interviewdate;
                             document.getElementById('imocha-score').textContent = data.l_1_score;
-                            document.getElementById('candidate-email').textContent = candidateEmail; // Use email from localStorage
+                            document.getElementById('candidate-email').textContent = candidateEmail;
                             document.getElementById('rrf-id').value = data.rrf_id;
                             document.getElementById('hr-email').value = data.hr_email;
                         }
@@ -369,7 +363,7 @@
                         showToast("Failed to load candidate data.", "error");
                     });
             } else {
-                showToast("No candidate details found in localStorage.", "error");
+                showToast("No candidate email found in localStorage.", "error");
             }
         });
 
