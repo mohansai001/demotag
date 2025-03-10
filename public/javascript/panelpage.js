@@ -201,7 +201,8 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
             candidateCard.innerHTML = cardContent;
                 
     localStorage.setItem('roundDetails', roundDetails);
-    console.log(roundDetails);
+    localStorage.setItem('emailcandidate', candidate.candidate_email);
+    console.log(candidate.candidate_email);
             meetingContainer.appendChild(candidateCard);  // Add the card to the container
         });
     } catch (error) {
