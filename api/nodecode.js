@@ -1909,7 +1909,7 @@ app.get('/api/panel-candidates-info', async (req, res) => {
     // Define the recruitment phases you want to include
     const recruitmentPhases = [
       'L2 Technical Round Scheduled',
-      'Client Round Scheduled',
+      'Client Fitment Round Scheduled',
       'Project Fitment Round Scheduled',
       'Fitment Round Scheduled',
       'EC Fitment Round Scheduled'
