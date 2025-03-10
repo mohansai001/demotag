@@ -293,7 +293,7 @@
             auth: {
                 clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
                 authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
-                redirectUri: "http://localhost:3000", // Must match the redirect URI registered in Azure AD
+                redirectUri: "https://demotag.vercel.app", // Must match the redirect URI registered in Azure AD
             }
         };
 
@@ -346,7 +346,7 @@
                 const candidateEmail = candidateDetails.candidateEmail; // Get the candidate email from the stored details
 
                 // Fetch candidate data from the server based on the email
-                fetch(`http://localhost:3000/api/getCandidateData?candidateEmail=${candidateEmail}`)
+                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
                     .then(response => response.json())
                     .then(data => {
                         // Check if the data is returned successfully
