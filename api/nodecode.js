@@ -2577,9 +2577,9 @@ app.post('/api/submitFeedback', async (req, res) => {
           updateQuery = `
               UPDATE candidate_info 
               SET recruitment_phase = $1
-              WHERE candidate_email = $2 AND round_id = $3
+              WHERE candidate_email = $2
           `;
-          updateValues = [recruitmentPhase, candidateEmail, roundId];
+          updateValues = [recruitmentPhase, candidateEmail];
 
           // Execute the update query
           await pool.query(updateQuery, updateValues);
