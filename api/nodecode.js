@@ -1880,20 +1880,51 @@ app.get('/api/getAllCandidateEmails', async (req, res) => {
 
 
 // panel call
-app.get('/api/panel-candidates-info', async (req, res) => {
+// app.get('/api/panel-candidates-info', async (req, res) => {
+//   try {
+//     const { l_2_interviewdate, userEmail } = req.query;
+
+//     const query = `
+//       SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, imocha_report, meeting_link, l_2_interviewtime
+//       FROM candidate_info
+//       WHERE prescreening_status = 'Shortlisted'
+//         AND recruitment_phase = 'L2 Scheduled'
+//         AND l_2_interviewdate = $1
+//         AND panel_name = $2;`;  // Add the condition to check for panel_name containing the user's email
+    
+//     // Use the '%' wildcard to match any occurrence of the userEmail in the panel_name field
+//     const result = await pool.query(query, [l_2_interviewdate, userEmail]);
+
+//     res.json(result.rows);
+//   } catch (error) {
+//     console.error('Error fetching shortlisted candidates:', error);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+app.get('/api/panel-candidates-info', async (req, res) => { 
   try {
     const { l_2_interviewdate, userEmail } = req.query;
 
+    // Define the recruitment phases you want to include
+    const recruitmentPhases = [
+      'L2 Technical Round Scheduled',
+      'Client Round Scheduled',
+      'Project Fitment Round Scheduled',
+      'Fitment Round Scheduled',
+      'EC Fitment Round Scheduled'
+    ];
+
     const query = `
-      SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, imocha_report, meeting_link, l_2_interviewtime
+      SELECT candidate_name, candidate_email, role, recruitment_phase, resume, l_2_interviewdate, 
+             imocha_report, meeting_link, l_2_interviewtime
       FROM candidate_info
       WHERE prescreening_status = 'Shortlisted'
-        AND recruitment_phase = 'L2 Scheduled'
-        AND l_2_interviewdate = $1
-        AND panel_name = $2;`;  // Add the condition to check for panel_name containing the user's email
-    
-    // Use the '%' wildcard to match any occurrence of the userEmail in the panel_name field
-    const result = await pool.query(query, [l_2_interviewdate, userEmail]);
+        AND recruitment_phase = ANY($1)  -- Matching against any of the provided recruitment phases
+        AND l_2_interviewdate = $2
+        AND panel_name = $3;`;
+
+    const result = await pool.query(query, [recruitmentPhases, l_2_interviewdate, userEmail]);
 
     res.json(result.rows);
   } catch (error) {
@@ -2481,6 +2512,88 @@ app.get("/api/get-next-round", async (req, res) => {
   } catch (error) {
     console.error("Error fetching next round:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post('/api/submitFeedback', async (req, res) => {
+  const { formData, roundDetails } = req.body;
+
+  if (!formData || !roundDetails) {
+      return res.status(400).json({ success: false, message: 'Missing form data or round details' });
+  }
+
+  // Prepare the SQL query for insertion into the feedbackform table
+  const query = `
+      INSERT INTO feedbackform 
+          (round_details, candidate_email, imocha_score, rrf_id, position, candidate_name, interview_date, 
+          interviewer_name, hr_email, detailed_feedback, result, submitted_at)
+      VALUES 
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW()) 
+      RETURNING *;
+  `;
+
+  const values = [
+      roundDetails,
+      formData.candidateEmail, 
+      formData.imochaScore, 
+      formData.rrfId, 
+      formData.position, 
+      formData.candidateName,
+      formData.interviewDate, 
+      formData.interviewerName, 
+      formData.hrEmail, 
+      formData.detailedFeedback, 
+      formData.result
+  ];
+
+  try {
+      // Execute the query to insert the feedback
+      const result = await pool.query(query, values);
+
+      // If insertion fails
+      if (result.rows.length === 0) {
+          return res.status(400).json({ success: false, message: 'Failed to submit feedback' });
+      }
+
+      // Now handle the update in candidate_info based on feedback result
+      const candidateEmail = formData.candidateEmail;
+      const feedbackResult = formData.result;
+      const roundId = roundDetails; // This assumes roundDetails is the round name or ID
+
+      let updateQuery;
+      let updateValues;
+
+      // Build the dynamic recruitment_phase update based on feedback result and round name
+      let recruitmentPhase = '';
+
+      if (feedbackResult === 'Recommended') {
+          recruitmentPhase = `Shortlisted in ${roundId}`;
+      } else if (feedbackResult === 'Rejected') {
+          recruitmentPhase = `Rejected in ${roundId}`;
+      }
+
+      // If there's a valid recruitmentPhase value, update the candidate_info table
+      if (recruitmentPhase) {
+          updateQuery = `
+              UPDATE candidate_info 
+              SET recruitment_phase = $1
+              WHERE candidate_email = $2 AND round_id = $3
+          `;
+          updateValues = [recruitmentPhase, candidateEmail, roundId];
+
+          // Execute the update query
+          await pool.query(updateQuery, updateValues);
+      }
+
+      // Respond with the inserted feedback data
+      res.status(200).json({
+          success: true,
+          message: 'Feedback submitted successfully',
+          data: result.rows[0]
+      });
+  } catch (error) {
+      console.error('Error submitting feedback:', error);
+      res.status(500).json({ success: false, message: 'Error submitting feedback' });
   }
 });
 
