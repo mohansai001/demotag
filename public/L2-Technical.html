@@ -723,7 +723,7 @@
                             document.getElementById('position').value = data.position;
                             document.getElementById('interviewer-name').value = data.interviewer_name;
                             document.getElementById('interview-date').value = data.interview_date;
-                            document.getElementById('imocha-score').textContent = data.imocha_score;
+                            document.getElementById('imocha-score').textContent = data.imocha_score || 'N/A';
                             document.getElementById('candidate-email').textContent = candidateEmail;
                             document.getElementById('rrf-id').value = data.rrf_id;
                             document.getElementById('hr-email').value = data.hr_email;
