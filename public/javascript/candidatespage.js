@@ -50,8 +50,19 @@ async function fetchCandidatesInfo() {
 
       // Determine next round logic
       let nextRound;
-      if (candidate.recruitment_phase === "Moved to L2" || candidate.recruitment_phase ==="No iMocha Exam" ) {
+      if (
+        candidate.recruitment_phase === "Moved to L2" ||
+        candidate.recruitment_phase === "No iMocha Exam"
+      ) {
         nextRound = "L2 Technical"; // Button should show L2 Technical
+      } else if (
+        candidate.recruitment_phase === "Rejected in L1" ||
+        candidate.recruitment_phase === "Rejected in L2" ||
+        candidate.recruitment_phase === "Rejected in Client Fitment Round" ||
+        candidate.recruitment_phase === "Rejected in Project Fitment Round" ||
+        candidate.recruitment_phase === "Rejected in Fitment Round"
+      ) {
+        nextRound = "No Further Rounds"; // Display 'No Further Rounds' for rejected candidates
       } else {
         nextRound = await getNextRound(candidate.rrf_id, candidate.recruitment_phase);
       }
@@ -77,15 +88,17 @@ async function fetchCandidatesInfo() {
           ${
             showPendingText
               ? '<span class="pending-text">Pending iMocha Exam</span>'
+              : nextRound === "No Further Rounds"
+              ? '<span class="rejected-text">No Further Rounds</span>'
               : nextRound
-              ? `<button class="schedule-btn"> ${nextRound}</button>`
-              : '<span class="no-next-round">Waiting For Response</span>'
+              ? `<button class="schedule-btn">${nextRound}</button>`
+              : '<span class="no-next-round">Waiting For Feedback</span>'
           }
         </td>
       `;
 
       const button = row.querySelector(".schedule-btn");
-      if (button && nextRound) {
+      if (button && nextRound && nextRound !== "No Further Rounds") {
         button.addEventListener("click", () => handleScheduleClick(candidate.rrf_id, nextRound));
       }
 
