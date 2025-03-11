@@ -50,8 +50,16 @@ async function fetchCandidatesInfo() {
 
       // Determine next round logic
       let nextRound;
-      if (candidate.recruitment_phase === "Moved to L2" || candidate.recruitment_phase ==="No iMocha Exam" ) {
-        nextRound = "L2 Technical"; // Button should show L2 Technical
+      if (
+        candidate.recruitment_phase === "Rejected in L1" ||
+        candidate.recruitment_phase === "Rejected in L2" ||
+        candidate.recruitment_phase === "Rejected in Client Fitment Round" ||
+        candidate.recruitment_phase === "Rejected in Project Fitment Round" ||
+        candidate.recruitment_phase === "Rejected in Fitment Round"
+      ) {
+        nextRound = null; // No further rounds
+      } else if (candidate.recruitment_phase === "Moved to L2" || candidate.recruitment_phase === "No iMocha Exam") {
+        nextRound = "L2 Technical";
       } else {
         nextRound = await getNextRound(candidate.rrf_id, candidate.recruitment_phase);
       }
@@ -79,7 +87,7 @@ async function fetchCandidatesInfo() {
               ? '<span class="pending-text">Pending iMocha Exam</span>'
               : nextRound
               ? `<button class="schedule-btn"> ${nextRound}</button>`
-              : '<span class="no-next-round">Waiting For Response</span>'
+              : '<span class="no-next-round">No Further Rounds</span>'
           }
         </td>
       `;
