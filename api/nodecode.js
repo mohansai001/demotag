@@ -1576,6 +1576,105 @@ app.post('/api/updateCandidateFeedback', async (req, res) => {
   }
 });
 
+// app.post('/api/add-feedback', async (req, res) => {
+//   const {
+//       rrf_id, position, candidate_name, interview_date, interviewer_name,
+//       hr_email, candidate_email, core_cloud_concepts_deployment, core_cloud_concepts_configuration,
+//       core_cloud_concepts_troubleshooting, core_cloud_concepts_justification,
+//       core_cloud_concepts_improvements, networking_security_deployment, networking_security_configuration,
+//       networking_security_troubleshooting, networking_security_justification,
+//       networking_security_improvements, infrastructure_management_deployment, infrastructure_management_configuration,
+//       infrastructure_management_troubleshooting, infrastructure_management_justification,
+//       infrastructure_management_improvements, scalability_high_avail_deployment, scalability_high_avail_configuration,
+//       scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+//       scalability_high_avail_improvements, automation_deployment, automation_configuration, automation_troubleshooting,
+//       automation_justification, automation_improvements, observability_deployment, observability_configuration, observability_troubleshooting,
+//       observability_justification, observability_improvements, detailed_feedback, result
+//   } = req.body;
+
+//   // Check for required fields
+//   if (!rrf_id || !position || !candidate_name || !interview_date || !interviewer_name || !hr_email || !candidate_email) {
+//       return res.status(400).json({
+//           success: false,
+//           message: 'Missing required fields.',
+//       });
+//   }
+
+//   try {
+//       const query = `
+//           INSERT INTO feedback_table (
+//               rrf_id, position, candidate_name, interview_date, interviewer_name,
+//               hr_email, candidate_email,
+
+//               core_cloud_concepts_deployment, core_cloud_concepts_configuration,
+//               core_cloud_concepts_troubleshooting, core_cloud_concepts_justification,
+//               core_cloud_concepts_improvements,
+
+//               networking_security_deployment, networking_security_configuration,
+//               networking_security_troubleshooting, networking_security_justification,
+//               networking_security_improvements,
+
+//               infrastructure_management_deployment, infrastructure_management_configuration,
+//               infrastructure_management_troubleshooting, infrastructure_management_justification,
+//               infrastructure_management_improvements,
+
+//               scalability_high_avail_deployment, scalability_high_avail_configuration,
+//               scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+//               scalability_high_avail_improvements,
+
+//               automation_deployment, automation_configuration, automation_troubleshooting,
+//               automation_justification, automation_improvements,
+
+//               observability_deployment, observability_configuration, observability_troubleshooting,
+//               observability_justification, observability_improvements,
+
+//               detailed_feedback, result
+//           ) VALUES (
+//               $1, $2, $3, $4, $5, $6, $7,
+//               $8, $9, $10, $11, $12,
+//               $13, $14, $15, $16, $17,
+//               $18, $19, $20, $21, $22,
+//               $23, $24, $25, $26, $27,
+//               $28, $29, $30, $31, $32,
+//               $33, $34, $35, $36, $37,
+//               $38, $39
+//           )
+//       `;
+      
+//       const values = [
+//           rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email, candidate_email,
+//           core_cloud_concepts_deployment, core_cloud_concepts_configuration, core_cloud_concepts_troubleshooting,
+//           core_cloud_concepts_justification, core_cloud_concepts_improvements,
+//           networking_security_deployment, networking_security_configuration, networking_security_troubleshooting,
+//           networking_security_justification, networking_security_improvements,
+//           infrastructure_management_deployment, infrastructure_management_configuration,
+//           infrastructure_management_troubleshooting, infrastructure_management_justification,
+//           infrastructure_management_improvements,
+//           scalability_high_avail_deployment, scalability_high_avail_configuration,
+//           scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+//           scalability_high_avail_improvements,
+//           automation_deployment, automation_configuration, automation_troubleshooting, automation_justification,
+//           automation_improvements,
+//           observability_deployment, observability_configuration, observability_troubleshooting,
+//           observability_justification, observability_improvements,
+//           detailed_feedback, result
+//       ];
+
+//       await pool.query(query, values);
+
+//       return res.status(200).json({
+//           success: true,
+//           message: 'Feedback submitted successfully!',
+//       });
+//   } catch (error) {
+//       console.error('Error submitting feedback:', error);
+//       return res.status(500).json({
+//           success: false,
+//           message: 'An error occurred while submitting feedback.',
+//       });
+//   }
+// });
+
 app.post('/api/add-feedback', async (req, res) => {
   const {
       rrf_id, position, candidate_name, interview_date, interviewer_name,
@@ -1601,76 +1700,132 @@ app.post('/api/add-feedback', async (req, res) => {
   }
 
   try {
-      const query = `
-          INSERT INTO feedback_table (
-              rrf_id, position, candidate_name, interview_date, interviewer_name,
-              hr_email, candidate_email,
-
-              core_cloud_concepts_deployment, core_cloud_concepts_configuration,
-              core_cloud_concepts_troubleshooting, core_cloud_concepts_justification,
-              core_cloud_concepts_improvements,
-
-              networking_security_deployment, networking_security_configuration,
-              networking_security_troubleshooting, networking_security_justification,
-              networking_security_improvements,
-
-              infrastructure_management_deployment, infrastructure_management_configuration,
-              infrastructure_management_troubleshooting, infrastructure_management_justification,
-              infrastructure_management_improvements,
-
-              scalability_high_avail_deployment, scalability_high_avail_configuration,
-              scalability_high_avail_troubleshooting, scalability_high_avail_justification,
-              scalability_high_avail_improvements,
-
-              automation_deployment, automation_configuration, automation_troubleshooting,
-              automation_justification, automation_improvements,
-
-              observability_deployment, observability_configuration, observability_troubleshooting,
-              observability_justification, observability_improvements,
-
-              detailed_feedback, result
-          ) VALUES (
-              $1, $2, $3, $4, $5, $6, $7,
-              $8, $9, $10, $11, $12,
-              $13, $14, $15, $16, $17,
-              $18, $19, $20, $21, $22,
-              $23, $24, $25, $26, $27,
-              $28, $29, $30, $31, $32,
-              $33, $34, $35, $36, $37,
-              $38, $39
-          )
+      // First, check if the candidate email already exists
+      const existingCandidateQuery = `
+          SELECT * FROM feedback_table WHERE candidate_email = $1;
       `;
-      
-      const values = [
-          rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email, candidate_email,
-          core_cloud_concepts_deployment, core_cloud_concepts_configuration, core_cloud_concepts_troubleshooting,
-          core_cloud_concepts_justification, core_cloud_concepts_improvements,
-          networking_security_deployment, networking_security_configuration, networking_security_troubleshooting,
-          networking_security_justification, networking_security_improvements,
-          infrastructure_management_deployment, infrastructure_management_configuration,
-          infrastructure_management_troubleshooting, infrastructure_management_justification,
-          infrastructure_management_improvements,
-          scalability_high_avail_deployment, scalability_high_avail_configuration,
-          scalability_high_avail_troubleshooting, scalability_high_avail_justification,
-          scalability_high_avail_improvements,
-          automation_deployment, automation_configuration, automation_troubleshooting, automation_justification,
-          automation_improvements,
-          observability_deployment, observability_configuration, observability_troubleshooting,
-          observability_justification, observability_improvements,
-          detailed_feedback, result
-      ];
+      const existingCandidateResult = await pool.query(existingCandidateQuery, [candidate_email]);
 
-      await pool.query(query, values);
+      if (existingCandidateResult.rows.length > 0) {
+          // If the candidate exists, update the existing record
+          const updateQuery = `
+              UPDATE feedback_table SET
+                  rrf_id = $1, position = $2, candidate_name = $3, interview_date = $4,
+                  interviewer_name = $5, hr_email = $6, core_cloud_concepts_deployment = $7,
+                  core_cloud_concepts_configuration = $8, core_cloud_concepts_troubleshooting = $9,
+                  core_cloud_concepts_justification = $10, core_cloud_concepts_improvements = $11,
+                  networking_security_deployment = $12, networking_security_configuration = $13,
+                  networking_security_troubleshooting = $14, networking_security_justification = $15,
+                  networking_security_improvements = $16, infrastructure_management_deployment = $17,
+                  infrastructure_management_configuration = $18, infrastructure_management_troubleshooting = $19,
+                  infrastructure_management_justification = $20, infrastructure_management_improvements = $21,
+                  scalability_high_avail_deployment = $22, scalability_high_avail_configuration = $23,
+                  scalability_high_avail_troubleshooting = $24, scalability_high_avail_justification = $25,
+                  scalability_high_avail_improvements = $26, automation_deployment = $27,
+                  automation_configuration = $28, automation_troubleshooting = $29, automation_justification = $30,
+                  automation_improvements = $31, observability_deployment = $32,
+                  observability_configuration = $33, observability_troubleshooting = $34,
+                  observability_justification = $35, observability_improvements = $36,
+                  detailed_feedback = $37, result = $38
+              WHERE candidate_email = $39
+              RETURNING *;
+          `;
+          const values = [
+              rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email, core_cloud_concepts_deployment,
+              core_cloud_concepts_configuration, core_cloud_concepts_troubleshooting, core_cloud_concepts_justification,
+              core_cloud_concepts_improvements, networking_security_deployment, networking_security_configuration,
+              networking_security_troubleshooting, networking_security_justification, networking_security_improvements,
+              infrastructure_management_deployment, infrastructure_management_configuration, infrastructure_management_troubleshooting,
+              infrastructure_management_justification, infrastructure_management_improvements, scalability_high_avail_deployment,
+              scalability_high_avail_configuration, scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+              scalability_high_avail_improvements, automation_deployment, automation_configuration, automation_troubleshooting,
+              automation_justification, automation_improvements, observability_deployment, observability_configuration,
+              observability_troubleshooting, observability_justification, observability_improvements, detailed_feedback, result,
+              candidate_email
+          ];
 
-      return res.status(200).json({
-          success: true,
-          message: 'Feedback submitted successfully!',
-      });
+          await pool.query(updateQuery, values);
+          return res.status(200).json({
+              success: true,
+              message: 'Candidate feedback updated successfully!',
+          });
+      } else {
+          // If the candidate does not exist, insert new feedback data
+          const insertQuery = `
+              INSERT INTO feedback_table (
+                  rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email, candidate_email,
+                  core_cloud_concepts_deployment, core_cloud_concepts_configuration, core_cloud_concepts_troubleshooting,
+                  core_cloud_concepts_justification, core_cloud_concepts_improvements, networking_security_deployment,
+                  networking_security_configuration, networking_security_troubleshooting, networking_security_justification,
+                  networking_security_improvements, infrastructure_management_deployment, infrastructure_management_configuration,
+                  infrastructure_management_troubleshooting, infrastructure_management_justification,
+                  infrastructure_management_improvements, scalability_high_avail_deployment, scalability_high_avail_configuration,
+                  scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+                  scalability_high_avail_improvements, automation_deployment, automation_configuration, automation_troubleshooting,
+                  automation_justification, automation_improvements, observability_deployment, observability_configuration,
+                  observability_troubleshooting, observability_justification, observability_improvements, detailed_feedback, result
+              ) VALUES (
+                  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21,
+                  $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39
+              )
+          `;
+          const values = [
+              rrf_id, position, candidate_name, interview_date, interviewer_name, hr_email, candidate_email,
+              core_cloud_concepts_deployment, core_cloud_concepts_configuration, core_cloud_concepts_troubleshooting,
+              core_cloud_concepts_justification, core_cloud_concepts_improvements, networking_security_deployment,
+              networking_security_configuration, networking_security_troubleshooting, networking_security_justification,
+              networking_security_improvements, infrastructure_management_deployment, infrastructure_management_configuration,
+              infrastructure_management_troubleshooting, infrastructure_management_justification,
+              infrastructure_management_improvements, scalability_high_avail_deployment, scalability_high_avail_configuration,
+              scalability_high_avail_troubleshooting, scalability_high_avail_justification,
+              scalability_high_avail_improvements, automation_deployment, automation_configuration, automation_troubleshooting,
+              automation_justification, automation_improvements, observability_deployment, observability_configuration,
+              observability_troubleshooting, observability_justification, observability_improvements, detailed_feedback, result
+          ];
+
+          await pool.query(insertQuery, values);
+          return res.status(200).json({
+              success: true,
+              message: 'Feedback submitted successfully!',
+          });
+      }
   } catch (error) {
       console.error('Error submitting feedback:', error);
       return res.status(500).json({
           success: false,
           message: 'An error occurred while submitting feedback.',
+      });
+  }
+});
+
+app.get('/api/get-feedback', async (req, res) => {
+  const { candidateEmail } = req.query;
+
+  if (!candidateEmail) {
+      return res.status(400).json({
+          error: 'Candidate email is required.'
+      });
+  }
+
+  try {
+      // Query to get feedback data for the candidate by their email
+      const query = `
+          SELECT * FROM feedback_table WHERE candidate_email = $1;
+      `;
+      const result = await pool.query(query, [candidateEmail]);
+
+      if (result.rows.length === 0) {
+          return res.status(404).json({
+              error: 'No feedback found for this candidate.'
+          });
+      }
+
+      // Return the feedback data as JSON
+      return res.json(result.rows[0]); // Return only the first (and only) matching candidate
+  } catch (error) {
+      console.error('Error fetching feedback:', error);
+      return res.status(500).json({
+          error: 'An error occurred while fetching the feedback.'
       });
   }
 });
@@ -1908,11 +2063,11 @@ app.get('/api/panel-candidates-info', async (req, res) => {
 
     // Define the recruitment phases you want to include
     const recruitmentPhases = [
-      'L2 Technical Round Scheduled',
-      'Client Fitment Round Scheduled',
-      'Project Fitment Round Scheduled',
-      'Fitment Round Scheduled',
-      'EC Fitment Round Scheduled'
+      'L2 Technical Round Scheduled','Shortlisted in L2',
+      'Client Fitment Round Scheduled','Shortlisted in Client Fitment Round',
+      'Project Fitment Round Scheduled','Shortlisted in Project Fitment Round',
+      'Fitment Round Scheduled','Shortlisted in Fitment Round',
+      'EC Fitment Round Scheduled', 'Shortlisted in EC Fitment Round'
     ];
 
     const query = `
