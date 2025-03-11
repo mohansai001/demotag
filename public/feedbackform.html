@@ -409,42 +409,51 @@ document.getElementById('submit-button').addEventListener('click', function () {
 // Function to send the PDF via email using Microsoft Graph API
 async function sendEmailWithPDF(hrEmail, roundDetails) {
     try {
-        const account = msalInstance.getAllAccounts()[0];
+        let account = msalInstance.getAllAccounts()[0];
+
         if (!account) {
-            showToast("User not logged in", "error");
-            return;
+            console.log("No active account found. Attempting to log in...");
+            await msalInstance.loginPopup({ scopes: ["Mail.Send"] }); // Use loginRedirect if needed
+            account = msalInstance.getAllAccounts()[0];
+
+            if (!account) {
+                showToast("Login required to send email", "error");
+                return;
+            }
         }
 
+        msalInstance.setActiveAccount(account); // Set the active account
+
         const request = {
+            account: account,
             scopes: ["Mail.Send"]
         };
 
         const response = await msalInstance.acquireTokenSilent(request);
         const accessToken = response.accessToken;
+
         if (!accessToken) {
             showToast("Failed to get access token", "error");
             return;
         }
 
-        // Convert form container to PDF blob
+        // Convert form to PDF
         const formContainer = document.querySelector('.form-container');
         const pdfBlob = await html2pdf().from(formContainer).outputPdf("blob");
 
         const reader = new FileReader();
         reader.readAsDataURL(pdfBlob);
         reader.onloadend = async function () {
-            const base64PDF = reader.result.split(',')[1]; // Get the base64 content
+            const base64PDF = reader.result.split(',')[1];
 
             const emailData = {
                 message: {
-                    subject: `Interview Feedback - ${roundDetails}`, // Include round details in subject
+                    subject: `Interview Feedback - ${roundDetails}`,
                     body: {
                         contentType: "Text",
                         content: "Please find the attached interview feedback form."
                     },
-                    toRecipients: [
-                        { emailAddress: { address: hrEmail } } // Send to HR email dynamically
-                    ],
+                    toRecipients: [{ emailAddress: { address: hrEmail } }],
                     attachments: [
                         {
                             "@odata.type": "#microsoft.graph.fileAttachment",
@@ -478,7 +487,6 @@ async function sendEmailWithPDF(hrEmail, roundDetails) {
         showToast("Error sending email", "error");
     }
 }
-
 </script>
 </body>
 
