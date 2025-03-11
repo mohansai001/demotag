@@ -1412,7 +1412,7 @@ app.get('/api/get-shortlisted-candidates', async (req, res) => {
     WHERE 
       candidate_info.candidate_email = ir.candidate_email
       AND candidate_info.prescreening_status = 'Shortlisted'
-      AND candidate_info.recruitment_phase NOT IN ('Shortlisted in Fitment Round','L2 Technical Round Scheduled','EC Fitment Round Scheduled','Shortlisted in EC Fitment Round','Shortlisted in Client','Fitment Round Scheduled','Project Fitment Round Scheduled','Shortlisted in Project Fitment Round','Client Fitment Round Scheduled','Shortlisted in Client Fitment Round','Shortlisted in L2', 'Rejected in L2', 'On Hold in L2', 'No iMocha Exam','Schedule L2 Technical','Client Round Scheduled','Rejected in Client','Rejected in Client Fitment Round','Rejected in Project Fitment Round');
+      AND candidate_info.recruitment_phase NOT IN ('Shortlisted in Fitment Round','L2 Technical Round Scheduled','EC Fitment Round Scheduled','Shortlisted in EC Fitment Round','Shortlisted in Client','Fitment Round Scheduled','Project Fitment Round Scheduled','Shortlisted in Project Fitment Round','Client Fitment Round Scheduled','Shortlisted in Client Fitment Round','Shortlisted in L2', 'Rejected in L2', 'On Hold in L2', 'No iMocha Exam','Schedule L2 Technical','Client Round Scheduled','Rejected in Client','Rejected in Client Fitment Round','Rejected in Project Fitment Round','Rejected in Fitment Round');
     
     `;
 
