@@ -60,6 +60,7 @@ async function fetchCandidatesInfo() {
         candidate.recruitment_phase === "Rejected in L2" ||
         candidate.recruitment_phase === "Rejected in Client Fitment Round" ||
         candidate.recruitment_phase === "Rejected in Project Fitment Round" ||
+         candidate.recruitment_phase === "Shortlisted in Fitment Round" ||
         candidate.recruitment_phase === "Rejected in Fitment Round"
       ) {
         nextRound = "No Further Rounds"; // Display 'No Further Rounds' for rejected candidates
