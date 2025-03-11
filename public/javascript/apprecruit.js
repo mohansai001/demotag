@@ -949,7 +949,7 @@ ${globalJobDescription}
         sendCandidateInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue);
         sendPrescreeningInfoToDB(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId);
         sendRRFToDB(globalRrfId, role, selectedValue, status = 'open');
-        sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue);
+        sendCandidateDetailsToHR(candidateName, candidateEmail, statusText, role, suitabilityPercentage, candidatePhoneNumber, resumeUrl,globalHrEmail,globalRrfId,selectedValue,finalSummary);
 
 
         // Create a unique container for inputs and button
