@@ -707,36 +707,80 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the candidate email from the URL
             const urlParams = new URLSearchParams(window.location.search);
-            const candidateEmail = urlParams.get('candidateEmail');
+            const candidateEmail = urlParams.get('candidateEmail'); // Assume email is passed in the URL
 
             if (candidateEmail) {
                 // Fetch candidate data from the server based on the email
-                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+                fetch(`https://demotag.vercel.app/api/get-feedback?candidateEmail=${candidateEmail}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Check if the data is returned successfully
                         if (data.error) {
                             showToast(data.error, "error");
                         } else {
                             // Populate the form fields with the returned data
                             document.getElementById('candidate-name').value = data.candidate_name;
-                            document.getElementById('position').value = data.role;
-                            document.getElementById('interviewer-name').value = data.panel_name;
-                            document.getElementById('interview-date').value = data.l_2_interviewdate;
-                            document.getElementById('imocha-score').textContent = data.l_1_score;
+                            document.getElementById('position').value = data.position;
+                            document.getElementById('interviewer-name').value = data.interviewer_name;
+                            document.getElementById('interview-date').value = data.interview_date;
+                            document.getElementById('imocha-score').textContent = data.imocha_score;
                             document.getElementById('candidate-email').textContent = candidateEmail;
                             document.getElementById('rrf-id').value = data.rrf_id;
                             document.getElementById('hr-email').value = data.hr_email;
+
+                            // Populate Core Cloud Concepts fields
+                            document.getElementById('core-cloud-concepts-deployment').value = data.core_cloud_concepts_deployment;
+                            document.getElementById('core-cloud-concepts-configuration').value = data.core_cloud_concepts_configuration;
+                            document.getElementById('core-cloud-concepts-troubleshooting').value = data.core_cloud_concepts_troubleshooting;
+                            document.getElementById('core-cloud-concepts-justification').value = data.core_cloud_concepts_justification;
+                            document.getElementById('core-cloud-concepts-improvements').value = data.core_cloud_concepts_improvements;
+
+                            // Populate Networking & Security fields
+                            document.getElementById('networking-security-deployment').value = data.networking_security_deployment;
+                            document.getElementById('networking-security-configuration').value = data.networking_security_configuration;
+                            document.getElementById('networking-security-troubleshooting').value = data.networking_security_troubleshooting;
+                            document.getElementById('networking-security-justification').value = data.networking_security_justification;
+                            document.getElementById('networking-security-improvements').value = data.networking_security_improvements;
+
+                            // Populate Infrastructure Management fields
+                            document.getElementById('infrastructure-management-deployment').value = data.infrastructure_management_deployment;
+                            document.getElementById('infrastructure-management-configuration').value = data.infrastructure_management_configuration;
+                            document.getElementById('infrastructure-management-troubleshooting').value = data.infrastructure_management_troubleshooting;
+                            document.getElementById('infrastructure-management-justification').value = data.infrastructure_management_justification;
+                            document.getElementById('infrastructure-management-improvements').value = data.infrastructure_management_improvements;
+
+                            // Populate Scalability & High Availability fields
+                            document.getElementById('scalability-high-avail-deployment').value = data.scalability_high_avail_deployment;
+                            document.getElementById('scalability-high-avail-configuration').value = data.scalability_high_avail_configuration;
+                            document.getElementById('scalability-high-avail-troubleshooting').value = data.scalability_high_avail_troubleshooting;
+                            document.getElementById('scalability-high-avail-justification').value = data.scalability_high_avail_justification;
+                            document.getElementById('scalability-high-avail-improvements').value = data.scalability_high_avail_improvements;
+
+                            // Populate Automation fields
+                            document.getElementById('automation-deployment').value = data.automation_deployment;
+                            document.getElementById('automation-configuration').value = data.automation_configuration;
+                            document.getElementById('automation-troubleshooting').value = data.automation_troubleshooting;
+                            document.getElementById('automation-justification').value = data.automation_justification;
+                            document.getElementById('automation-improvements').value = data.automation_improvements;
+
+                            // Populate Observability fields
+                            document.getElementById('observability-deployment').value = data.observability_deployment;
+                            document.getElementById('observability-configuration').value = data.observability_configuration;
+                            document.getElementById('observability-troubleshooting').value = data.observability_troubleshooting;
+                            document.getElementById('observability-justification').value = data.observability_justification;
+                            document.getElementById('observability-improvements').value = data.observability_improvements;
+
+                            // Populate the remaining fields
+                            document.getElementById('detailed-feedback').value = data.detailed_feedback;
+                            document.getElementById('result').value = data.result;
                         }
                     })
                     .catch(error => {
                         console.error('Error fetching candidate data:', error);
                         showToast("Failed to load candidate data.", "error");
                     });
-            }
-        });
+                }
+            });
 
         document.getElementById('submit-button').addEventListener('click', function (e) {
             e.preventDefault(); // Prevent the default form submission
