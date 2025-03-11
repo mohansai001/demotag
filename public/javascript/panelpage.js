@@ -41,12 +41,17 @@ function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
 
 function getFeedbackFormUrl(recruitmentPhase) {
     // Mapping recruitment phase to feedback form URLs
-    const feedbackFormUrls = {
+   const feedbackFormUrls = {
         'L2 Technical Round Scheduled': 'L2-Technical.html',
+        'Shortlisted in L2': 'L2-Technical.html',
         'Client Fitment Round Scheduled': 'feedbackform.html',
+        'Shortlisted in Client Fitment Round': 'feedbackform.html',
         'Project Fitment Round Scheduled': 'feedbackform.html',
+        'Shortlisted in Project Fitment Round': 'feedbackform.html',
         'Fitment Round Scheduled': 'feedbackform.html',
-        'EC Fitment Round Scheduled': 'ec-usecase.html'
+        'Shortlisted in Fitment Round': 'feedbackform.html',
+        'EC Fitment Round Scheduled': 'ec-usecase.html',
+        'Shortlisted in EC Fitment Round': 'ec-usecase.html'
     };
 
     // Return the corresponding URL or default if not matched
