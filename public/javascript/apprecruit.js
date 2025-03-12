@@ -1008,7 +1008,7 @@ ${globalJobDescription}
             nextButton.classList.add('next-btn');
             nextButton.textContent = 'Next';
             nextButton.onclick = function () {
-            window.location.href = 'l1-imocha.html';
+            window.location.href = 'prescreeningform.html';
         };
         container.appendChild(nextButton);
         }
