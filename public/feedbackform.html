@@ -366,14 +366,10 @@ function downloadPDF() {
         });
 
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const roundDetails = localStorage.getItem('roundDetails');
-            if (roundDetails) {
-                document.getElementById('round-details').textContent = roundDetails;
-            } else {
-                document.getElementById('round-details').textContent = 'No round details available';
-            }
-        });
+       document.addEventListener("DOMContentLoaded", function () {
+         const roundDetails = localStorage.getItem('roundDetails');
+         document.getElementById('round-details').textContent = roundDetails || 'No round details available';
+     });
 
 // Submit feedback
 document.getElementById('submit-button').addEventListener('click', function () {
