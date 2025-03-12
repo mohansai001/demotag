@@ -2146,39 +2146,36 @@ app.get('/api/candidate-total-by-team', async (req, res) => {
   try {
     // Extract ECs from query parameters
     const { ecs } = req.query;
-
     // Validate input
     if (!ecs) {
       return res.status(400).json({ error: 'Please provide ECs as a query parameter.' });
     }
-
     // Split the provided ECs into an array
     const ecList = ecs.split(',').map(ec => ec.trim());
-
     // Query to fetch the count of candidates for the specified ECs
     const query = `
       SELECT eng_center, COUNT(*) AS total_count
-FROM candidate_info
-WHERE eng_center = ANY($1) AND visible = TRUE
-GROUP BY eng_center;
+      FROM candidate_info
+      WHERE eng_center = ANY($1) AND visible = TRUE
+      GROUP BY eng_center;
     `;
-
-    // Execute the query with the EC list
-       const result = await Promise.race([
+ 
+    // Execute the query with a timeout
+    const result = await Promise.race([
       pool.query(query, [ecList]),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
     ]);
-
     // Transform the result into a key-value object
     const countsByTeam = result.rows.reduce((acc, row) => {
       acc[row.eng_center] = row.total_count;
       return acc;
     }, {});
-
     res.json(countsByTeam);
   } catch (error) {
     console.error('Error fetching total count by team:', error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ 
+      error: error.message.includes('Query Timeout') ? 'Database query timed out' : 'Internal Server Error' 
+    });
   }
 });
 
