@@ -2164,7 +2164,10 @@ GROUP BY eng_center;
     `;
 
     // Execute the query with the EC list
-    const result = await pool.query(query, [ecList]);
+       const result = await Promise.race([
+      pool.query(query, [ecList]),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
+    ]);
 
     // Transform the result into a key-value object
     const countsByTeam = result.rows.reduce((acc, row) => {
