@@ -189,10 +189,7 @@ app.post('/api/update-candidate-recruitment-phase', async (req, res) => {
 
 app.get('/api/rrf-details', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
-
+    // Query to fetch aggregated resume counts grouped by eng_center where visible is TRUE
     const result = await pool.query(`
       SELECT eng_center, SUM(resume_count) AS resume_count
       FROM rrf_details
@@ -625,23 +622,17 @@ app.get('/api/cloudops-resume-count', async (req, res) => {
 //site reliability count
 app.get('/api/site-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior Azure Site Reliability Engineer', 'Lead Azure Site Reliability Engineer',
-                      'Senior Azure Site Reliability Engineer', 'Junior AWS Site Reliability Engineer',
-                      'Senior AWS Site Reliability Engineer', 'Lead AWS Site Reliability Engineer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior Azure Site Reliability Engineer', 'Lead Azure Site Reliability Engineer','Senior Azure Site Reliability Engineer','Junior AWS Site Reliability Engineer','Senior AWS Site Reliability Engineer','Lead AWS Site Reliability Engineer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching Site Reliability resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the Site Reliability resume count' });
+    console.error('Error fetching DevOps resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
 
@@ -666,103 +657,75 @@ app.get('/api/reactjs-resume-count', async (req, res) => {
  
 app.get('/api/snow-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior Angular Cloud Native Application Engineer - Frontend', 
-                      'Senior Angular Cloud Native Application Engineer - Frontend',
-                      'Junior React Cloud Native Application Engineer - Frontend',
-                      'Senior React Cloud Native Application Engineer - Frontend')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior Angular Cloud Native Application Engineer - Frontend', 'Senior Angular Cloud Native Application Engineer - Frontend','Junior React Cloud Native Application Engineer - Frontend','Senior React Cloud Native Application Engineer - Frontend')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching Snow resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the Snow resume count' });
+    console.error('Error fetching snow resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
 app.get('/api/java-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior Mendix LCNC Platform Engineer', 'Senior Mendix LCNC Platform Engineer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior Mendix LCNC Platform Engineer', 'Senior Mendix LCNC Platform Engineer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching Java resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the Java resume count' });
+    console.error('Error fetching java resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
  
 app.get('/api/hadoop-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior Hadoop Data Engineer', 'Lead Hadoop Data Engineer', 'Senior Hadoop Data Engineer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior Hadoop Data Engineer', 'Lead Hadoop Data Engineer','Senior Hadoop Data Engineer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching Hadoop resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the Hadoop resume count' });
+    console.error('Error fetching hadoop resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
 app.get('/api/.net-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior WF-NET & ASP.NET Core Developer', 
-                      'Lead WF-NET & ASP.NET Core Developer',
-                      'Senior WF-NET & ASP.NET Core Developer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior WF-NET & ASP.NET Core Developer', 'Lead WF-NET & ASP.NET Core Developer','Senior WF-NET & ASP.NET Core Developer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching .NET resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the .NET resume count' });
+    console.error('Error fetching .net resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the DevOps resume count' });
   }
 });
  
 //Data count
 app.get('/api/data-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('AWS Data Engineer', 'Azure Data Engineer','Databricks Data Engineer','Hadoop Data Engineer',
-                      'DataStage Data Engineer','IBM MDM Data Engineer','ETL Data Engineer','Oracle Data Engineer',
-                      'IDMC Data Engineer','Marklogic Data Engineer','SQL Data Engineer','Snowflake Data Engineer',
-                      'SSIS Data Engineer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('AWS Data Engineer', 'Azure Data Engineer','Databricks Data Engineer','Hadoop Data Engineer','DataStage Data Engineer','IBM MDM Data Engineer','ETL Data Engineer','Oracle Data Engineer','IDMC Data Engineer','Marklogic Data Engineer','SQL Data Engineer','Snowflake Data Engineer','SSIS Data Engineer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
@@ -772,114 +735,89 @@ app.get('/api/data-resume-count', async (req, res) => {
 });
 app.get('/api/data-ops-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior Data-Ops Engineer', 'Lead Data-Ops Engineer','Senior Data-Ops Engineer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior Data-Ops Engineer', 'Lead Data-Ops Engineer','Senior Data-Ops Engineer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching data-ops resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the data-ops resume count' });
+    console.error('Error fetching data resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
 app.get('/api/data-bi-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Power BI Data – BI Visualization Engineer', 'Tableau Data – BI Visualization Engineer',
-                      'WebFOCUS Data – BI Visualization Engineer')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Power BI Data – BI Visualization Engineer', 'Tableau Data – BI Visualization Engineer','WebFOCUS Data – BI Visualization Engineer')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching data-bi resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the data-bi resume count' });
+    console.error('Error fetching data resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
 app.get('/api/data-modeller-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Data Modeller')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Data Modeller')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching data-modeller resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the data-modeller resume count' });
+    console.error('Error fetching data resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
 app.get('/api/data-analyst-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Data Analyst')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN (' Data Analyst')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching data-analyst resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the data-analyst resume count' });
+    console.error('Error fetching data resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
 app.get('/api/data-architect-resume-count', async (req, res) => {
   try {
-    const result = await Promise.race([
-      pool.query(`
-        SELECT COUNT(*) AS count
-        FROM candidate_info
-        WHERE role IN ('Junior Data Architect', 'Lead Data Architect','Senior Data Architect')
-        AND visible = TRUE;
-      `),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
+    const result = await pool.query(`
+      SELECT COUNT(*) AS count
+      FROM candidate_info
+      WHERE role IN ('Junior Data Architect', 'Lead Data Architect','Senior Data Architect')
+      AND visible = TRUE;
+    `);
     const count = result.rows[0].count;
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching data-architect resume count:', error);
-    res.status(500).json({ error: 'An error occurred while fetching the data-architect resume count' });
+    console.error('Error fetching data resume count:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
   }
 });
 app.get('/api/data-Scientist-resume-count', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
-
     const result = await pool.query(`
       SELECT COUNT(*) AS count
       FROM candidate_info
-      WHERE role IN ('Junior Data Scientist –AI/ML', 'Lead Data Scientist –AI/ML', 'Senior Data Scientist –AI/ML')
+      WHERE role IN ('Junior Data Scientist –AI/ML', 'Lead Data Scientist –AI/ML','Senior Data Scientist –AI/ML')
       AND visible = TRUE;
     `);
-
-    res.json({ count: result.rows[0].count });
+    const count = result.rows[0].count;
+    res.json({ count });
   } catch (error) {
     console.error('Error fetching data resume count:', error);
     res.status(500).json({ error: 'An error occurred while fetching the data resume count' });
@@ -972,42 +910,45 @@ app.get('/api/getcandidates', async (req, res) => {
 
 app.get('/api/candidate-counts', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      const { eng_center } = req.query;
 
-    const { eng_center } = req.query;
+      if (!eng_center) {
+          return res.status(400).json({ error: "eng_center parameter is required" });
+      }
 
-    if (!eng_center) {
-      return res.status(400).json({ error: "eng_center parameter is required" });
-    }
+      // Convert comma-separated string to an array and trim spaces
+      const engCentersArray = eng_center.split(',').map(center => center.trim());
 
-    const engCentersArray = eng_center.split(',').map(center => center.trim());
-    const placeholders = engCentersArray.map((_, index) => `$${index + 1}`).join(',');
+      // Generate placeholders ($1, $2, $3, ...) dynamically
+      const placeholders = engCentersArray.map((_, index) => `$${index + 1}`).join(',');
 
-    const totalResult = await pool.query(
-      `SELECT COUNT(*) AS total_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND visible = TRUE`,
-      engCentersArray
-    );
+      // Query to get the total count for multiple eng_center values
+      const totalResult = await pool.query(
+          `SELECT COUNT(*) AS total_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND visible = TRUE`,
+          engCentersArray
+      );
 
-    const shortlistedResult = await pool.query(
-      `SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Shortlisted' AND visible = TRUE`,
-      engCentersArray
-    );
+      // Query to get the count of shortlisted candidates
+      const shortlistedResult = await pool.query(
+          `SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Shortlisted' AND visible = TRUE`,
+          engCentersArray
+      );
 
-    const rejectedResult = await pool.query(
-      `SELECT COUNT(*) AS rejected_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Rejected' AND visible = TRUE`,
-      engCentersArray
-    );
+      // Query to get the count of rejected candidates
+      const rejectedResult = await pool.query(
+          `SELECT COUNT(*) AS rejected_count FROM candidate_info WHERE eng_center IN (${placeholders}) AND prescreening_status = 'Rejected' AND visible = TRUE`,
+          engCentersArray
+      );
 
-    res.json({
-      totalCount: totalResult.rows[0].total_count,
-      shortlistedCount: shortlistedResult.rows[0].shortlisted_count,
-      rejectedCount: rejectedResult.rows[0].rejected_count
-    });
+      // Respond with the counts
+      res.json({
+          totalCount: totalResult.rows[0].total_count,
+          shortlistedCount: shortlistedResult.rows[0].shortlisted_count,
+          rejectedCount: rejectedResult.rows[0].rejected_count
+      });
   } catch (error) {
-    console.error('Error fetching counts:', error);
-    res.status(500).send('Server error');
+      console.error('Error fetching counts:', error);
+      res.status(500).send('Server error');
   }
 });
 
@@ -1184,39 +1125,35 @@ setInterval(() => {
 
 app.get('/api/test-counts', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000)) // 59s timeout
-    ]);
+      const testNames = [
+          'Clone of_Java Backend Developer',
+          'Data_EC_ERIE_Python_PySpark',
+          'Senior Azure DevOps Engineer - Cloud EC',
+          'Jr DevSecOps Engineer - AWS',
+          'Junior Azure DevOps Engineer',
+          'AWS Platform Lead',
+          'Azure Cloud Engineer - Cloud EC'
+      ];
 
-    const testNames = [
-      'Clone of_Java Backend Developer',
-      'Data_EC_ERIE_Python_PySpark',
-      'Senior Azure DevOps Engineer - Cloud EC',
-      'Jr DevSecOps Engineer - AWS',
-      'Junior Azure DevOps Engineer',
-      'AWS Platform Lead',
-      'Azure Cloud Engineer - Cloud EC'
-    ];
+      // Query the database for counts of the specified test names where visible = TRUE
+      const query = `
+          SELECT test_name, COUNT(*) AS count
+          FROM imocha_results
+          WHERE test_name = ANY($1) AND visible = TRUE
+          GROUP BY test_name
+      `;
+      const result = await pool.query(query, [testNames]);
 
-    // Query the database for counts of the specified test names where visible = TRUE
-    const query = `
-      SELECT test_name, COUNT(*) AS count
-      FROM imocha_results
-      WHERE test_name = ANY($1) AND visible = TRUE
-      GROUP BY test_name
-    `;
-    const result = await pool.query(query, [testNames]);
+      // Convert the result into a key-value object
+      const counts = {};
+      result.rows.forEach(row => {
+          counts[row.test_name] = parseInt(row.count, 10);
+      });
 
-    // Convert the result into a key-value object
-    const counts = {};
-    result.rows.forEach(row => {
-      counts[row.test_name] = parseInt(row.count, 10);
-    });
-
-    res.json(counts);
+      res.json(counts);
   } catch (error) {
-    console.error('Error fetching test counts:', error);
-    res.status(500).json({ error: 'Failed to fetch test counts' });
+      console.error('Error fetching test counts:', error);
+      res.status(500).json({ error: 'Failed to fetch test counts' });
   }
 });
 
@@ -1265,72 +1202,63 @@ app.get('/api/fetch-results', async (req, res) => {
 });
 app.get('/api/candidates', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      const engCenter = req.query.eng_center;
 
-    const engCenter = req.query.eng_center;
-    let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE visible = TRUE';
-    const params = [];
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE visible = TRUE';
+      const params = [];
 
-    if (engCenter) {
-      query += ' AND eng_center = $1';
-      params.push(engCenter);
-    }
+      if (engCenter) {
+          query += ' AND eng_center = $1';
+          params.push(engCenter);
+      }
 
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+      const result = await pool.query(query, params);
+      res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).send('Server error');
+      console.error('Error fetching data:', error);
+      res.status(500).send('Server error');
   }
 });
 
 // Shortlisted candidates with visible = true
 app.get('/api/candidates/shortlisted', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      const engCenter = req.query.eng_center;
 
-    const engCenter = req.query.eng_center;
-    let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1 AND visible = TRUE';
-    const params = ['Shortlisted'];
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1 AND visible = TRUE';
+      const params = ['Shortlisted'];
 
-    if (engCenter) {
-      query += ' AND eng_center = $2';
-      params.push(engCenter);
-    }
+      if (engCenter) {
+          query += ' AND eng_center = $2';
+          params.push(engCenter);
+      }
 
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+      const result = await pool.query(query, params);
+      res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching shortlisted candidates:', error);
-    res.status(500).send('Server error');
+      console.error('Error fetching shortlisted candidates:', error);
+      res.status(500).send('Server error');
   }
 });
 
 // Rejected candidates with visible = true
 app.get('/api/candidates/rejected', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      const engCenter = req.query.eng_center;
 
-    const engCenter = req.query.eng_center;
-    let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1 AND visible = TRUE';
-    const params = ['Rejected'];
+      let query = 'SELECT rrf_id, candidate_name, candidate_email, prescreening_status, role, recruitment_phase, resume_score, date FROM candidate_info WHERE prescreening_status = $1 AND visible = TRUE';
+      const params = ['Rejected'];
 
-    if (engCenter) {
-      query += ' AND eng_center = $2';
-      params.push(engCenter);
-    }
+      if (engCenter) {
+          query += ' AND eng_center = $2';
+          params.push(engCenter);
+      }
 
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+      const result = await pool.query(query, params);
+      res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching rejected candidates:', error);
-    res.status(500).send('Server error');
+      console.error('Error fetching rejected candidates:', error);
+      res.status(500).send('Server error');
   }
 });
 
@@ -1338,66 +1266,54 @@ app.get('/api/candidates/rejected', async (req, res) => {
 // API endpoint to get the prescreening count
 app.get('/api/prescreening-count', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      // Query to fetch the prescreening count
+      const query = `
+          SELECT COUNT(*) AS prescreening_count
+          FROM candidate_info
+          WHERE recruitment_phase = 'prescreening';
+      `;
+      const result = await pool.query(query);
 
-    // Query to fetch the prescreening count
-    const query = `
-      SELECT COUNT(*) AS prescreening_count
-      FROM candidate_info
-      WHERE recruitment_phase = 'prescreening';
-    `;
-    const result = await pool.query(query);
-
-    // Send the count as the response
-    res.json({ prescreening_count: result.rows[0].prescreening_count });
+      // Send the count as the response
+      res.json({ prescreening_count: result.rows[0].prescreening_count });
   } catch (error) {
-    console.error('Error fetching prescreening count:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error fetching prescreening count:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 app.get('/api/move-to-l1-count', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      // Query to fetch the Move to L1 count
+      const query = `
+          SELECT COUNT(*) AS move_to_l1_count
+          FROM candidate_info
+          WHERE recruitment_phase = 'Move to L1';
+      `;
+      const result = await pool.query(query);
 
-    // Query to fetch the Move to L1 count
-    const query = `
-      SELECT COUNT(*) AS move_to_l1_count
-      FROM candidate_info
-      WHERE recruitment_phase = 'Move to L1';
-    `;
-    const result = await pool.query(query);
-
-    // Send the count as the response
-    res.json({ move_to_l1_count: result.rows[0].move_to_l1_count });
+      // Send the count as the response
+      res.json({ move_to_l1_count: result.rows[0].move_to_l1_count });
   } catch (error) {
-    console.error('Error fetching Move to L1 count:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error fetching Move to L1 count:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 // API endpoint to get the Moved to L2 count
 app.get('/api/moved-to-l2-count', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
+      // Query to fetch the Moved to L2 count
+      const query = `
+          SELECT COUNT(*) AS moved_to_l2_count
+          FROM candidate_info
+          WHERE recruitment_phase = 'Shortlisted in L2';
+      `;
+      const result = await pool.query(query);
 
-    // Query to fetch the Moved to L2 count
-    const query = `
-      SELECT COUNT(*) AS moved_to_l2_count
-      FROM candidate_info
-      WHERE recruitment_phase = 'Shortlisted in L2';
-    `;
-    const result = await pool.query(query);
-
-    // Send the count as the response
-    res.json({ moved_to_l2_count: result.rows[0].moved_to_l2_count });
+      // Send the count as the response
+      res.json({ moved_to_l2_count: result.rows[0].moved_to_l2_count });
   } catch (error) {
-    console.error('Error fetching Moved to L2 count:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error fetching Moved to L2 count:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -2230,15 +2146,12 @@ app.get('/api/candidate-total-by-team', async (req, res) => {
   try {
     // Extract ECs from query parameters
     const { ecs } = req.query;
-
     // Validate input
     if (!ecs) {
       return res.status(400).json({ error: 'Please provide ECs as a query parameter.' });
     }
-
     // Split the provided ECs into an array
     const ecList = ecs.split(',').map(ec => ec.trim());
-
     // Query to fetch the count of candidates for the specified ECs
     const query = `
       SELECT eng_center, COUNT(*) AS total_count
@@ -2246,22 +2159,26 @@ app.get('/api/candidate-total-by-team', async (req, res) => {
       WHERE eng_center = ANY($1) AND visible = TRUE
       GROUP BY eng_center;
     `;
-
-    // Execute the query with the EC list
-    const result = await pool.query(query, [ecList]);
-
+ 
+    // Execute the query with a timeout
+    const result = await Promise.race([
+      pool.query(query, [ecList]),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
+    ]);
     // Transform the result into a key-value object
     const countsByTeam = result.rows.reduce((acc, row) => {
       acc[row.eng_center] = row.total_count;
       return acc;
     }, {});
-
     res.json(countsByTeam);
   } catch (error) {
     console.error('Error fetching total count by team:', error.message);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ 
+      error: error.message.includes('Query Timeout') ? 'Database query timed out' : 'Internal Server Error' 
+    });
   }
 });
+
 //hr names
 app.get('/api/hr-names', async (req, res) => {
   try {
@@ -2317,25 +2234,25 @@ app.get('/api/hr-phases', async (req, res) => {
 //phase count
 app.get('/api/phase-counts', async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
-
-    const result = await pool.query(`
-      SELECT 
-          hr_email,
-          recruitment_phase,
-          COUNT(*) AS phase_count
-      FROM 
-          candidate_info
-      GROUP BY 
-          hr_email, recruitment_phase;
-    `);
-
-    res.json(result.rows);
+      const query = `
+          SELECT 
+              hr_email,
+              recruitment_phase,
+              COUNT(*) AS phase_count
+          FROM 
+              candidate_info
+          GROUP BY 
+              hr_email, recruitment_phase;
+      `;
+      
+      // Execute the query using pool.query
+      const result = await pool.query(query);
+      
+      // Send the result back as JSON
+      res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Failed to fetch phase counts' });
+      console.error('Error fetching data:', error);
+      res.status(500).json({ error: 'Failed to fetch phase counts' });
   }
 });
 
@@ -2584,14 +2501,10 @@ app.post('/api/update-visibility', async (req, res) => {
 
 app.get("/api/shortlisted-count", async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
-
     const result = await pool.query(
       "SELECT COUNT(*) AS shortlisted_count FROM candidate_info WHERE prescreening_status = 'Shortlisted'"
     );
-
+    
     res.json({ inviteCount: result.rows[0].shortlisted_count });
   } catch (error) {
     console.error("Error fetching shortlisted count:", error.message);
@@ -2601,10 +2514,6 @@ app.get("/api/shortlisted-count", async (req, res) => {
 
 app.get("/api/available-score-count", async (req, res) => {
   try {
-    await Promise.race([
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Query Timeout')), 59000))
-    ]);
-
     const result = await pool.query(
       "SELECT COUNT(*) AS available_score_count FROM candidate_info WHERE l_1_score IS NOT NULL"
     );
