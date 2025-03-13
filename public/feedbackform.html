@@ -335,80 +335,110 @@ function downloadPDF() {
 }
         
     document.addEventListener("DOMContentLoaded", function () {
-            // Get the candidate email from the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const candidateEmail = urlParams.get('candidateEmail');
- 
-            if (candidateEmail) {
-                // Fetch candidate data from the server based on the email
-                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+            const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
+            const roundDetails = localStorage.getItem('roundDetails');
+
+            if (candidateEmail && roundDetails) {
+                // First, check if feedback data exists for the given email and roundDetails
+                fetch(`https://demotag.vercel.app/api/get-feedbackform?candidateEmail=${candidateEmail}&roundDetails=${roundDetails}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.error) {
-                            showToast(data.error, "error");
+                            // If no feedback data is found, fetch candidate data instead
+                            console.log("No feedback data found, fetching candidate data...");
+                            fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
+                                .then(response => response.json())
+                                .then(candidateData => {
+                                    if (candidateData.error) {
+                                        showToast(candidateData.error, "error");
+                                    } else {
+                                        // Fill the form with the fetched candidate data
+                                        document.getElementById('candidate-name').value = candidateData.candidate_name;
+                                        document.getElementById('position').value = candidateData.role;
+                                        document.getElementById('interviewer-name').value = candidateData.panel_name;
+                                        document.getElementById('interview-date').value = candidateData.l_2_interviewdate;
+                                        document.getElementById('imocha-score').textContent = candidateData.l_1_score || 'N/A';
+                                        document.getElementById('candidate-email').textContent = candidateEmail;
+                                        document.getElementById('rrf-id').value = candidateData.rrf_id;
+                                        document.getElementById('hr-email').value = candidateData.hr_email;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching candidate data:', error);
+                                    showToast("Failed to load candidate data.", "error");
+                                });
                         } else {
-                            document.getElementById('candidate-name').value = data.candidate_name;
-                            document.getElementById('position').value = data.role;
-                            document.getElementById('interviewer-name').value = data.panel_name;
-                            document.getElementById('interview-date').value = data.l_2_interviewdate;
-                            document.getElementById('imocha-score').textContent = data.l_1_score || 'N/A';
+                            // If feedback data exists, pre-fill the form with the feedback data
+                            document.getElementById('candidate-name').value = data.candidate_name || '';
+                            document.getElementById('position').value = data.position || '';
+                            document.getElementById('interviewer-name').value = data.interviewer_name || '';
+                            document.getElementById('interview-date').value = data.interview_date || '';
+                            document.getElementById('imocha-score').textContent = data.imocha_score || 'N/A';
                             document.getElementById('candidate-email').textContent = candidateEmail;
-                            document.getElementById('rrf-id').value = data.rrf_id;
-                            document.getElementById('hr-email').value = data.hr_email;
+                            document.getElementById('rrf-id').value = data.rrf_id || '';
+                            document.getElementById('hr-email').value = data.hr_email || '';
+                            document.getElementById('detailed-feedback').value = data.detailed_feedback || '';
+                            document.getElementById('result').value = data.result || '';
                         }
                     })
                     .catch(error => {
-                        console.error('Error fetching candidate data:', error);
-                        showToast("Failed to load candidate data.", "error");
+                        console.error('Error fetching feedback data:', error);
+                        showToast("Failed to load feedback data.", "error");
                     });
+            } else {
+                showToast("Candidate email or round details missing.", "error");
             }
         });
 
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('submit-button').addEventListener('click', function () {
             const roundDetails = localStorage.getItem('roundDetails');
-            if (roundDetails) {
-                document.getElementById('round-details').textContent = roundDetails;
-            } else {
-                document.getElementById('round-details').textContent = 'No round details available';
-            }
-        });
-        
-// Submit feedback
-document.getElementById('submit-button').addEventListener('click', function () {
-    const roundDetails = localStorage.getItem('roundDetails');
-    const formData = {
-        candidateEmail: document.getElementById('candidate-email').textContent,
-        imochaScore: document.getElementById('imocha-score').textContent,
-        rrfId: document.getElementById('rrf-id').value,
-        position: document.getElementById('position').value,
-        candidateName: document.getElementById('candidate-name').value,
-        interviewDate: document.getElementById('interview-date').value,
-        interviewerName: document.getElementById('interviewer-name').value,
-        hrEmail: document.getElementById('hr-email').value, // Fetch HR email
-        detailedFeedback: document.getElementById('detailed-feedback').value,
-        result: document.getElementById('result').value
-    };
+            const candidateEmail = document.getElementById('candidate-email').textContent;
+            const imochaScore = document.getElementById('imocha-score').textContent;
+            const rrfId = document.getElementById('rrf-id').value;
+            const position = document.getElementById('position').value;
+            const candidateName = document.getElementById('candidate-name').value;
+            const interviewDate = document.getElementById('interview-date').value;
+            const interviewerName = document.getElementById('interviewer-name').value;
+            const hrEmail = document.getElementById('hr-email').value;
+            const detailedFeedback = document.getElementById('detailed-feedback').value;
+            const result = document.getElementById('result').value;
 
-    fetch('https://demotag.vercel.app/api/submitFeedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formData, roundDetails })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('Feedback submitted successfully', 'success');
-                sendEmailWithPDF(formData.hrEmail, roundDetails); // Pass HR email and round details
-            } else {
-                showToast('Error submitting feedback', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error submitting feedback', 'error');
+            // Creating the formData object
+            const formData = {
+                candidateEmail,
+                imochaScore,
+                rrfId,
+                position,
+                candidateName,
+                interviewDate,
+                interviewerName,
+                hrEmail,
+                detailedFeedback,
+                result
+            };
+
+            // Send data to backend
+            fetch('https://demotag.vercel.app/api/submitFeedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ formData, roundDetails })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Feedback submitted successfully', 'success');
+                    } else {
+                        showToast('Error submitting feedback', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error submitting feedback', 'error');
+                });
         });
-});
 
 // Function to send the PDF via email using Microsoft Graph API
 async function sendEmailWithPDF(hrEmail, roundDetails) {
