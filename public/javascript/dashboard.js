@@ -1662,10 +1662,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Map recruitment_phase to dataset index
       const phaseMap = {
-        prescreening: 0,
+      prescreening: 0,
         "Move to L1": 1,
-        "L2 Scheduled": 2,
-        Shortlisted: 3,
+        "L2 Technical Round Scheduled": 2,
+
+        "EC Fitment Round Scheduled":3,
+        "Project Fitment Round Scheduled":4,
+        "Client Fitment Round Scheduled":5,
+        "Fitment Round Scheduled":6,
       };
 
       // Prepare a map of HR emails to their corresponding phase data
