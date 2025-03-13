@@ -891,6 +891,7 @@ ${globalJobDescription}
                 // Check if the recommendation section includes "Shortlisted" or "Rejected"
                 if (section.title === "Result") {
                     finalSummary = sectionContent;
+                    suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1];
                     if (sectionContent.includes("Shortlisted for the next round")  || suitabilityPercentage >= 75) {
                         statusText = "Shortlisted";
                         suitabilityPercentage = sectionContent.match(/Suitability Percentage:\s*(\d+)%/)?.[1]; // Extract percentage
