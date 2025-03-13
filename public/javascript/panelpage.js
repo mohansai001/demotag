@@ -32,13 +32,7 @@ function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
 
     // If recruitmentPhase is already mapped, it will not match the expected keys in roundDetailsMap
     const roundDetails = roundDetailsMap[recruitmentPhase] || recruitmentPhase;
-        const roundDetailsMap = {
-            'L2 Technical Round Scheduled': 'L2 Technical',
-            'Client Fitment Round Scheduled': 'Client Fitment Round',
-            'Project Fitment Round Scheduled': 'Project Fitment Round',
-            'Fitment Round Scheduled': 'Fitment Round',
-            'EC Fitment Round Scheduled': 'EC Fitment Round'
-        };
+
     
     console.log("Mapped roundDetails:", roundDetails); // Debugging step
 
