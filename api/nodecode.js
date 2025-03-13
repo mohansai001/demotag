@@ -2672,26 +2672,126 @@ app.get("/api/get-next-round", async (req, res) => {
   }
 });
 
+//submit feedback for feedback form
+app.get('/api/get-feedbackform', async (req, res) => {
+  try {
+    const { candidateEmail, roundDetails } = req.query;
+
+    if (!candidateEmail || !roundDetails) {
+      return res.status(400).json({ error: 'candidateEmail and roundDetails are required' });
+    }
+
+    const query = `
+      SELECT * FROM feedbackform
+      WHERE candidate_email = $1 AND round_details = $2;
+    `;
+    
+    const result = await pool.query(query, [candidateEmail, roundDetails]);
+
+    if (result.rows.length > 0) {
+      return res.json(result.rows[0]);
+    } else {
+      return res.status(404).json({ error: 'No feedback found' });
+    }
+  } catch (error) {
+    console.error('Error fetching feedback form:', error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+});
+
+//submit feedback for feedback form
 app.post('/api/submitFeedback', async (req, res) => {
   const { formData, roundDetails } = req.body;
 
   if (!formData || !roundDetails) {
-      return res.status(400).json({ success: false, message: 'Missing form data or round details' });
+    return res.status(400).json({ success: false, message: 'Please fill all the fields' });
   }
 
-  // Prepare the SQL query for insertion into the feedbackform table
-  const query = `
+  const candidateEmail = formData.candidateEmail;
+
+  const checkQuery = `
+    SELECT * FROM feedbackform
+    WHERE candidate_email = $1 AND round_details = $2;
+  `;
+  const checkValues = [candidateEmail, roundDetails];
+
+  try {
+    const existingFeedback = await pool.query(checkQuery, checkValues);
+
+    // If feedback already exists, update it
+    if (existingFeedback.rows.length > 0) {
+      const updateQuery = `
+        UPDATE feedbackform 
+        SET 
+            imocha_score = $1,
+            rrf_id = $2,
+            position = $3,
+            candidate_name = $4,
+            interview_date = $5,
+            interviewer_name = $6,
+            hr_email = $7,
+            detailed_feedback = $8,
+            result = $9,
+            submitted_at = NOW()
+        WHERE candidate_email = $10 AND round_details = $11
+        RETURNING *;
+      `;
+      const updateValues = [
+        formData.imochaScore,
+        formData.rrfId,
+        formData.position,
+        formData.candidateName,
+        formData.interviewDate,
+        formData.interviewerName,
+        formData.hrEmail,
+        formData.detailedFeedback,
+        formData.result,
+        candidateEmail,
+        roundDetails
+      ];
+
+      const updateResult = await pool.query(updateQuery, updateValues);
+
+      // Now check the updated result and handle the recruitment_phase accordingly
+      const feedbackResult = formData.result;
+      let recruitmentPhase = '';
+
+      if (feedbackResult === 'Recommended') {
+        recruitmentPhase = `Shortlisted in ${roundDetails}`;
+      } else if (feedbackResult === 'Rejected') {
+        recruitmentPhase = `Rejected in ${roundDetails}`;
+      }
+
+      // If there's a recruitmentPhase to update, update the candidate_info table
+      if (recruitmentPhase) {
+        const updateCandidateQuery = `
+          UPDATE candidate_info 
+          SET recruitment_phase = $1
+          WHERE candidate_email = $2
+        `;
+        const updateCandidateValues = [recruitmentPhase, candidateEmail];
+        await pool.query(updateCandidateQuery, updateCandidateValues);
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Feedback updated successfully',
+        data: updateResult.rows[0]
+      });
+    }
+
+    // If feedback does not exist, insert a new record
+    const insertQuery = `
       INSERT INTO feedbackform 
           (round_details, candidate_email, imocha_score, rrf_id, position, candidate_name, interview_date, 
           interviewer_name, hr_email, detailed_feedback, result, submitted_at)
       VALUES 
           ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW()) 
       RETURNING *;
-  `;
-
-  const values = [
+    `;
+    const insertValues = [
       roundDetails,
-      formData.candidateEmail, 
+      candidateEmail, 
       formData.imochaScore, 
       formData.rrfId, 
       formData.position, 
@@ -2701,59 +2801,41 @@ app.post('/api/submitFeedback', async (req, res) => {
       formData.hrEmail, 
       formData.detailedFeedback, 
       formData.result
-  ];
+    ];
 
-  try {
-      // Execute the query to insert the feedback
-      const result = await pool.query(query, values);
+    const insertResult = await pool.query(insertQuery, insertValues);
 
-      // If insertion fails
-      if (result.rows.length === 0) {
-          return res.status(400).json({ success: false, message: 'Failed to submit feedback' });
-      }
+    const feedbackResult = formData.result;
+    let recruitmentPhase = '';
 
-      // Now handle the update in candidate_info based on feedback result
-      const candidateEmail = formData.candidateEmail;
-      const feedbackResult = formData.result;
-      const roundId = roundDetails; // This assumes roundDetails is the round name or ID
+    if (feedbackResult === 'Recommended') {
+      recruitmentPhase = `Shortlisted in ${roundDetails}`;
+    } else if (feedbackResult === 'Rejected') {
+      recruitmentPhase = `Rejected in ${roundDetails}`;
+    }
 
-      let updateQuery;
-      let updateValues;
+    // If there's a recruitmentPhase to update, update the candidate_info table
+    if (recruitmentPhase) {
+      const updateCandidateQuery = `
+        UPDATE candidate_info 
+        SET recruitment_phase = $1
+        WHERE candidate_email = $2
+      `;
+      const updateCandidateValues = [recruitmentPhase, candidateEmail];
+      await pool.query(updateCandidateQuery, updateCandidateValues);
+    }
 
-      // Build the dynamic recruitment_phase update based on feedback result and round name
-      let recruitmentPhase = '';
+    res.status(200).json({
+      success: true,
+      message: 'Feedback submitted successfully',
+      data: insertResult.rows[0]
+    });
 
-      if (feedbackResult === 'Recommended') {
-          recruitmentPhase = `Shortlisted in ${roundId}`;
-      } else if (feedbackResult === 'Rejected') {
-          recruitmentPhase = `Rejected in ${roundId}`;
-      }
-
-      // If there's a valid recruitmentPhase value, update the candidate_info table
-      if (recruitmentPhase) {
-          updateQuery = `
-              UPDATE candidate_info 
-              SET recruitment_phase = $1
-              WHERE candidate_email = $2
-          `;
-          updateValues = [recruitmentPhase, candidateEmail];
-
-          // Execute the update query
-          await pool.query(updateQuery, updateValues);
-      }
-
-      // Respond with the inserted feedback data
-      res.status(200).json({
-          success: true,
-          message: 'Feedback submitted successfully',
-          data: result.rows[0]
-      });
   } catch (error) {
-      console.error('Error submitting feedback:', error);
-      res.status(500).json({ success: false, message: 'Error submitting feedback' });
+    console.error('Error submitting feedback:', error);
+    res.status(500).json({ success: false, message: 'Error submitting feedback' });
   }
 });
-
 
 // Start the server
 app.listen(PORT, () => {
