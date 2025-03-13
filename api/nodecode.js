@@ -40,9 +40,11 @@ const connectionString = 'postgresql://retool:4zBLlh1TPsAu@ep-frosty-pine-a6aqfk
 const pool = new Pool({
   connectionString,
   ssl: {
-    rejectUnauthorized: false, // Ensures compatibility with cloud-hosted databases
-	
+    rejectUnauthorized: false, // Required for cloud-hosted PostgreSQL
   },
+  max: 10, // Limits the number of clients in the pool (adjust as needed)
+  idleTimeoutMillis: 30000, // Closes idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // Time before a connection attempt is aborted
 });
 
 // iMocha API credentials
