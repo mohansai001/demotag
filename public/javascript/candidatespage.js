@@ -544,6 +544,7 @@ async function handleScheduleClick(event) {
           overlay.classList.remove("active");
           successMessage.style.display = "none";
         }, 3000);
+         window.location.reload(); 
       } catch (error) {
         console.error("Error scheduling Teams meeting:", error);
       }
