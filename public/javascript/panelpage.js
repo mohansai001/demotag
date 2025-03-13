@@ -9,13 +9,7 @@ const calendarMonthYearElement = document.getElementById("calendarMonthYear");
 const feedbackModal = document.getElementById("feedbackModal");
 const feedbackFormIframe = document.getElementById('feedbackFormIframe');
 const feedbackCloseBtn = document.querySelector(".close-btn");
-     const roundDetailsMap = {
-            'L2 Technical Round Scheduled': 'L2 Technical',
-            'Client Fitment Round Scheduled': 'Client Fitment Round',
-            'Project Fitment Round Scheduled': 'Project Fitment Round',
-            'Fitment Round Scheduled': 'Fitment Round',
-            'EC Fitment Round Scheduled': 'EC Fitment Round'
-        };
+
 
 function logout() {
     window.location.href = 'index.html';
