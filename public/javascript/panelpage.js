@@ -27,18 +27,11 @@ interviewsBtn.addEventListener("click", function () {
     }
 });
 
-function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase, meetingLink) {
-    console.log("Raw recruitmentPhase:", recruitmentPhase);
-
-    // Ensure roundDetailsMap is globally defined before using it
+function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
     const roundDetails = roundDetailsMap[recruitmentPhase] || recruitmentPhase;
-    console.log("Mapped roundDetails:", roundDetails);
 
-    localStorage.setItem('roundDetails', roundDetails);
-    localStorage.setItem('emailcandidate', candidateEmail);
-
-    openFeedbackForm(candidateEmail, roundDetails);  
-    window.open(meetingLink, "_blank"); // Open the provided meeting link
+    openFeedbackForm(candidateEmail, roundDetails);  // Pass roundDetails to the popup
+    window.open(document.getElementById("joinLink").href, "_blank");
 
     const iframe = document.getElementById('feedbackFormIframe');
     iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(roundDetails)}`;
