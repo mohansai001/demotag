@@ -28,7 +28,12 @@ interviewsBtn.addEventListener("click", function () {
 });
 
 function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
+    console.log("Raw recruitmentPhase:", recruitmentPhase); // Debugging step
+
+    // If recruitmentPhase is already mapped, it will not match the expected keys in roundDetailsMap
     const roundDetails = roundDetailsMap[recruitmentPhase] || recruitmentPhase;
+    
+    console.log("Mapped roundDetails:", roundDetails); // Debugging step
 
     openFeedbackForm(candidateEmail, roundDetails);  // Pass roundDetails to the popup
     window.open(document.getElementById("joinLink").href, "_blank");
@@ -36,6 +41,7 @@ function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
     const iframe = document.getElementById('feedbackFormIframe');
     iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(roundDetails)}`;
 }
+
 
 
 
