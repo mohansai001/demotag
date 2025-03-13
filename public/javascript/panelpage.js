@@ -27,21 +27,23 @@ interviewsBtn.addEventListener("click", function () {
     }
 });
 
-function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
-    console.log("Raw recruitmentPhase:", recruitmentPhase); // Debugging step
+function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase, meetingLink) {
+    console.log("Raw recruitmentPhase:", recruitmentPhase);
 
-    // If recruitmentPhase is already mapped, it will not match the expected keys in roundDetailsMap
+    // Ensure roundDetailsMap is globally defined before using it
     const roundDetails = roundDetailsMap[recruitmentPhase] || recruitmentPhase;
+    console.log("Mapped roundDetails:", roundDetails);
 
-    
-    console.log("Mapped roundDetails:", roundDetails); // Debugging step
+    localStorage.setItem('roundDetails', roundDetails);
+    localStorage.setItem('emailcandidate', candidateEmail);
 
-    openFeedbackForm(candidateEmail, roundDetails);  // Pass roundDetails to the popup
-    window.open(document.getElementById("joinLink").href, "_blank");
+    openFeedbackForm(candidateEmail, roundDetails);  
+    window.open(meetingLink, "_blank"); // Open the provided meeting link
 
     const iframe = document.getElementById('feedbackFormIframe');
     iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(roundDetails)}`;
 }
+
 
 
 
