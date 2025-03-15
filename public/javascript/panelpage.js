@@ -200,9 +200,9 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                         <div class="meeting-location">🕐 ${formattedDate} , ${candidate.l_2_interviewtime}</div>
                     </div>
 
-                  <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}', '${candidate.meeting_link}')">
-    <img src="teams.png" alt="Teams Logo" class="teams-logo">
-    <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
+    <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}')">
+<img src="teams.png" alt="Teams Logo" class="teams-logo">
+<a href="${candidate.meeting_link}" target="_blank" class="join-link" id="joinLink">Join Meeting</a>
 </button>
 
                 </div>
