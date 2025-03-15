@@ -35,11 +35,12 @@ interviewsBtn.addEventListener("click", function () {
     }
 });
 
-function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase) {
+function joinMeetingAndShowFeedback(candidateEmail, recruitmentPhase, meetingLink) {
+    // Add meetingLink parameter to the function
     const roundDetails = roundDetailsMap[recruitmentPhase] || recruitmentPhase;
 
     openFeedbackForm(candidateEmail, roundDetails);  // Pass roundDetails to the popup
-    window.open(document.getElementById("joinLink").href, "_blank");
+    window.open(meetingLink, "_blank");  // Use the passed meetingLink directly
 
     const iframe = document.getElementById('feedbackFormIframe');
     iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(roundDetails)}`;
@@ -200,9 +201,9 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                         <div class="meeting-location">🕐 ${formattedDate} , ${candidate.l_2_interviewtime}</div>
                     </div>
 
-    <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}')">
-<img src="teams.png" alt="Teams Logo" class="teams-logo">
-<a href="${candidate.meeting_link}" target="_blank" class="join-link" id="joinLink">Join Meeting</a>
+<button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}', '${candidate.meeting_link}')">
+    <img src="teams.png" alt="Teams Logo" class="teams-logo">
+    <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
 </button>
 
                 </div>
