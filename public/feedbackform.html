@@ -430,6 +430,7 @@ function downloadPDF() {
                 .then(data => {
                     if (data.success) {
                         showToast('Feedback submitted successfully', 'success');
+                          sendEmailWithPDF(formData.hrEmail, roundDetails); 
                     } else {
                         showToast('Error submitting feedback', 'error');
                     }
