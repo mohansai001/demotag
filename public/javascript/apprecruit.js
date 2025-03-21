@@ -467,7 +467,7 @@ const githubToken = await getGithubToken();// Fetch the GitHub token here
         }
         try {
             const apiUrl = 'https://api.chatpdf.com/v1/sources/add-url';
-            const apiKey = 'sec_ELtQJOZKC9dGCpaTRqb8kVzLSiOvfT89'; // Replace with your ChatPDF API key
+            const apiKey = 'sec_U9gJ7XetrGWfbji3eM3nE2xknV201N42'; // Replace with your ChatPDF API key
 
             // Send the resume URL to ChatPDF API
             const response = await fetch(apiUrl, {
