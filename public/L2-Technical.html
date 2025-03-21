@@ -713,7 +713,7 @@
  
             if (candidateEmail) {
                 // Fetch candidate data from the server based on the email
-                fetch(`http://localhost:3000/api/getCandidateData?candidateEmail=${candidateEmail}`)
+                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${candidateEmail}`)
                     .then(response => response.json())
                     .then(data => {
                         // Check if the data is returned successfully
