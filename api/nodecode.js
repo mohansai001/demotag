@@ -2837,6 +2837,27 @@ app.post('/api/submitFeedback', async (req, res) => {
   }
 });
 
+app.get('/api/feedback-for-panel-member', async (req, res) => { 
+  try {
+    const { interview_date, userEmail } = req.query;
+
+    const query = `
+      SELECT candidate_email, candidate_name, interview_date, interviewer_name, 
+             detailed_feedback, result, submitted_at, round_details, position
+      FROM feedbackform
+      WHERE interview_date = $1
+        AND interviewer_name = $2;
+    `;
+
+    const result = await pool.query(query, [interview_date, userEmail]);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
