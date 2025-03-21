@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interview Details</title>
-    <link rel="icon" href="vam.png" type="image/png">
+    <link rel="icon" href="vam.png" type="image/png" />
     <style>
       /* Basic Styling (remains same as your current code) */
 
@@ -98,6 +98,14 @@
       }
 
       .meeting-card {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 5px 0;
+        padding: 10px;
+      }
+      .feedback-card {
         background-color: #ffffff;
         border: 1px solid #ddd;
         border-radius: 8px;
@@ -413,7 +421,11 @@
       </ul>
     </div>
     <div class="main-content">
-      <div class="calendar-container" id="calendarContainer" style="display: none">
+      <div
+        class="calendar-container"
+        id="calendarContainer"
+        style="display: none"
+      >
         <div class="calendar-header" id="calendarMonthYear">
           <button class="btn_prevnext" id="prevMonthBtn">&laquo;</button>
           <select id="monthSelector">
@@ -452,16 +464,24 @@
       <div class="meeting-section">
         <h3 class="meeting-date"></h3>
         <div id="meeting-container" style="color: #666">
+          <!-- Feedback cards will be displayed here -->
+
           <!-- Meeting cards will be added dynamically -->
         </div>
+        <div id="feedback-container" style="color: #666"></div>
       </div>
     </div>
 
     <div id="feedbackModal" class="modal">
       <div class="modal-content">
         <span class="close-btn" onclick="closeFeedbackModal()">&times;</span>
-        <h2 style="color: black;">Feedback Form</h2>
-        <iframe src="" id="feedbackFormIframe" width="100%" height="98%"></iframe>
+        <h2 style="color: black">Feedback Form</h2>
+        <iframe
+          src=""
+          id="feedbackFormIframe"
+          width="100%"
+          height="98%"
+        ></iframe>
       </div>
     </div>
 
