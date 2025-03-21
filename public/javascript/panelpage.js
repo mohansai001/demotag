@@ -67,7 +67,10 @@ function getFeedbackFormUrl(recruitmentPhase) {
         'EC Fitment Round Scheduled': 'ec-usecase.html',
         'Shortlisted in EC Fitment Round': 'ec-usecase.html',
         'Project Fitment Round':'feedbackform.html',
-        'Fitment Round':'feedbackform.html'
+        'Fitment Round':'feedbackform.html',
+        'L2 Technical':'L2-Technical.html',
+        'Client Fitment Round':'feedbackform.html',
+        'EC Fitment Round':'feedbackform.html',
     };
 
     // Return the corresponding URL or default if not matched
