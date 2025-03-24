@@ -2756,11 +2756,16 @@ app.post('/api/submitFeedback', async (req, res) => {
       const feedbackResult = formData.result;
       let recruitmentPhase = '';
 
-      if (feedbackResult === 'Recommended') {
-        recruitmentPhase = `Shortlisted in ${roundDetails}`;
-      } else if (feedbackResult === 'Rejected') {
-        recruitmentPhase = `Rejected in ${roundDetails}`;
-      }
+   if (roundDetails.includes('Scheduled')) {
+  roundDetails = roundDetails.replace('Scheduled', '').trim();
+}
+
+if (feedbackResult === 'Recommended') {
+  recruitmentPhase = `Shortlisted in ${roundDetails}`;
+} else if (feedbackResult === 'Rejected') {
+  recruitmentPhase = `Rejected in ${roundDetails}`;
+}
+
 
       // If there's a recruitmentPhase to update, update the candidate_info table
       if (recruitmentPhase) {
