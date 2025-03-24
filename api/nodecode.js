@@ -2701,11 +2701,14 @@ app.get('/api/get-feedbackform', async (req, res) => {
 
 //submit feedback for feedback form
 app.post('/api/submitFeedback', async (req, res) => {
-  const { formData, roundDetails } = req.body;
+  let { formData, roundDetails } = req.body;
 
   if (!formData || !roundDetails) {
     return res.status(400).json({ success: false, message: 'Please fill all the fields' });
   }
+
+  // Remove "Scheduled" and leading spaces from roundDetails
+  roundDetails = roundDetails.replace('Scheduled', '').trim();
 
   const candidateEmail = formData.candidateEmail;
 
@@ -2718,8 +2721,8 @@ app.post('/api/submitFeedback', async (req, res) => {
   try {
     const existingFeedback = await pool.query(checkQuery, checkValues);
 
-    // If feedback already exists, update it
     if (existingFeedback.rows.length > 0) {
+      // Update feedback if it already exists
       const updateQuery = `
         UPDATE feedbackform 
         SET 
@@ -2752,22 +2755,16 @@ app.post('/api/submitFeedback', async (req, res) => {
 
       const updateResult = await pool.query(updateQuery, updateValues);
 
-      // Now check the updated result and handle the recruitment_phase accordingly
       const feedbackResult = formData.result;
       let recruitmentPhase = '';
 
-   if (roundDetails.includes('Scheduled')) {
-  roundDetails = roundDetails.replace('Scheduled', '').trim();
-}
+      if (feedbackResult === 'Recommended') {
+        recruitmentPhase = `Shortlisted in ${roundDetails}`;
+      } else if (feedbackResult === 'Rejected') {
+        recruitmentPhase = `Rejected in ${roundDetails}`;
+      }
 
-if (feedbackResult === 'Recommended') {
-  recruitmentPhase = `Shortlisted in ${roundDetails}`;
-} else if (feedbackResult === 'Rejected') {
-  recruitmentPhase = `Rejected in ${roundDetails}`;
-}
-
-
-      // If there's a recruitmentPhase to update, update the candidate_info table
+      // Update candidate_info table with recruitmentPhase if needed
       if (recruitmentPhase) {
         const updateCandidateQuery = `
           UPDATE candidate_info 
@@ -2785,7 +2782,7 @@ if (feedbackResult === 'Recommended') {
       });
     }
 
-    // If feedback does not exist, insert a new record
+    // Insert new feedback if no existing record
     const insertQuery = `
       INSERT INTO feedbackform 
           (round_details, candidate_email, imocha_score, rrf_id, position, candidate_name, interview_date, 
@@ -2819,7 +2816,7 @@ if (feedbackResult === 'Recommended') {
       recruitmentPhase = `Rejected in ${roundDetails}`;
     }
 
-    // If there's a recruitmentPhase to update, update the candidate_info table
+    // Update candidate_info table with recruitmentPhase if needed
     if (recruitmentPhase) {
       const updateCandidateQuery = `
         UPDATE candidate_info 
@@ -2841,6 +2838,7 @@ if (feedbackResult === 'Recommended') {
     res.status(500).json({ success: false, message: 'Error submitting feedback' });
   }
 });
+
 
 app.get('/api/feedback-for-panel-member', async (req, res) => { 
   try {
