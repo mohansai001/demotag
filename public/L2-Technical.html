@@ -288,7 +288,7 @@
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
-            min-height: 100px;
+            min-height: 200px;
             resize: vertical;
         }
 
@@ -631,8 +631,10 @@
         <!-- Feedback Section -->
         <div class="feedback-section">
             <label for="detailed-feedback">Detailed Feedback: *</label>
+            <h3><div id="loading-message" style="display: none; font-style: italic; color: #00d9ff;">Please wait while analysing the feedback based on given inputs...</div></h3>
             <textarea id="detailed-feedback" class="feedback-section-text"
                 placeholder="Enter your detailed feedback here..." required></textarea>
+                <button id="generate-summary">Generate Feedback</button>
         </div>
 
         <!-- Result Section -->
@@ -679,6 +681,125 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+
+        document.getElementById('generate-summary').addEventListener('click', function (e) {
+                e.preventDefault();
+                generateFeedback();
+            });
+
+            async function generateFeedback() {
+                const geminiApiKey = 'AIzaSyAlAfH393pQdCKb-gQA8poL5ds5Rxudung';
+
+                // Show loading message
+                document.getElementById('loading-message').style.display = 'block';  // Show the loading message
+
+                // Collect form data with validation
+                const formData = {
+                    coreCloudConcepts: {
+                        deployment: document.getElementById('core-cloud-concepts-deployment').value || 'N/A',
+                        configuration: document.getElementById('core-cloud-concepts-configuration').value || 'N/A',
+                        troubleshooting: document.getElementById('core-cloud-concepts-troubleshooting').value || 'N/A',
+                        justification: document.getElementById('core-cloud-concepts-justification').value || 'N/A',
+                        improvements: document.getElementById('core-cloud-concepts-improvements').value || 'N/A',
+                    },
+                    networkingSecurity: {
+                        deployment: document.getElementById('networking-security-deployment').value || 'N/A',
+                        configuration: document.getElementById('networking-security-configuration').value || 'N/A',
+                        troubleshooting: document.getElementById('networking-security-troubleshooting').value || 'N/A',
+                        justification: document.getElementById('networking-security-justification').value || 'N/A',
+                        improvements: document.getElementById('networking-security-improvements').value || 'N/A',
+                    },
+                    infrastructureManagement: {
+                        deployment: document.getElementById('infrastructure-management-deployment').value || 'N/A',
+                        configuration: document.getElementById('infrastructure-management-configuration').value || 'N/A',
+                        troubleshooting: document.getElementById('infrastructure-management-troubleshooting').value || 'N/A',
+                        justification: document.getElementById('infrastructure-management-justification').value || 'N/A',
+                        improvements: document.getElementById('infrastructure-management-improvements').value || 'N/A',
+                    },
+                    scalabilityHighAvailability: {
+                        deployment: document.getElementById('scalability-high-avail-deployment').value || 'N/A',
+                        configuration: document.getElementById('scalability-high-avail-configuration').value || 'N/A',
+                        troubleshooting: document.getElementById('scalability-high-avail-troubleshooting').value || 'N/A',
+                        justification: document.getElementById('scalability-high-avail-justification').value || 'N/A',
+                        improvements: document.getElementById('scalability-high-avail-improvements').value || 'N/A',
+                    },
+                    automation: {
+                        deployment: document.getElementById('automation-deployment').value || 'N/A',
+                        configuration: document.getElementById('automation-configuration').value || 'N/A',
+                        troubleshooting: document.getElementById('automation-troubleshooting').value || 'N/A',
+                        justification: document.getElementById('automation-justification').value || 'N/A',
+                        improvements: document.getElementById('automation-improvements').value || 'N/A',
+                    },
+                    observability: {
+                        deployment: document.getElementById('observability-deployment').value || 'N/A',
+                        configuration: document.getElementById('observability-configuration').value || 'N/A',
+                        troubleshooting: document.getElementById('observability-troubleshooting').value || 'N/A',
+                        justification: document.getElementById('observability-justification').value || 'N/A',
+                        improvements: document.getElementById('observability-improvements').value || 'N/A',
+                    },
+                };
+
+                // Log the form data for debugging
+                console.log("Form Data Sent:", formData);
+
+                // Prepare the payload for the Gemini AI API
+                const payload = {
+                    contents: [{
+                        parts: [{
+                            text: `Provide a brief summary in 120 words highlighting key skills, weaknesses, and areas for improvement based on the following data:
+
+                Core Cloud Concepts: ${formData.coreCloudConcepts.deployment}, ${formData.coreCloudConcepts.configuration}, ${formData.coreCloudConcepts.troubleshooting}, ${formData.coreCloudConcepts.justification}, ${formData.coreCloudConcepts.improvements}
+                Networking & Security: ${formData.networkingSecurity.deployment}, ${formData.networkingSecurity.configuration}, ${formData.networkingSecurity.troubleshooting}, ${formData.networkingSecurity.justification}, ${formData.networkingSecurity.improvements}
+                Infrastructure Management: ${formData.infrastructureManagement.deployment}, ${formData.infrastructureManagement.configuration}, ${formData.infrastructureManagement.troubleshooting}, ${formData.infrastructureManagement.justification}, ${formData.infrastructureManagement.improvements}
+                Scalability & High Availability: ${formData.scalabilityHighAvailability.deployment}, ${formData.scalabilityHighAvailability.configuration}, ${formData.scalabilityHighAvailability.troubleshooting}, ${formData.scalabilityHighAvailability.justification}, ${formData.scalabilityHighAvailability.improvements}
+                Automation: ${formData.automation.deployment}, ${formData.automation.configuration}, ${formData.automation.troubleshooting}, ${formData.automation.justification}, ${formData.automation.improvements}
+                Observability: ${formData.observability.deployment}, ${formData.observability.configuration}, ${formData.observability.troubleshooting}, ${formData.observability.justification}, ${formData.observability.improvements}
+
+                After the summary, provide a one-line response for each concept, highlighting:
+                - What the person is good at (strengths).
+                - What they need to improve (weaknesses).
+
+                For each concept (Core Cloud Concepts, Networking & Security, Infrastructure Management, Scalability & High Availability, Automation, and Observability), write a single sentence in the following format:
+
+                [Concept Name]: The candidate is good at [strength] but needs improvement in [weakness].`
+                        }]
+                    }]
+                };
+
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const responseBody = await response.json();
+                    console.log("API Response Body:", responseBody);
+
+                    // Hide the loading message
+                    document.getElementById('loading-message').style.display = 'none';  // Hide the loading message
+
+                    if (!response.ok || !responseBody.candidates || responseBody.candidates.length === 0) {
+                        console.error('Error: Invalid response structure', responseBody);
+                        alert('Error generating feedback. Please try again later.');
+                        return;
+                    }
+
+                    const firstCandidate = responseBody.candidates[0];
+                    console.log('First candidate structure:', firstCandidate);
+
+                    const generatedFeedback = firstCandidate.content?.parts[0]?.text || 'No feedback generated';
+                    document.getElementById('detailed-feedback').value = generatedFeedback;
+                } catch (error) {
+                    console.error('Error generating feedback:', error);
+                    alert('Error generating feedback. Please try again later.');
+                    // Hide the loading message in case of error
+                    document.getElementById('loading-message').style.display = 'none';
+                }
+            }
+
 
         function downloadPDF() {
             const formContainer = document.querySelector('.form-container');
