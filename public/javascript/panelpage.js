@@ -1,5 +1,5 @@
 const calendarContainer = document.getElementById("calendarContainer");
-// const interviewsBtn = document.getElementById("interviewsBtn");
+const interviewsBtn = document.getElementById("interviewsBtn");
 const meetingDateElement = document.querySelector(".meeting-date");
 const calendarGrid = document.querySelector(".calendar-grid");
 const monthSelector = document.getElementById("monthSelector");
@@ -25,17 +25,17 @@ function logout() {
     window.location.href = '/';
 }
 
-// interviewsBtn.addEventListener("click", function () {
-//     if (calendarContainer.style.display === "none") {
-//         calendarContainer.style.display = "block"; // Show the calendar
-//         toggleSidebar(); // Automatically open the sidebar
+interviewsBtn.addEventListener("click", function () {
+    if (calendarContainer.style.display === "none") {
+        calendarContainer.style.display = "block"; // Show the calendar
+        toggleSidebar(); // Automatically open the sidebar
 
-//         fetchMeetingsForSelectedDate(currentDate);
+        fetchMeetingsForSelectedDate(currentDate);
 
-//     } else {
-//         calendarContainer.style.display = "none"; // Hide the calendar
-//     }
-// });
+    } else {
+        calendarContainer.style.display = "none"; // Hide the calendar
+    }
+});
 
 function loadCalendarAndFetchMeetings() {
     calendarContainer.style.display = "block";
@@ -407,10 +407,10 @@ function openFeedbackModal(roundDetails) {
 }
 
 
-// function toggleSidebar() {
-//     const sidebar = document.getElementById('sidebar');
-//     sidebar.classList.toggle('show');
-// }
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('show');
+}
 
 renderCalendar(currentMonth, currentYear);
 monthSelector.value = currentMonth;
