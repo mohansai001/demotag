@@ -408,18 +408,40 @@
       iframe {
         border: none;
       }
+
+      #logout-btn {
+        background-color: #daf7a6;
+        position: absolute;
+        color: black;
+        border: none;
+        padding: 7px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        top: 20px;
+        right: 20px;
+        border: 2px solid grey;
+        transition: all 0.3s ease;
+      }
+
+      #logout-btn:hover {
+        background-color: white;
+        border-color: grey;
+        transform: translateY(-3px);
+      }
     </style>
   </head>
 
   <body>
-    <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
+    <button id="logout-btn" onclick="logout()">Logout</button>
+<!--     <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
     <div class="sidebar" id="sidebar">
       <ul>
         <li id="interviewsBtn">Interviews</li>
         <div style="flex-grow: 1"></div>
         <li onclick="logout()">Logout</li>
       </ul>
-    </div>
+    </div> -->
     <div class="main-content">
       <div
         class="calendar-container"
