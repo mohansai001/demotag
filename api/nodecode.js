@@ -2079,7 +2079,7 @@ app.get('/api/panel-candidates-info', async (req, res) => {
       WHERE prescreening_status = 'Shortlisted'
         AND recruitment_phase = ANY($1)  -- Matching against any of the provided recruitment phases
         AND l_2_interviewdate = $2
-        AND panel_name = $3;`;
+         AND panel_name ILIKE $3;`;
 
     const result = await pool.query(query, [recruitmentPhases, l_2_interviewdate, userEmail]);
 
