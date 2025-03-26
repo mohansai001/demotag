@@ -28,12 +28,14 @@ function logout() {
 interviewsBtn.addEventListener("click", function () {
     if (calendarContainer.style.display === "none") {
         calendarContainer.style.display = "block"; // Show the calendar
+        meetingContainer.style.display = "block"; // Show the meeting container
         toggleSidebar(); // Automatically open the sidebar
 
         fetchMeetingsForSelectedDate(currentDate);
 
     } else {
         calendarContainer.style.display = "none"; // Hide the calendar
+        meetingContainer.style.display = "none"; // Hide the meeting container
     }
 });
 
