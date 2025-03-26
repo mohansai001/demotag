@@ -66,7 +66,7 @@ app.post("/api/check-admin", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT ec_mapping, status FROM admin_table WHERE email ILIKE $1",
+      "SELECT ec_mapping, status FROM admin_table WHERE email ILIKE $1", 
       [email]
     );
 
