@@ -22,7 +22,7 @@ const feedbackCloseBtn = document.querySelector(".close-btn");
 
 
 function logout() {
-    window.location.href = 'index.html';
+    window.location.href = '/';
 }
 
 // interviewsBtn.addEventListener("click", function () {
