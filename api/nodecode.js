@@ -2849,7 +2849,7 @@ app.get('/api/feedback-for-panel-member', async (req, res) => {
              detailed_feedback, result, submitted_at, round_details, position
       FROM feedbackform
       WHERE interview_date = $1
-        AND interviewer_name = $2;
+       AND interviewer_name ILIKE $2;
     `;
 
     const result = await pool.query(query, [interview_date, userEmail]);
