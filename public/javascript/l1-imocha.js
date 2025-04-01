@@ -256,45 +256,45 @@ document.getElementById("saveButton").addEventListener("click", function () {
     const newStep = document.createElement("div");
     newStep.classList.add("step");
     newStep.innerHTML = `
-              <div class="step-circle">${
-                stepsContainer.children.length + 1
-              }</div>
-              <div class="step-title">${name}</div>
-          `;
+      <div class="step-circle"></div>
+      <div class="step-title">${name}</div>
+    `;
 
-    // Insert the new step based on position (before or after Fitment Round)
-    if (position === "before") {
-      // Insert before Fitment Round (index 3)
-      const fitmentRoundStep = stepsContainer.children[3];
-      stepsContainer.insertBefore(newStep, fitmentRoundStep);
+    // Find the current Fitment step dynamically
+    const allSteps = stepsContainer.querySelectorAll(".step");
+    let fitmentIndex = -1;
 
-      // Update numbers for the steps after the new one
-      updateStepNumbers(stepsContainer);
-      newStep.querySelector(".step-circle").textContent = "4"; // New step gets 4
+    allSteps.forEach((step, index) => {
+      if (step.textContent.includes("Fitment") && step.textContent.trim() === "Fitment") {
+        fitmentIndex = index;
+      }
+    });
+
+    if (position === "before" && fitmentIndex !== -1) {
+      stepsContainer.insertBefore(newStep, allSteps[fitmentIndex]);
     } else if (position === "after") {
-      // Insert after Fitment Round (index 4)
       stepsContainer.appendChild(newStep);
-
-      // Update numbers for the steps after the new one
-      updateStepNumbers(stepsContainer);
     }
 
-    // Close the popup
+    // Update step numbers dynamically
+    updateStepNumbers(stepsContainer);
+
+    // Close the popup and reset fields
     document.getElementById("popupForm").style.display = "none";
-    document.getElementById("name").value = ""; // Reset input
+    document.getElementById("name").value = "";
   }
 });
 
 // Helper function to update step numbers
 function updateStepNumbers(stepsContainer) {
-  let number = 1; // Start numbering from 1
-  // Loop through all the steps in the container
+  let number = 1;
   stepsContainer.querySelectorAll(".step").forEach((step) => {
     const stepCircle = step.querySelector(".step-circle");
-    stepCircle.textContent = number; // Update the step number
-    number++; // Increment the step number for the next iteration
+    stepCircle.textContent = number;
+    number++;
   });
 }
+
 
 function saveRoundsToDB() {
   const rrf_id = globalRrfId; // Replace with dynamic rrf_id if needed
