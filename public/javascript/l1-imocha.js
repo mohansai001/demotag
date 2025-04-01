@@ -249,37 +249,40 @@ document.getElementById("closeButton").addEventListener("click", function () {
 document.getElementById("saveButton").addEventListener("click", function () {
   const name = document.getElementById("name").value;
   const position = document.getElementById("position").value;
- 
+
   if (name && position) {
     const stepsContainer = document.querySelector(".steps-container");
- 
+
     // Create a new step element
     const newStep = document.createElement("div");
     newStep.classList.add("step");
     newStep.innerHTML = `
-              <div class="step-circle">${
-                stepsContainer.children.length + 1
-              }</div>
-              <div class="step-title">${name}</div>
-          `;
- 
-    // Insert the new step based on position (before or after Fitment Round)
+      <div class="step-circle"></div> <!-- Number will be updated later -->
+      <div class="step-title">${name}</div>
+    `;
+
     if (position === "before") {
-      // Insert before Fitment Round (index 3)
-      const fitmentRoundStep = stepsContainer.children[3];
-      stepsContainer.insertBefore(newStep, fitmentRoundStep);
- 
-      // Update numbers for the steps after the new one
-      updateStepNumbers(stepsContainer);
-      newStep.querySelector(".step-circle").textContent = "4"; // New step gets 4
+      // Find all steps titled "Fitment"
+      const fitmentSteps = Array.from(stepsContainer.children).filter(step =>
+        step.querySelector(".step-title").textContent.includes("Fitment")
+      );
+
+      // Select the last Fitment step in the list
+      const lastFitmentStep = fitmentSteps[fitmentSteps.length - 1];
+
+      // Insert before the last found Fitment step
+      if (lastFitmentStep) {
+        stepsContainer.insertBefore(newStep, lastFitmentStep);
+      } else {
+        stepsContainer.appendChild(newStep);
+      }
     } else if (position === "after") {
-      // Insert after Fitment Round (index 4)
       stepsContainer.appendChild(newStep);
- 
-      // Update numbers for the steps after the new one
-      updateStepNumbers(stepsContainer);
     }
- 
+
+    // Update step numbers correctly
+    updateStepNumbers(stepsContainer);
+
     // Close the popup
     document.getElementById("popupForm").style.display = "none";
     document.getElementById("name").value = ""; // Reset input
