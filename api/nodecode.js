@@ -2860,6 +2860,38 @@ app.get('/api/feedback-for-panel-member', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+app.get('/api/feedback-table', async (req, res) => {
+  try {
+      const { interview_date, userEmail } = req.query;
+      console.log("Received request with:", { interview_date, userEmail });
+
+      if (!interview_date || !userEmail) {
+          console.log("Missing date or userEmail");
+          return res.status(400).json({ error: 'Date and userEmail are required' });
+      }
+
+      const query = `
+          SELECT candidate_name, candidate_email, position,hr_email,result
+          FROM feedback_table
+          WHERE interview_date = $1
+        AND interviewer_name  = $2;
+      `;
+
+      console.log("Executing query:", query, [interview_date, userEmail]);
+
+      const result = await pool.query(query, [interview_date, userEmail]);
+
+      if (result.rows.length === 0) {
+          console.log("No records found for given date and userEmail");
+          return res.status(404).json({ message: 'No feedback records found' });
+      }
+
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching feedback table:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Start the server
 app.listen(PORT, () => {
