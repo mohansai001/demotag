@@ -1043,26 +1043,38 @@
             formContainer.style.marginTop = '0';
 
             setTimeout(() => {
-                html2pdf()
-                    .set({
-                        margin: 0.5,
-                        filename: 'Interview_Feedback_Form.pdf',
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 3, useCORS: true },
-                        jsPDF: { unit: 'in', format: [11, 8.5], orientation: 'landscape' }
-                    })
-                    .from(formContainer)
-                    .toPdf()
-                    .get('pdf')
-                    .then(async (pdf) => {
-                        const pdfBlob = pdf.output('blob');
+function replaceInputsWithText(container) {
+    container.querySelectorAll("input, textarea").forEach((el) => {
+        let text = document.createTextNode(el.value || ""); // Get text content
+        let parent = el.parentNode;
+        parent.replaceChild(text, el); // Replace input field with plain text
+    });
+}
 
-                        // Restore original styles after PDF generation
-                        formContainer.style.marginLeft = originalMarginLeft;
-                        formContainer.style.marginTop = originalMarginTop;
+// Clone the form container to avoid modifying the original form
+let clonedFormContainer = formContainer.cloneNode(true);
+replaceInputsWithText(clonedFormContainer);
 
-                        // Convert Blob to Base64
-                        const base64PDF = await convertBlobToBase64(pdfBlob);
+html2pdf()
+    .set({
+        margin: 0.5,
+        filename: 'Interview_Feedback_Form.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true },
+        jsPDF: { unit: 'in', format: [11, 8.5], orientation: 'landscape' }
+    })
+    .from(clonedFormContainer) // Use the cloned version without inputs
+    .toPdf()
+    .get('pdf')
+    .then(async (pdf) => {
+        const pdfBlob = pdf.output('blob');
+
+        // Restore original styles after PDF generation
+        formContainer.style.marginLeft = originalMarginLeft;
+        formContainer.style.marginTop = originalMarginTop;
+
+        // Convert Blob to Base64
+        const base64PDF = await convertBlobToBase64(pdfBlob);
 
                         // Acquire Microsoft Graph API Token
                         const tokenRequest = {
