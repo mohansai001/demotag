@@ -223,7 +223,6 @@ function renderCalendar(month, year) {
 
 
 // Call fetchFeedbackForSelectedDate after fetching meetings
-
 async function fetchMeetingsForSelectedDate(selectedDate) {
     const meetingContainer = document.getElementById('meeting-container'); 
     const feedbackContainer = document.getElementById('feedback-container'); 
@@ -237,44 +236,67 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
             selectedDate.setHours(0, 0, 0, 0);
         }
         const formattedSelectedDate = selectedDate.toLocaleDateString('en-CA');
+        console.log('Fetching data for date:', formattedSelectedDate);
 
-        console.log('Fetching meetings for date:', formattedSelectedDate);
+        // API Calls (Handled Separately)
+        let candidatesData = [];
+        let allFeedbacks = [];
 
         // Fetch shortlisted candidates (Meetings)
-        const response = await fetch(`https://demotag.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}&userEmail=${userEmail}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch shortlisted candidates');
+        try {
+            const response = await fetch(`https://demotag.vercel.app/api/panel-candidates-info?l_2_interviewdate=${formattedSelectedDate}&userEmail=${userEmail}`);
+            if (response.ok) {
+                candidatesData = await response.json();
+                console.log('Candidates fetched:', candidatesData);
+            } else {
+                console.error('Failed to fetch shortlisted candidates');
+            }
+        } catch (error) {
+            console.error("Error fetching candidates:", error);
         }
-        const candidatesData = await response.json();
-        console.log('Candidates fetched:', candidatesData);
 
         // Fetch feedback for the selected date
-        console.log('Fetching feedback for date:', formattedSelectedDate);
-        const feedbackResponse = await fetch(`https://demotag.vercel.app/api/feedback-for-panel-member?interview_date=${formattedSelectedDate}&userEmail=${userEmail}`);
-        if (!feedbackResponse.ok) {
-            throw new Error('Failed to fetch feedback');
+        try {
+            const feedbackResponse = await fetch(`https://demotag.vercel.app/api/feedback-for-panel-member?interview_date=${formattedSelectedDate}&userEmail=${userEmail}`);
+            if (feedbackResponse.ok) {
+                const feedbacks = await feedbackResponse.json();
+                allFeedbacks = [...allFeedbacks, ...feedbacks];
+                console.log('Feedback fetched:', feedbacks);
+            } else {
+                console.error('Failed to fetch feedback');
+            }
+        } catch (error) {
+            console.error("Error fetching feedback:", error);
         }
-        const feedbacks = await feedbackResponse.json();
-        console.log('Feedback fetched:', feedbacks);
+
+        // Fetch feedback from the feedback-table API
+        try {
+            const feedbackTableResponse = await fetch(`https://demotag.vercel.app/api/feedback-table?interview_date=${formattedSelectedDate}&userEmail=${userEmail}`);
+            if (feedbackTableResponse.ok) {
+                const feedbackTableData = await feedbackTableResponse.json();
+                allFeedbacks = [...allFeedbacks, ...feedbackTableData];
+                console.log('Additional feedback fetched:', feedbackTableData);
+            } else {
+                console.error('Failed to fetch feedback from table');
+            }
+        } catch (error) {
+            console.error("Error fetching feedback from table:", error);
+        }
 
         // Clear previous content
         meetingContainer.innerHTML = ''; 
         feedbackContainer.innerHTML = ''; 
 
-        // Display meeting cards
-        if (candidatesData.length === 0 && feedbacks.length === 0) {
-            meetingContainer.innerHTML = '<p>No meetings scheduled for this date.</p>';
-        } else {
+        // Display meeting cards (if available)
+        if (candidatesData.length > 0) {
             candidatesData.forEach(candidate => {
-                const formattedDate = new Date(candidate.l_2_interviewdate).toLocaleDateString('en-CA'); // Format as 'YYYY-MM-DD'
-    
-                // Get the round details based on the recruitment phase
-                const roundDetails = roundDetailsMap[candidate.recruitment_phase] || candidate.recruitment_phase;  // Default to the phase name if no match
-    
+                const formattedDate = new Date(candidate.l_2_interviewdate).toLocaleDateString('en-CA'); 
+                const roundDetails = roundDetailsMap[candidate.recruitment_phase] || candidate.recruitment_phase || 'L2 Technical';  
+
                 const candidateCard = document.createElement('div');
                 candidateCard.classList.add('meeting-card');
-    
-                const cardContent = `
+
+                candidateCard.innerHTML = `
                     <div class="meeting-header">
                         <div>
                             <h4 class="meeting-title">Meeting with - ${candidate.candidate_name}</h4>
@@ -282,66 +304,64 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                     </div>
                     <div class="meeting-details">
                         <div class="meeting-info">
-                            <div class="meeting-location">Inteview Details: ${roundDetails}</div>
+                            <div class="meeting-location">Interview Details: ${roundDetails}</div>
                             <div class="meeting-location">Role: ${candidate.role}</div>
                             <div class="meeting-location">Email: ${candidate.candidate_email}</div>
                             <div class="meeting-location">🕐 ${formattedDate} , ${candidate.l_2_interviewtime}</div>
                         </div>
-    
-    <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}', '${candidate.meeting_link}')">
-        <img src="teams.png" alt="Teams Logo" class="teams-logo">
-        <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
-    </button>
-    
+                        <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}', '${candidate.meeting_link}')">
+                            <img src="teams.png" alt="Teams Logo" class="teams-logo">
+                            <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
+                        </button>
                     </div>
-                    
                     <div class="buttons">
                         <button class="btn btn-resume"><a href="${candidate.resume}" target="_blank">Candidate Resume</a></button>
                         <button class="btn btn-mocha"><a href="${candidate.imocha_report}" target="_blank">iMocha Result</a></button>
-    
-                        <button class="btn btn-feedback" onclick="openFeedbackForm('${candidate.candidate_email}', '${candidate.recruitment_phase}')">Feedback Form</button>
+                        <button class="btn btn-feedback" onclick="openFeedbackForm('${candidate.candidate_email}', '${roundDetails}')">Feedback Form</button>
                     </div>
                 `;
-    
-                candidateCard.innerHTML = cardContent;
-                    
-        localStorage.setItem('roundDetails', roundDetails);
-        localStorage.setItem('emailcandidate', candidate.candidate_email);
-        console.log(candidate.candidate_email);
-                meetingContainer.appendChild(candidateCard);  // Add the card to the container
+
+                meetingContainer.appendChild(candidateCard);
             });
+        } else {
+            meetingContainer.innerHTML = '<p>No meetings scheduled for this date.</p>';
         }
-        // Display feedback cards
-        if (feedbacks.length > 0) {
-                feedbacks.forEach((feedback) => {
+
+        // Display feedback cards (if available)
+        if (allFeedbacks.length > 0) {
+            allFeedbacks.forEach((feedback) => {
                 const feedbackCard = document.createElement('div');
                 feedbackCard.classList.add('feedback-card');
-            
+
                 feedbackCard.innerHTML = `
                     <div class="feedback-header">
                         <h4 class="feedback-title">Feedback for - ${feedback.candidate_name}</h4>
                     </div>
                     <div class="feedback-details">
-                        <p><b>Position:</b> ${feedback.position}</p>
-                        <p><b>Interview Round:</b> ${feedback.round_details}</p>
+                        <p><b>Position:</b> ${feedback.position || 'N/A'}</p>
+                        <p><b>Interview Round:</b> ${feedback.round_details || 'L2 Technical'}</p>
                         <p><b>Email:</b> ${feedback.candidate_email}</p>
-                        <p><b>Result:</b> ${feedback.result}</p>
-                        <p><b>Submitted At:</b> ${new Date(feedback.submitted_at).toLocaleString()}</p>
+                        <p><b>Result:</b> ${feedback.result || 'N/A'}</p>
+                        <p><b>Submitted At:</b> ${feedback.submitted_at ? new Date(feedback.submitted_at).toLocaleString() : 'N/A'}</p>
                     </div>
                     <div class="feedback-content">
-                        <p><strong>Feedback:</strong> ${feedback.detailed_feedback}</p>
+                        <p><strong>Feedback:</strong> ${feedback.detailed_feedback || 'No detailed feedback available.'}</p>
                     </div>
                     <div class="buttons">
-                        <button class="btn btn-feedback" onclick="openFeedbackForm('${feedback.candidate_email}', '${feedback.round_details}')">Feedback Form</button>
+                        <button class="btn btn-feedback" onclick="openFeedbackForm('${feedback.candidate_email}', '${feedback.round_details || 'L2 Technical'}')">
+                            Feedback Form
+                        </button>
                     </div>
                 `;
-            
+
                 feedbackContainer.appendChild(feedbackCard);
-            });            
+            });
+        } else {
+            feedbackContainer.innerHTML = '<p>No feedback available for this date.</p>';
         }
-    }catch (error) {
-        console.error("Error fetching meetings:", error);
-        meetingContainer.innerHTML = '<p>Error fetching meetings.</p>';
+
+    } catch (error) {
+        console.error("Unexpected error:", error);
     }
 }
 
