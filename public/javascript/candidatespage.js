@@ -96,6 +96,9 @@ async function fetchCandidatesInfo() {
               : '<span class="no-next-round">Waiting For Feedback</span>'
           }
         </td>
+         <td>
+            <button class="feedbackButton" data-email="${candidate.candidate_email}">Feedback</button>
+        </td>
       `;
 
       const button = row.querySelector(".schedule-btn");
@@ -134,6 +137,22 @@ async function getNextRound(rrf_id, recruitment_Phase) {
   }
 }
 
+// Add event listener to the table (or a parent container)
+document.addEventListener("click", function (event) {
+  if (event.target && event.target.classList.contains("feedbackButton")) {
+      let candidateEmail = event.target.getAttribute("data-email"); // Get candidate email
+      let modal = document.getElementById("feedbackPopup");
+      let iframe = document.getElementById("feedbackIframe");
+
+      iframe.src = `finalfeedback.html?email=${encodeURIComponent(candidateEmail)}`; // Pass email as query param
+      modal.style.display = "block"; // Show modal
+  }
+});
+
+// Close modal when clicking the close button
+document.querySelector(".custom-close").addEventListener("click", function () {
+  document.getElementById("feedbackPopup").style.display = "none";
+});
 
 
 
