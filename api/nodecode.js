@@ -213,41 +213,49 @@ app.get('/api/rrf-details', async (req, res) => {
 //final feedback form prescreening details fetch
 app.get('/api/final-prescreening', async (req, res) => {
   try {
-    const { candidateEmail } = req.query;  // Get the email from query params
+    const { candidateEmail } = req.query;
 
     if (!candidateEmail) {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    console.log(`Fetching prescreening details for: ${candidateEmail}`);  // Debugging log
+    console.log(`Fetching prescreening details for: ${candidateEmail}`);
 
-    // Fetch from prescreening_form table
+    // Prescreening form
     const prescreeningResult = await pool.query(`
       SELECT feedback, status, summary
       FROM prescreening_form
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
-    // Fetch from feedback_form table
+    // Feedbackform with round details (for fitment rounds)
     const feedbackResult = await pool.query(`
       SELECT result, detailed_feedback, round_details
       FROM feedbackform
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
-    if (prescreeningResult.rows.length === 0 && feedbackResult.rows.length === 0) {
-      return res.status(404).json({ message: 'No prescreening or feedback details found for this email' });
+    // L2 Technical feedback from feedback_table (no round_details column)
+    const l2TechnicalResult = await pool.query(`
+      SELECT result, detailed_feedback
+      FROM feedback_table
+      WHERE candidate_email = $1
+    
+    `, [candidateEmail]);
+
+    if (prescreeningResult.rows.length === 0 && feedbackResult.rows.length === 0 && l2TechnicalResult.rows.length === 0) {
+      return res.status(404).json({ message: 'No data found for this email' });
     }
 
-    // Prepare response with all feedback records
     const response = {
-      prescreening: prescreeningResult.rows[0] || {},  // Single record
-      feedback: feedbackResult.rows || []  // Array of feedback records
+      prescreening: prescreeningResult.rows[0] || {},
+      feedback: feedbackResult.rows || [],
+      l2Technical: l2TechnicalResult.rows[0] || {}
     };
 
     res.status(200).json(response);
   } catch (error) {
-    console.error('Error fetching prescreening and feedback details:', error);
+    console.error('Error fetching data:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
