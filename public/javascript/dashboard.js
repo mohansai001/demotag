@@ -1657,44 +1657,43 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("https://demotag.vercel.app/api/phase-counts");
       if (!response.ok) throw new Error("Failed to fetch data");
-      
+  
       const data = await response.json();
-
-      // Map recruitment_phase to dataset index
+  
+      // Map phase names exactly as they appear in API response
       const phaseMap = {
-      prescreening: 0,
+        "Prescreening": 0,
         "Move to L1": 1,
-        "L2 Technical Round Scheduled": 2,
-
-        "EC Fitment Round Scheduled":3,
-        "Project Fitment Round Scheduled":4,
-        "Client Fitment Round Scheduled":5,
-        "Fitment Round Scheduled":6,
+        "L2 Technical Round": 2,
+        "EC Fitment Round": 3,
+        "Project Fitment Round": 4,
+        "Client Fitment Round": 5,
+        "Fitment Round": 6,
       };
-
-      // Prepare a map of HR emails to their corresponding phase data
+  
+      // Initialize HR data storage
       const hrData = {};
-
+  
       // Organize data by HR email and phase
       data.forEach((item) => {
         if (!item.hr_email || item.hr_email.trim() === "") return; // Skip null or empty HR emails
-
+  
         const hrEmail = item.hr_email.trim(); // Remove extra spaces
-        const phase = item.recruitment_phase;
-        const count = parseInt(item.phase_count, 10);
-
+        const phase = item.phase; // API response should match `phase`, not `recruitment_phase`
+        const count = parseInt(item.phase_count, 10) || 0; // Ensure count is a valid number
+  
         if (!hrData[hrEmail]) {
-          hrData[hrEmail] = [0, 0, 0, 0]; // Initialize array for HR's phases
+          hrData[hrEmail] = new Array(Object.keys(phaseMap).length).fill(0); // Dynamically size the array
         }
-
+  
         if (phaseMap[phase] !== undefined) {
           hrData[hrEmail][phaseMap[phase]] = count;
         }
       });
-
+  
       // Reset datasets
       hrChart.data.datasets = [];
-
+  
       // Add a dataset for each HR email
       Object.keys(hrData).forEach((hrEmail) => {
         hrChart.data.datasets.push({
@@ -1703,7 +1702,7 @@ document.addEventListener("DOMContentLoaded", () => {
           backgroundColor: getRandomColor(), // Assign random color
         });
       });
-
+  
       // Update the chart with new data
       hrChart.update();
     } catch (error) {
