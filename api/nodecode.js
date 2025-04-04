@@ -221,24 +221,36 @@ app.get('/api/final-prescreening', async (req, res) => {
 
     console.log(`Fetching prescreening details for: ${candidateEmail}`);  // Debugging log
 
-    // Ensure you're using the correct column name: candidate_email
-    const result = await pool.query(`
+    // Fetch from prescreening_form table
+    const prescreeningResult = await pool.query(`
       SELECT feedback, status, summary
       FROM prescreening_form
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'No prescreening details found for this email' });
+    // Fetch from feedback_form table
+    const feedbackResult = await pool.query(`
+      SELECT result, detailed_feedback, round_details
+      FROM feedbackform
+      WHERE candidate_email = $1
+    `, [candidateEmail]);
+
+    if (prescreeningResult.rows.length === 0 && feedbackResult.rows.length === 0) {
+      return res.status(404).json({ message: 'No prescreening or feedback details found for this email' });
     }
 
-    res.status(200).json(result.rows[0]);
+    // Prepare response with all feedback records
+    const response = {
+      prescreening: prescreeningResult.rows[0] || {},  // Single record
+      feedback: feedbackResult.rows || []  // Array of feedback records
+    };
+
+    res.status(200).json(response);
   } catch (error) {
-    console.error('Error fetching prescreening details:', error);
+    console.error('Error fetching prescreening and feedback details:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 
 
