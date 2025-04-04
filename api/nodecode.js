@@ -2237,14 +2237,67 @@ app.get('/api/hr-phases', async (req, res) => {
 app.get('/api/phase-counts', async (req, res) => {
   try {
       const query = `
+          -- Fetch Prescreening count from candidate_info
           SELECT 
               hr_email,
-              recruitment_phase,
+              'Prescreening' AS phase,
               COUNT(*) AS phase_count
           FROM 
               candidate_info
           GROUP BY 
-              hr_email, recruitment_phase;
+              hr_email
+
+          UNION ALL
+
+          -- Fetch Move to L1 (Shortlisted) count from candidate_info
+          SELECT 
+              hr_email,
+              'Move to L1' AS phase,
+              COUNT(*) AS phase_count
+          FROM 
+              candidate_info
+          WHERE 
+              Prescreening_status = 'Shortlisted'
+          GROUP BY 
+              hr_email
+
+          UNION ALL
+
+          -- Fetch Rejected count from candidate_info
+          SELECT 
+              hr_email,
+              'Rejected' AS phase,
+              COUNT(*) AS phase_count
+          FROM 
+              candidate_info
+          WHERE 
+              Prescreening_status = 'Rejected'
+          GROUP BY 
+              hr_email
+
+          UNION ALL
+
+          -- Fetch all other phase counts from feedbackform
+          SELECT 
+              hr_email,
+              round_details AS phase,
+              COUNT(*) AS phase_count
+          FROM 
+              feedbackform
+          GROUP BY 
+              hr_email, round_details
+
+          UNION ALL
+
+          -- Fetch L2 Technical Count from feedback_table
+          SELECT 
+              hr_email,
+              'L2 Technical Round' AS phase,
+              COUNT(*) AS phase_count
+          FROM 
+              feedback_table
+          GROUP BY 
+              hr_email;
       `;
       
       // Execute the query using pool.query
