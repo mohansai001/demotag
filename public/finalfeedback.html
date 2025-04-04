@@ -235,6 +235,12 @@
             <input type="text" id="imocha-score" placeholder="" readonly />
           </td>
         </tr>
+                <tr>
+          <td class="header-cell">L2 Technical</td>
+          <td><input type="text" id="" placeholder="" readonly /></td>
+          <td><input type="text" id="l2-technical-feedback" placeholder="" readonly /></td>
+          <td><input type="text" id="l2-technical-result" placeholder="" readonly /></td>
+        </tr>
         <tr>
           <td class="header-cell">EC Fitment</td>
           <td>
@@ -272,12 +278,7 @@
             />
           </td>
         </tr>
-        <tr>
-          <td class="header-cell">Onsite CS Team</td>
-          <td><input type="text" id="" placeholder="" readonly /></td>
-          <td><input type="text" id="" placeholder="" readonly /></td>
-          <td><input type="text" id="" placeholder="" readonly /></td>
-        </tr>
+
         <tr>
           <td class="header-cell">Client Fitment</td>
           <td>
@@ -422,7 +423,7 @@
               });
 
             // Fetch and display prescreening details
-            fetch(
+           fetch(
               `https://demotag.vercel.app/api/final-prescreening?candidateEmail=${selectedEmail}`
             )
               .then((response) => response.json())
@@ -437,7 +438,7 @@
                     document.getElementById("prescreening-summary").value =
                       data.prescreening.summary || "";
 
-                    var prescreeningStatusField = document.getElementById(
+                    const prescreeningStatusField = document.getElementById(
                       "prescreening-status"
                     );
                     prescreeningStatusField.value =
@@ -492,6 +493,17 @@
                           result;
                       }
                     });
+                  }
+
+                  // Handle L2 Technical round feedback
+                  if (data.l2Technical) {
+                    const l2Result = data.l2Technical.result || "";
+                    const l2Feedback = data.l2Technical.detailed_feedback || "";
+
+                    document.getElementById("l2-technical-feedback").value =
+                      l2Feedback;
+                    document.getElementById("l2-technical-result").value =
+                      l2Result;
                   }
                 }
               })
