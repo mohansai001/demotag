@@ -357,7 +357,7 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                 feedbackContainer.appendChild(feedbackCard);
             });
         } else {
-            feedbackContainer.innerHTML = '<p>No feedback available for this date.</p>';
+            // feedbackContainer.innerHTML = '<p>No feedback available for this date.</p>';
         }
 
     } catch (error) {
