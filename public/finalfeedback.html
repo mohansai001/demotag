@@ -141,6 +141,10 @@
       .toast.error {
         background-color: #f44336;
       }
+        textarea {
+        min-height: 75px;
+        resize: vertical;
+      }
     </style>
   </head>
 
@@ -223,7 +227,7 @@
           <td class="header-cell">Prescreening</td>
           <td><input type="text" id="prescreening-feedback" readonly /></td>
           <td><input type="text" id="prescreening-status" readonly /></td>
-          <td><input type="text" id="prescreening-summary" readonly /></td>
+  <td><textarea id="prescreening-feedback" readonly></textarea></td>
         </tr>
         <tr>
           <td class="header-cell">L1 or iMocha</td>
