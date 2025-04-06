@@ -430,6 +430,11 @@
           const selectedEmail = event.target.value;
           if (selectedEmail) {
             // Fetch candidate data based on the selected email
+       let imochaScore = null;
+            let l2Result = "";
+            let imochaStatusField = document.getElementById("imocha-status");
+
+            // === Step 1: Fetch candidate basic data (getCandidateData) ===
             fetch(
               `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${selectedEmail}`
             )
@@ -451,17 +456,7 @@
                     data.l_1_score;
                   document.getElementById("account").value = data.eng_center;
 
-                  var imochaScore = data.l_1_score;
-                  var imochaStatusField =
-                    document.getElementById("imocha-status");
-
-                  if (imochaScore >= 18) {
-                    imochaStatusField.value = "Shortlisted";
-                    imochaStatusField.style.backgroundColor = "lightgreen";
-                  } else {
-                    imochaStatusField.value = "Rejected";
-                    imochaStatusField.style.backgroundColor = "lightcoral";
-                  }
+                  imochaScore = data.l_1_score; // Save iMocha score for later use
                   showToast(
                     "Candidate details fetched successfully!",
                     "success"
@@ -473,8 +468,8 @@
                 showToast("Failed to load candidate data.", "error");
               });
 
-            // Fetch and display prescreening details
-           fetch(
+            // === Step 2: Fetch prescreening & feedback (final-prescreening) ===
+            fetch(
               `https://demotag.vercel.app/api/final-prescreening?candidateEmail=${selectedEmail}`
             )
               .then((response) => response.json())
@@ -482,7 +477,7 @@
                 if (data.message) {
                   showToast(data.message, "error");
                 } else {
-                  // Handling prescreening details
+                  // Prescreening section
                   if (data.prescreening) {
                     document.getElementById("prescreening-feedback").value =
                       data.prescreening.feedback || "";
@@ -496,14 +491,12 @@
                       data.prescreening.status || "";
 
                     if (
-                      data.prescreening.status &&
-                      data.prescreening.status.toLowerCase() === "shortlisted"
+                      data.prescreening.status?.toLowerCase() === "shortlisted"
                     ) {
                       prescreeningStatusField.style.backgroundColor =
                         "lightgreen";
                     } else if (
-                      data.prescreening.status &&
-                      data.prescreening.status.toLowerCase() === "rejected"
+                      data.prescreening.status?.toLowerCase() === "rejected"
                     ) {
                       prescreeningStatusField.style.backgroundColor =
                         "lightcoral";
@@ -512,7 +505,7 @@
                     }
                   }
 
-                  // Handling feedback details for rounds
+                  // Feedback for rounds
                   if (data.feedback && Array.isArray(data.feedback)) {
                     data.feedback.forEach((feedback) => {
                       const roundDetails = feedback.round_details;
@@ -546,16 +539,40 @@
                     });
                   }
 
-                  // Handle L2 Technical round feedback
+                  // L2 Technical round
                   if (data.l2Technical) {
-                    const l2Result = data.l2Technical.result || "";
                     const l2Feedback = data.l2Technical.detailed_feedback || "";
+                    l2Result = data.l2Technical.result || "";
 
                     document.getElementById("l2-technical-feedback").value =
                       l2Feedback;
                     document.getElementById("l2-technical-result").value =
                       l2Result;
                   }
+
+                  // === ✅ iMocha Status Logic (only after L2 result is available) ===
+                  if (imochaScore != null && imochaScore !== "") {
+                    if (imochaScore >= 18) {
+                      imochaStatusField.value = "Shortlisted";
+                      imochaStatusField.style.backgroundColor = "lightgreen";
+                    } else {
+                      imochaStatusField.value = "Rejected";
+                      imochaStatusField.style.backgroundColor = "lightcoral";
+                    }
+                  } else {
+                    if (l2Result !== "") {
+                      imochaStatusField.value = "iMocha Skipped";
+                      imochaStatusField.style.backgroundColor = "#f0f0f0"; // neutral gray
+                    } else {
+                      imochaStatusField.value = "Waiting for iMocha";
+                      imochaStatusField.style.backgroundColor = "#fffacd"; // light yellow
+                    }
+                  }
+
+                  showToast(
+                    "Prescreening details fetched successfully!",
+                    "success"
+                  );
                 }
               })
               .catch((error) => {
