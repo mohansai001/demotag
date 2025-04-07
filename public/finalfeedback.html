@@ -288,7 +288,7 @@
         </tr>
                 <tr>
           <td class="header-cell">L2 Technical</td>
-          <td><input type="text" id="" placeholder="" readonly /></td>
+          <td><input type="text" id="l2-technical-summary" placeholder="" readonly /></td>
           <td><input type="text" id="l2-technical-result" placeholder="" readonly /></td>
           <td><textarea id="l2-technical-feedback" placeholder="" readonly ></textarea></td>
         </tr>
@@ -297,7 +297,7 @@
           <td>
             <input
               type="text"
-              id=""
+              id="ec-fitment-summary"
               placeholder=""
               readonly
             />
@@ -310,7 +310,7 @@
         <tr>
           <td class="header-cell">Project Fitment</td>
           <td>
-            <input type="text" id="" placeholder="" readonly />
+            <input type="text" id="project-fitment-summary" placeholder="" readonly />
           </td>
           <td>
             <input
@@ -333,7 +333,7 @@
         <tr>
           <td class="header-cell">Client Fitment</td>
           <td>
-            <input type="text" id="" placeholder="" readonly />
+            <input type="text" id="client-fitment-summary" placeholder="" readonly />
           </td>
           <td>
             <input
@@ -355,7 +355,7 @@
         <tr>
           <td class="header-cell">Fitment</td>
           <td>
-            <input type="text" id="" placeholder="" readonly />
+            <input type="text" id="fitment-summary" placeholder="" readonly />
           </td>
           <td>
             <input type="text" id="fitment-result" placeholder="" readonly />
@@ -479,8 +479,9 @@
                 } else {
                   // Prescreening section
                   if (data.prescreening) {
+                    
                     document.getElementById("prescreening-feedback").value =
-                      data.prescreening.feedback || "";
+                      data.prescreening.hr_email || "";
                     document.getElementById("prescreening-summary").value =
                       data.prescreening.summary || "";
 
@@ -511,19 +512,28 @@
                       const roundDetails = feedback.round_details;
                       const detailedFeedback = feedback.detailed_feedback || "";
                       const result = feedback.result || "";
+                      const interviewer_name = feedback.interviewer_name || "";
 
                       if (roundDetails === "EC Fitment Round") {
+                          document.getElementById("ec-fitment-summary").value =
+                          interviewer_name;
                         document.getElementById("ec-fitment-feedback").value =
                           detailedFeedback;
                         document.getElementById("ec-fitment-result").value =
                           result;
                       } else if (roundDetails === "Client Fitment Round") {
+                           document.getElementById(
+                          "client-fitment-summary"
+                        ).value = interviewer_name;
                         document.getElementById(
                           "client-fitment-feedback"
                         ).value = detailedFeedback;
                         document.getElementById("client-fitment-result").value =
                           result;
                       } else if (roundDetails === "Project Fitment Round") {
+                          document.getElementById(
+                          "project-fitment-feedback"
+                        ).value = detailedFeedback;
                         document.getElementById(
                           "project-fitment-feedback"
                         ).value = detailedFeedback;
@@ -531,6 +541,8 @@
                           "project-fitment-result"
                         ).value = result;
                       } else if (roundDetails === "Fitment Round") {
+                          document.getElementById("fitment-summary").value =
+                          interviewer_name;
                         document.getElementById("fitment-feedback").value =
                           detailedFeedback;
                         document.getElementById("fitment-result").value =
@@ -543,6 +555,10 @@
                   if (data.l2Technical) {
                     const l2Feedback = data.l2Technical.detailed_feedback || "";
                     l2Result = data.l2Technical.result || "";
+                     const interviewer_name =
+                      data.l2Technical.interviewer_name || "";
+                       document.getElementById("l2-technical-summary").value =
+                      interviewer_name;
 
                     document.getElementById("l2-technical-feedback").value =
                       l2Feedback;
