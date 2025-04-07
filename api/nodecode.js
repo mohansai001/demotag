@@ -223,21 +223,21 @@ app.get('/api/final-prescreening', async (req, res) => {
 
     // Prescreening form
     const prescreeningResult = await pool.query(`
-      SELECT feedback, status, summary
+      SELECT feedback, status, summary, hr_email
       FROM prescreening_form
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
     // Feedbackform with round details (for fitment rounds)
     const feedbackResult = await pool.query(`
-      SELECT result, detailed_feedback, round_details
+      SELECT result, detailed_feedback, round_details,interviewer_name
       FROM feedbackform
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
     // L2 Technical feedback from feedback_table (no round_details column)
     const l2TechnicalResult = await pool.query(`
-      SELECT result, detailed_feedback
+      SELECT result, detailed_feedback,interviewer_name
       FROM feedback_table
       WHERE candidate_email = $1
     
