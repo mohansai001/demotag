@@ -252,6 +252,7 @@ async function uploadResume() {
 
     setTimeout(() => {
         displaySuccessPopup('Resume already evaluated.');
+        closePopup()
     }, 100); // slight delay helps with UI race conditions
 }
 
