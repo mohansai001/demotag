@@ -243,12 +243,16 @@ async function uploadResume() {
 
                 // Send the resume URL to ChatPDF API for evaluation
                 await evaluateResumeWithChatPDF(githubUrl);
+} else {
+    // Resume already evaluated, reset the progress bar
+    console.log('Inside else block: Resume already evaluated');
+    progressBar.style.width = '0%';
 
-            } else {
-                // Resume already evaluated, reset the progress bar
-                displaySuccessPopup('Resume already evaluated.');
-                progressBar.style.width = '0%';
-            }
+    setTimeout(() => {
+        displaySuccessPopup('Resume already evaluated.');
+        closePopup()
+    }, 100); // slight delay helps with UI race conditions
+}
 
         } catch (error) {
             console.error('Error uploading file: ', error);
