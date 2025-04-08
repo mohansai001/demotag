@@ -249,8 +249,12 @@ async function uploadResume() {
     // Resume already evaluated, reset the progress bar
     console.log('Inside else block: Resume already evaluated');
     progressBar.style.width = '0%';
-    displaySuccessPopup('Resume already evaluated.');
+
+    setTimeout(() => {
+        displaySuccessPopup('Resume already evaluated.');
+    }, 100); // slight delay helps with UI race conditions
 }
+
 
 
         } catch (error) {
