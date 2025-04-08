@@ -507,12 +507,13 @@
 
 
         <!-- Popup structure -->
-        <div id="successPopup" class="popups" style="animation: fadeOut 2s forwards;">
-            <div class="popup-contents">
-                <span class="close-btns" onclick="closeSuccessPopup()">&times;</span>
-                <p id="popupMessage"></p>
-            </div>
-        </div>
+      <div id="successPopup" class="popups" style="display: none;">
+    <div class="popup-contents">
+        <span class="close-btns" onclick="closeSuccessPopup()">&times;</span>
+        <p id="popupMessage"></p>
+    </div>
+</div>
+
         <style>
             @keyframes fadeOut {
                 0% {
