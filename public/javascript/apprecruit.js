@@ -233,23 +233,25 @@ async function uploadResume() {
             var fileName = timestamp + "_" + originalFileName;
             var githubUrl = await uploadToGitHub(fileName, processedFile);
 
-            if (githubUrl) {
-                // Resume successfully uploaded
-                progressBar.style.width = '100%'; // Set progress bar to 100% on success
-                displaySuccessPopup('Resume uploaded successfully: ' + processedFile.name);
-                closePopup(); // Assuming this closes another popup or message
+  if (githubUrl) {
+    // Resume successfully uploaded
+    progressBar.style.width = '100%'; // Set progress bar to 100% on success
+    displaySuccessPopup('Resume uploaded successfully: ' + processedFile.name);
+    closePopup(); // Assuming this closes another popup or message
 
-                document.querySelector('.role-selection-container').style.display = 'none';
-                document.querySelector('.container').style.display = 'block';
+    document.querySelector('.role-selection-container').style.display = 'none';
+    document.querySelector('.container').style.display = 'block';
 
-                // Send the resume URL to ChatPDF API for evaluation
-                await evaluateResumeWithChatPDF(githubUrl);
+    // Send the resume URL to ChatPDF API for evaluation
+    await evaluateResumeWithChatPDF(githubUrl);
 
-            } else {
-                // Resume already evaluated, reset the progress bar
-                displaySuccessPopup('Resume already evaluated.');
-                progressBar.style.width = '0%';
-            }
+} else {
+    // Resume already evaluated, reset the progress bar
+    console.log('Inside else block: Resume already evaluated');
+    progressBar.style.width = '0%';
+    displaySuccessPopup('Resume already evaluated.');
+}
+
 
         } catch (error) {
             console.error('Error uploading file: ', error);
