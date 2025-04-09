@@ -3127,6 +3127,31 @@ app.post('/api/submit-feedback', async (req, res) => {
     client.release();
   }
 });
+app.post('/api/get-ec-select', async (req, res) => {
+  const { candidateEmail } = req.body;
+
+  if (!candidateEmail) {
+      return res.status(400).json({ error: "Candidate email is required." });
+  }
+
+  try {
+      const query = `
+          SELECT ec_select
+          FROM prescreening_form
+          WHERE candidate_email = $1;
+      `;
+      const result = await pool.query(query, [candidateEmail]);
+
+      if (result.rows.length === 0) {
+          return res.status(404).json({ error: "Candidate not found." });
+      }
+
+      res.json({ ec_select: result.rows[0].ec_select });
+  } catch (error) {
+      console.error("Error fetching ec_select:", error);
+      res.status(500).json({ error: "Internal server error." });
+  }
+});
 
 // Start the server
 app.listen(PORT, () => {
