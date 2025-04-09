@@ -288,10 +288,10 @@ async function sendEmailsForCompletedCandidates(candidates) {
       );
     }
   }
-  showToast(
-    "Emails processed for all completed iMocha candidates (if any).",
-    "success"
-  );
+  // showToast(
+  //   "Emails processed for all completed iMocha candidates (if any).",
+  //   "success"
+  // );
 }
 
 /**
