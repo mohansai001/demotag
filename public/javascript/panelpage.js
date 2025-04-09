@@ -89,14 +89,14 @@ function getFeedbackFormUrl(recruitmentPhase) {
     return feedbackFormUrls[recruitmentPhase] || 'default-feedback.html'; // Default feedback form if not matched
 }
 
-function openFeedbackForm(candidateEmail, recruitmentPhase) {
-    localStorage.setItem('roundDetails', recruitmentPhase);  // Storing round details
-    const modal = document.getElementById("feedbackModal");
-    modal.style.display = "block";
+// function openFeedbackForm(candidateEmail, recruitmentPhase) {
+//     localStorage.setItem('roundDetails', recruitmentPhase);  // Storing round details
+//     const modal = document.getElementById("feedbackModal");
+//     modal.style.display = "block";
 
-    const iframe = document.getElementById('feedbackFormIframe');
-    iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}`;
-}
+//     const iframe = document.getElementById('feedbackFormIframe');
+//     iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}`;
+// }
 
 
 
@@ -108,11 +108,53 @@ function openFeedbackForm(candidateEmail, recruitmentPhase) {
 //     iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}`;
 // }
 
+// async function openFeedbackForm(candidateEmail, recruitmentPhase) {
+//     try {
+//         // Fetch ec_select value for the candidate
+//         const response = await fetch('https://demotag.vercel.app/api/get-ec-select', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ candidateEmail }),
+//         });
+
+//         if (!response.ok) {
+//             throw new Error("Failed to fetch ec_select value.");
+//         }
+
+//         const data = await response.json();
+
+//         // Check if ec_select is "App"
+//         if (data.ec_select === "App") {
+//             // Navigate to L2_App_Technical.html
+//             window.location.href = `L2_App_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`;
+//         } 
+//                 else if (data.ec_select === "Data") {
+//             // Navigate to L2_Data_Technical.html
+//             window.location.href = `L2_Data_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`;
+
+//         }else {
+//             // Open the default feedback form in a modal
+//             localStorage.setItem('roundDetails', recruitmentPhase); // Storing round details
+//             const modal = document.getElementById("feedbackModal");
+//             modal.style.display = "block";
+
+//             const iframe = document.getElementById('feedbackFormIframe');
+//             iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}`;
+//         }
+//     } catch (error) {
+//         console.error("Error opening feedback form:", error);
+//         alert("Failed to open feedback form. Please try again.");
+//     }
+// }
+
 
 function closeFeedbackModal() {
     const modal = document.getElementById("feedbackModal");
     modal.style.display = "none";
 }
+
 
 window.onclick = function(event) {
     var modal = document.getElementById("feedbackModal");
@@ -428,6 +470,108 @@ function openFeedbackModal(roundDetails) {
 
 }
 
+function closeAppFeedbackModal() {
+    const modal = document.getElementById("feedback-modal");
+    if (modal) {
+        modal.style.display = "none"; // For custom modal
+
+        // If using Bootstrap 5 modal
+        // const modalInstance = bootstrap.Modal.getInstance(modal);
+        // if (modalInstance) modalInstance.hide();
+
+        // Optional: reset iframe content if needed
+        const iframe = document.getElementById("feedback-iframe");
+        if (iframe) {
+            iframe.src = "";
+        }
+    } else {
+        console.warn("Modal not found with id 'feedback-modal'");
+    }
+}
+
+
+
+// Update the openFeedbackForm function to track opened windows
+const feedbackWindows = {}; // Track opened feedback windows
+
+async function openFeedbackForm(candidateEmail, recruitmentPhase) {
+    try {
+        const response = await fetch('https://demotag.vercel.app/api/get-ec-select', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ candidateEmail }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch ec_select value.");
+        }
+
+        const data = await response.json();
+
+        if (data.ec_select === "App") {
+            // Open App feedback in a new window and track it
+            const windowFeatures = 'width=1000,height=800,top=100,left=100';
+            feedbackWindows[candidateEmail] = window.open(
+                `L2_App_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+                `feedbackWindow_${candidateEmail}`,
+                windowFeatures
+            );
+        } 
+        else if (data.ec_select === "Data") {
+            // Open App feedback in a new window and track it
+            const windowFeatures = 'width=1000,height=800,top=100,left=100';
+            feedbackWindows[candidateEmail] = window.open(
+                `L2_Data_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+                `feedbackWindow_${candidateEmail}`,
+                windowFeatures
+            );
+        }
+        else  {
+            // Open standard feedback in modal
+            localStorage.setItem('roundDetails', recruitmentPhase);
+            const modal = document.getElementById("feedbackModal");
+            modal.style.display = "block";
+
+            const iframe = document.getElementById('feedbackFormIframe');
+            iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}`;
+        }
+    } catch (error) {
+        console.error("Error opening feedback form:", error);
+        alert("Failed to open feedback form. Please try again.");
+    }
+}
+
+// Enhanced closeFeedbackModal function
+function closeFeedbackModal() {
+    const modal = document.getElementById("feedbackModal");
+    modal.style.display = "none";
+    
+    // Reset iframe source to prevent resubmission
+    const iframe = document.getElementById('feedbackFormIframe');
+    iframe.src = 'about:blank';
+    
+    // Close any tracked feedback windows
+    Object.values(feedbackWindows).forEach(win => {
+        if (win && !win.closed) {
+            win.close();
+        }
+    });
+}
+
+// Add message listener to handle window closing
+window.addEventListener('message', function(event) {
+    if (event.data.action === 'feedbackSubmitted') {
+        const candidateEmail = event.data.candidateEmail;
+        if (feedbackWindows[candidateEmail] && !feedbackWindows[candidateEmail].closed) {
+            feedbackWindows[candidateEmail].close();
+            delete feedbackWindows[candidateEmail];
+        }
+        // Refresh feedback data
+        fetchMeetingsForSelectedDate(currentDate);
+    }
+});
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
