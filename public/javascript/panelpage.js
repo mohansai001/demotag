@@ -505,43 +505,46 @@ async function openFeedbackForm(candidateEmail, recruitmentPhase) {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to fetch ec_select value.");
+            throw new Error("Failed to fetch ec_select and position.");
         }
 
         const data = await response.json();
+        const { ec_select, position } = data;
 
-        if (data.ec_select === "App") {
-            // Open App feedback in a new window and track it
-            const windowFeatures = 'width=1000,height=800,top=100,left=100';
+        const windowFeatures = 'width=1000,height=800,top=100,left=100';
+
+        // Check if roundDetails is valid for L2
+        const isL2Round = recruitmentPhase === "L2 Technical" || recruitmentPhase === "Shortlisted in L2";
+
+        if (ec_select === "App" && isL2Round) {
             feedbackWindows[candidateEmail] = window.open(
-                `L2_App_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+                `L2_App_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}&position=${encodeURIComponent(position)}`,
                 `feedbackWindow_${candidateEmail}`,
                 windowFeatures
             );
-        } 
-        else if (data.ec_select === "Data") {
-            // Open App feedback in a new window and track it
-            const windowFeatures = 'width=1000,height=800,top=100,left=100';
+        } else if (ec_select === "Data") {
             feedbackWindows[candidateEmail] = window.open(
                 `L2_Data_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
                 `feedbackWindow_${candidateEmail}`,
                 windowFeatures
             );
-        }
-        else  {
-            // Open standard feedback in modal
-            localStorage.setItem('roundDetails', recruitmentPhase);
-            const modal = document.getElementById("feedbackModal");
-            modal.style.display = "block";
-
-            const iframe = document.getElementById('feedbackFormIframe');
-            iframe.src = `${getFeedbackFormUrl(recruitmentPhase)}?candidateEmail=${encodeURIComponent(candidateEmail)}`;
+        } else {
+            // Default fallback - open feedbackform.html instead
+            feedbackWindows[candidateEmail] = window.open(
+                `feedbackform.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+                `feedbackWindow_${candidateEmail}`,
+                windowFeatures
+            );
         }
     } catch (error) {
         console.error("Error opening feedback form:", error);
         alert("Failed to open feedback form. Please try again.");
     }
 }
+
+
+
+
 
 // Enhanced closeFeedbackModal function
 function closeFeedbackModal() {
