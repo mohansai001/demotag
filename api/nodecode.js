@@ -213,10 +213,10 @@ app.get('/api/rrf-details', async (req, res) => {
 //final feedback form prescreening details fetch
 app.get('/api/final-prescreening', async (req, res) => {
   try {
-    const { candidateEmail } = req.query;
+    const { candidateEmail, candidateId, position } = req.query;
 
-    if (!candidateEmail) {
-      return res.status(400).json({ message: 'Email is required' });
+    if (!candidateEmail || !candidateId || !position) {
+      return res.status(400).json({ message: 'Email, ID and position are required' });
     }
 
     console.log(`Fetching prescreening details for: ${candidateEmail}`);
@@ -228,22 +228,41 @@ app.get('/api/final-prescreening', async (req, res) => {
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
-    // Feedbackform with round details (for fitment rounds)
+    // Feedbackform (Fitment rounds)
     const feedbackResult = await pool.query(`
-      SELECT result, detailed_feedback, round_details,interviewer_name
+      SELECT result, detailed_feedback, round_details, interviewer_name
       FROM feedbackform
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
-    // L2 Technical feedback from feedback_table (no round_details column)
-    const l2TechnicalResult = await pool.query(`
-      SELECT result, detailed_feedback,interviewer_name
-      FROM feedback_table
-      WHERE candidate_email = $1
-    
-    `, [candidateEmail]);
+    let l2TechnicalResult = { rows: [] };
 
-    if (prescreeningResult.rows.length === 0 && feedbackResult.rows.length === 0 && l2TechnicalResult.rows.length === 0) {
+    if (position.toLowerCase().includes("java")) {
+      l2TechnicalResult = await pool.query(`
+        SELECT result, overall_feedback,interviewer_name
+        FROM app_java_l2_feedback_response
+        WHERE candidate_id = $1
+      `, [candidateId]);
+    } else if (position.toLowerCase().includes(".net")) {
+      l2TechnicalResult = await pool.query(`
+        SELECT result, overall_feedback,interviewer_name
+        FROM app_dotnet_l2_feedback_response
+        WHERE candidate_id = $1
+      `, [candidateId]);
+    } else {
+      // For all other roles including Cloud (default), fetch from feedback_table
+      l2TechnicalResult = await pool.query(`
+        SELECT result, detailed_feedback, interviewer_name
+        FROM feedback_table
+        WHERE candidate_email = $1
+      `, [candidateEmail]);
+    }
+
+    if (
+      prescreeningResult.rows.length === 0 &&
+      feedbackResult.rows.length === 0 &&
+      l2TechnicalResult.rows.length === 0
+    ) {
       return res.status(404).json({ message: 'No data found for this email' });
     }
 
@@ -259,8 +278,6 @@ app.get('/api/final-prescreening', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
 
 
 
