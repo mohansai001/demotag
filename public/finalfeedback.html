@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Final Feedback</title>
- <style>
+    <style>
       body,
       html {
         margin: 0;
@@ -274,11 +274,13 @@
           <td class="header-cell">Prescreening</td>
           <td><input type="text" id="prescreening-feedback" readonly /></td>
           <td><input type="text" id="prescreening-status" readonly /></td>
-  <td><textarea id="prescreening-summary" readonly></textarea></td>
+          <td><textarea id="prescreening-summary" readonly></textarea></td>
         </tr>
         <tr>
           <td class="header-cell">L1 or iMocha</td>
-          <td><input type="text" id="" placeholder="" readonly /></td>
+          <td>
+            <input type="text" id="hr-email" placeholder="" readonly />
+          </td>
           <td>
             <input type="text" id="imocha-status" placeholder="" readonly />
           </td>
@@ -286,11 +288,32 @@
             <input type="text" id="imocha-score" placeholder="" readonly />
           </td>
         </tr>
-                <tr>
+        <tr>
           <td class="header-cell">L2 Technical</td>
-          <td><input type="text" id="l2-technical-summary" placeholder="" readonly /></td>
-          <td><input type="text" id="l2-technical-result" placeholder="" readonly /></td>
-          <td><textarea id="l2-technical-feedback" placeholder="" readonly ></textarea></td>
+          <td>
+            <input
+              type="text"
+              id="l2-technical-summary"
+              placeholder=""
+              readonly
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              id="l2-technical-result"
+              placeholder=""
+              readonly
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              id="l2-technical-feedback"
+              placeholder=""
+              readonly
+            />
+          </td>
         </tr>
         <tr>
           <td class="header-cell">EC Fitment</td>
@@ -305,12 +328,24 @@
           <td>
             <input type="text" id="ec-fitment-result" placeholder="" readonly />
           </td>
-          <td><textarea id="ec-fitment-feedback" placeholder="" readonly ></textarea></td>
+          <td>
+            <input
+              type="text"
+              id="ec-fitment-feedback"
+              placeholder=""
+              readonly
+            />
+          </td>
         </tr>
         <tr>
           <td class="header-cell">Project Fitment</td>
           <td>
-            <input type="text" id="project-fitment-summary" placeholder="" readonly />
+            <input
+              type="text"
+              id="project-fitment-summary"
+              placeholder=""
+              readonly
+            />
           </td>
           <td>
             <input
@@ -321,19 +356,24 @@
             />
           </td>
           <td>
-            <textarea
+            <input
+              type="text"
               id="project-fitment-feedback"
               placeholder=""
               readonly
-            >
-              </textarea>
+            />
           </td>
         </tr>
 
         <tr>
           <td class="header-cell">Client Fitment</td>
           <td>
-            <input type="text" id="client-fitment-summary" placeholder="" readonly />
+            <input
+              type="text"
+              id="client-fitment-summary"
+              placeholder=""
+              readonly
+            />
           </td>
           <td>
             <input
@@ -344,12 +384,12 @@
             />
           </td>
           <td>
-            <textarea
+            <input
+              type="text"
               id="client-fitment-feedback"
               placeholder=""
               readonly
-            >
-              </textarea>
+            />
           </td>
         </tr>
         <tr>
@@ -361,7 +401,7 @@
             <input type="text" id="fitment-result" placeholder="" readonly />
           </td>
           <td>
-            <textarea id="fitment-feedback" placeholder="" readonly ></textarea>
+            <input type="text" id="fitment-feedback" placeholder="" readonly />
           </td>
         </tr>
       </table>
@@ -393,7 +433,7 @@
         let candidateEmailFromURL = getQueryParam("email");
 
         // Fetch all candidate emails from the server
-        fetch("https://demotag.vercel.app/api/getAllCandidateEmails")
+        fetch("http://localhost:3000/api/getAllCandidateEmails")
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -430,13 +470,13 @@
           const selectedEmail = event.target.value;
           if (selectedEmail) {
             // Fetch candidate data based on the selected email
-       let imochaScore = null;
+            let imochaScore = null;
             let l2Result = "";
             let imochaStatusField = document.getElementById("imocha-status");
 
             // === Step 1: Fetch candidate basic data (getCandidateData) ===
             fetch(
-              `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${selectedEmail}`
+              `http://localhost:3000/api/getCandidateData?candidateEmail=${selectedEmail}`
             )
               .then((response) => response.json())
               .then((data) => {
@@ -457,10 +497,160 @@
                   document.getElementById("account").value = data.eng_center;
 
                   imochaScore = data.l_1_score; // Save iMocha score for later use
-                  // showToast(
-                  //   "Candidate details fetched successfully!",
-                  //   "success"
-                  // );
+                  showToast(
+                    "Candidate details fetched successfully!",
+                    "success"
+                  );
+                  fetch(
+                    `http://localhost:3000/api/final-prescreening?candidateEmail=${selectedEmail}&candidateId=${data.id}&position=${data.role}`
+                  )
+                    .then((response) => response.json())
+                    .then((data) => {
+                      if (data.message) {
+                        showToast(data.message, "error");
+                      } else {
+                        // Prescreening
+                        if (data.prescreening) {
+                          document.getElementById(
+                            "prescreening-feedback"
+                          ).value = data.prescreening.hr_email || "";
+                          document.getElementById(
+                            "prescreening-summary"
+                          ).value = data.prescreening.summary || "";
+
+                          const prescreeningStatusField =
+                            document.getElementById("prescreening-status");
+                          prescreeningStatusField.value =
+                            data.prescreening.status || "";
+
+                          if (
+                            data.prescreening.status?.toLowerCase() ===
+                            "shortlisted"
+                          ) {
+                            prescreeningStatusField.style.backgroundColor =
+                              "lightgreen";
+                          } else if (
+                            data.prescreening.status?.toLowerCase() ===
+                            "rejected"
+                          ) {
+                            prescreeningStatusField.style.backgroundColor =
+                              "lightcoral";
+                          } else {
+                            prescreeningStatusField.style.backgroundColor = "";
+                          }
+                        }
+
+                        // Fitment Feedback
+                        if (data.feedback && Array.isArray(data.feedback)) {
+                          data.feedback.forEach((feedback) => {
+                            const {
+                              round_details,
+                              detailed_feedback,
+                              result,
+                              interviewer_name,
+                            } = feedback;
+
+                            if (round_details === "EC Fitment Round") {
+                              document.getElementById(
+                                "ec-fitment-summary"
+                              ).value = interviewer_name;
+                              document.getElementById(
+                                "ec-fitment-feedback"
+                              ).value = detailed_feedback;
+                              document.getElementById(
+                                "ec-fitment-result"
+                              ).value = result;
+                            } else if (
+                              round_details === "Client Fitment Round"
+                            ) {
+                              document.getElementById(
+                                "client-fitment-summary"
+                              ).value = interviewer_name;
+                              document.getElementById(
+                                "client-fitment-feedback"
+                              ).value = detailed_feedback;
+                              document.getElementById(
+                                "client-fitment-result"
+                              ).value = result;
+                            } else if (
+                              round_details === "Project Fitment Round"
+                            ) {
+                              document.getElementById(
+                                "project-fitment-summary"
+                              ).value = interviewer_name;
+                              document.getElementById(
+                                "project-fitment-feedback"
+                              ).value = detailed_feedback;
+                              document.getElementById(
+                                "project-fitment-result"
+                              ).value = result;
+                            } else if (round_details === "Fitment Round") {
+                              document.getElementById("fitment-summary").value =
+                                interviewer_name;
+                              document.getElementById(
+                                "fitment-feedback"
+                              ).value = detailed_feedback;
+                              document.getElementById("fitment-result").value =
+                                result;
+                            }
+                          });
+                        }
+
+                        // L2 Feedback (from any of the 3 tables depending on role)
+                        if (data.l2Technical) {
+                          const {
+                            detailed_feedback,
+                            result,
+                            interviewer_name,
+                          } = data.l2Technical;
+                          l2Result = result || "";
+                          document.getElementById(
+                            "l2-technical-summary"
+                          ).value = interviewer_name || "";
+                          document.getElementById(
+                            "l2-technical-feedback"
+                          ).value = detailed_feedback || "";
+                          document.getElementById("l2-technical-result").value =
+                            l2Result;
+                        }
+
+                        // iMocha Status (based on L2 fallback)
+                        if (imochaScore != null && imochaScore !== "") {
+                          if (imochaScore >= 18) {
+                            imochaStatusField.value = "Shortlisted";
+                            imochaStatusField.style.backgroundColor =
+                              "lightgreen";
+                          } else {
+                            imochaStatusField.value = "Rejected";
+                            imochaStatusField.style.backgroundColor =
+                              "lightcoral";
+                          }
+                        } else {
+                          if (l2Result !== "") {
+                            imochaStatusField.value = "iMocha Skipped";
+                            imochaStatusField.style.backgroundColor = "#f0f0f0";
+                          } else {
+                            imochaStatusField.value = "Waiting for iMocha";
+                            imochaStatusField.style.backgroundColor = "#fffacd";
+                          }
+                        }
+
+                        showToast(
+                          "Prescreening details fetched successfully!",
+                          "success"
+                        );
+                      }
+                    })
+                    .catch((error) => {
+                      console.error(
+                        "Error fetching prescreening details:",
+                        error
+                      );
+                      showToast(
+                        "Failed to load prescreening details.",
+                        "error"
+                      );
+                    });
                 }
               })
               .catch((error) => {
@@ -469,132 +659,6 @@
               });
 
             // === Step 2: Fetch prescreening & feedback (final-prescreening) ===
-            fetch(
-              `https://demotag.vercel.app/api/final-prescreening?candidateEmail=${selectedEmail}`
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                if (data.message) {
-                  showToast(data.message, "error");
-                } else {
-                  // Prescreening section
-                  if (data.prescreening) {
-                    
-                    document.getElementById("prescreening-feedback").value =
-                      data.prescreening.hr_email || "";
-                    document.getElementById("prescreening-summary").value =
-                      data.prescreening.summary || "";
-
-                    const prescreeningStatusField = document.getElementById(
-                      "prescreening-status"
-                    );
-                    prescreeningStatusField.value =
-                      data.prescreening.status || "";
-
-                    if (
-                      data.prescreening.status?.toLowerCase() === "shortlisted"
-                    ) {
-                      prescreeningStatusField.style.backgroundColor =
-                        "lightgreen";
-                    } else if (
-                      data.prescreening.status?.toLowerCase() === "rejected"
-                    ) {
-                      prescreeningStatusField.style.backgroundColor =
-                        "lightcoral";
-                    } else {
-                      prescreeningStatusField.style.backgroundColor = "";
-                    }
-                  }
-
-                  // Feedback for rounds
-                  if (data.feedback && Array.isArray(data.feedback)) {
-                    data.feedback.forEach((feedback) => {
-                      const roundDetails = feedback.round_details;
-                      const detailedFeedback = feedback.detailed_feedback || "";
-                      const result = feedback.result || "";
-                      const interviewer_name = feedback.interviewer_name || "";
-
-                      if (roundDetails === "EC Fitment Round") {
-                          document.getElementById("ec-fitment-summary").value =
-                          interviewer_name;
-                        document.getElementById("ec-fitment-feedback").value =
-                          detailedFeedback;
-                        document.getElementById("ec-fitment-result").value =
-                          result;
-                      } else if (roundDetails === "Client Fitment Round") {
-                           document.getElementById(
-                          "client-fitment-summary"
-                        ).value = interviewer_name;
-                        document.getElementById(
-                          "client-fitment-feedback"
-                        ).value = detailedFeedback;
-                        document.getElementById("client-fitment-result").value =
-                          result;
-                      } else if (roundDetails === "Project Fitment Round") {
-                          document.getElementById(
-                          "project-fitment-summary"
-                        ).value = interviewer_name;
-                        document.getElementById(
-                          "project-fitment-feedback"
-                        ).value = detailedFeedback;
-                        document.getElementById(
-                          "project-fitment-result"
-                        ).value = result;
-                      } else if (roundDetails === "Fitment Round") {
-                          document.getElementById("fitment-summary").value =
-                          interviewer_name;
-                        document.getElementById("fitment-feedback").value =
-                          detailedFeedback;
-                        document.getElementById("fitment-result").value =
-                          result;
-                      }
-                    });
-                  }
-
-                  // L2 Technical round
-                  if (data.l2Technical) {
-                    const l2Feedback = data.l2Technical.detailed_feedback || "";
-                    l2Result = data.l2Technical.result || "";
-                     const interviewer_name =
-                      data.l2Technical.interviewer_name || "";
-                       document.getElementById("l2-technical-summary").value =
-                      interviewer_name;
-
-                    document.getElementById("l2-technical-feedback").value =
-                      l2Feedback;
-                    document.getElementById("l2-technical-result").value =
-                      l2Result;
-                  }
-
-                  // === ✅ iMocha Status Logic (only after L2 result is available) ===
-                  if (imochaScore != null && imochaScore !== "") {
-                    if (imochaScore >= 18) {
-                      imochaStatusField.value = "Shortlisted";
-                      imochaStatusField.style.backgroundColor = "lightgreen";
-                    } else {
-                      imochaStatusField.value = "Rejected";
-                      imochaStatusField.style.backgroundColor = "lightcoral";
-                    }
-                  } else {
-                    if (l2Result !== "") {
-                      imochaStatusField.value = "iMocha Skipped";
-                      imochaStatusField.style.backgroundColor = "#f0f0f0"; // neutral gray
-                    } else {
-                      imochaStatusField.value = "Waiting for iMocha";
-                      imochaStatusField.style.backgroundColor = "#fffacd"; // light yellow
-                    }
-                  }
-
-                  // showToast(
-                  //   "Prescreening details fetched successfully!",
-                  //   "success"
-                  // );
-                }
-              })
-              .catch((error) => {
-                console.error("Error fetching prescreening details:", error);
-                showToast("Failed to load prescreening details.", "error");
-              });
           }
         });
       });
