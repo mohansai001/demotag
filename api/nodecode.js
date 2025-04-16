@@ -1554,7 +1554,7 @@ app.get('/api/getCandidateData', async (req, res) => {
     }
    
     const query = `
-      SELECT candidate_name, role, panel_name, l_2_interviewdate, l_1_score, rrf_id, hr_email, eng_center
+      SELECT id, candidate_name, role, panel_name, l_2_interviewdate, l_1_score, rrf_id, hr_email, eng_center
       FROM candidate_info WHERE candidate_email = $1;
     `;
  
