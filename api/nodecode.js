@@ -3136,7 +3136,7 @@ app.post('/api/get-ec-select', async (req, res) => {
 
   try {
       const query = `
-          SELECT ec_select
+          SELECT ec_select, position
           FROM prescreening_form
           WHERE candidate_email = $1;
       `;
@@ -3146,12 +3146,517 @@ app.post('/api/get-ec-select', async (req, res) => {
           return res.status(404).json({ error: "Candidate not found." });
       }
 
-      res.json({ ec_select: result.rows[0].ec_select });
+      res.json({
+          ec_select: result.rows[0].ec_select,
+          position: result.rows[0].position
+      });
   } catch (error) {
-      console.error("Error fetching ec_select:", error);
+      console.error("Error fetching ec_select and position:", error);
       res.status(500).json({ error: "Internal server error." });
   }
 });
+
+
+
+
+
+
+app.get('/api/data-feedback-questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, skill_category, skill_description, is_core_skill AS is_top_skill, created_at, updated_at
+      FROM data_l2_feedback_questions
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// API to save data feedback responses
+app.post('/api/data-submit-feedback', async (req, res) => {
+  const { candidateEmail, responses, detailedFeedback, result } = req.body;
+
+  console.log("Received payload:", { candidateEmail, responses });
+
+  if (!candidateEmail || !responses || !Array.isArray(responses)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    // Fetch candidateId using candidateEmail
+    const candidateQuery = `
+      SELECT id FROM candidate_info WHERE candidate_email = $1;
+    `;
+    const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: 'Candidate not found.' });
+    }
+
+    const candidateId = candidateResult.rows[0].id;
+    console.log("Fetched candidateId:", candidateId);
+
+    await client.query('BEGIN');
+
+    // Save all responses as a single JSON object
+    const query = `
+      INSERT INTO data_l2_feedback_response (
+        candidate_id, responses, overall_feedback, result, updated_at
+      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+      ON CONFLICT (candidate_id)
+      DO UPDATE SET
+        responses = EXCLUDED.responses,
+        overall_feedback = EXCLUDED.overall_feedback,
+        result = EXCLUDED.result,
+        updated_at = CURRENT_TIMESTAMP;
+    `;
+
+    await client.query(query, [
+      candidateId,
+      JSON.stringify(responses), // Serialize responses as JSON
+      detailedFeedback,
+      result,
+    ]);
+
+    await client.query('COMMIT');
+    console.log("Feedback saved successfully for candidateId:", candidateId);
+    res.json({ success: true, message: 'Feedback saved successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error saving feedback:', error);
+    res.status(500).json({ error: 'Failed to save feedback.' });
+  } finally {
+    client.release();
+  }
+});
+
+app.get('/api/java_feedback-questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, skill_category, skill_description, is_core_skill AS is_top_skill, created_at, updated_at
+      FROM app_java_l2_feedback_questions
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// API to save feedback responses
+app.post('/api/java_submit-feedback', async (req, res) => {
+  const { candidateEmail, responses, detailedFeedback, result } = req.body;
+
+  console.log("Received payload:", { candidateEmail, responses });
+
+  if (!candidateEmail || !responses || !Array.isArray(responses)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    // Fetch candidateId using candidateEmail
+    const candidateQuery = `
+    SELECT id, panel_name FROM candidate_info WHERE candidate_email = $1;
+  `;
+  const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+  
+  if (candidateResult.rows.length === 0) {
+    console.error("Candidate not found for email:", candidateEmail);
+    return res.status(404).json({ error: 'Candidate not found.' });
+  }
+  
+  const candidateRow = candidateResult.rows[0];
+  const candidateId = candidateRow.id;
+  const panelName = candidateRow.panel_name;
+  
+  console.log("Fetched candidateId:", candidateId);
+  console.log("Fetched panelName:", panelName);
+  
+  // Save feedback
+  const feedbackQuery = `
+    INSERT INTO app_java_l2_feedback_response (
+      candidate_id, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+    ON CONFLICT (candidate_id)
+    DO UPDATE SET
+      responses = EXCLUDED.responses,
+      overall_feedback = EXCLUDED.overall_feedback,
+      result = EXCLUDED.result,
+      interviewer_name = EXCLUDED.interviewer_name,
+      candidate_email = EXCLUDED.candidate_email,
+      updated_at = CURRENT_TIMESTAMP;
+  `;
+  
+  await client.query(feedbackQuery, [
+    candidateId,
+    candidateEmail,
+    panelName,
+    JSON.stringify(responses),
+    detailedFeedback,
+    result,
+  ]);
+  
+
+    // Set recruitmentphase based on result
+    let recruitmentPhaseL2 = null;
+    if (result === "Recommended") {
+      recruitmentPhaseL2 = "Shortlisted in L2";
+    } else if (result === "Rejected") {
+      recruitmentPhaseL2 = "Rejected in L2";
+    }
+
+    if (recruitmentPhaseL2) {
+      const updatePhaseQuery = `
+        UPDATE candidate_info
+        SET recruitment_phase = $1
+        WHERE id = $2;
+      `;
+      await client.query(updatePhaseQuery, [recruitmentPhaseL2, candidateId]);
+      console.log(`Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`);
+    }
+
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Feedback and recruitment phase updated successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error saving feedback:', error);
+    res.status(500).json({ error: 'Failed to save feedback.' });
+  } finally {
+    client.release();
+  }
+});
+
+
+// Api to fetch dontnet questions
+app.get('/api/dotnet_feedback-questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, skill_category, skill_description, is_core_skill AS is_top_skill, created_at, updated_at
+      FROM app_dotnet_l2_feedback_questions
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// API to save feedback responses
+app.post('/api/dotnet_submit-feedback', async (req, res) => { 
+  const { candidateEmail, responses, detailedFeedback, result } = req.body;
+
+  console.log("Received payload:", { candidateEmail, responses });
+
+  if (!candidateEmail || !responses || !Array.isArray(responses)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    // Fetch candidateId using candidateEmail
+    const candidateQuery = `
+    SELECT id, panel_name FROM candidate_info WHERE candidate_email = $1;
+  `;
+  const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+  
+  if (candidateResult.rows.length === 0) {
+    console.error("Candidate not found for email:", candidateEmail);
+    return res.status(404).json({ error: 'Candidate not found.' });
+  }
+  
+  const candidateRow = candidateResult.rows[0];
+  const candidateId = candidateRow.id;
+  const panelName = candidateRow.panel_name;
+  
+  console.log("Fetched candidateId:", candidateId);
+  console.log("Fetched panelName:", panelName);
+  
+  // Save feedback
+  const feedbackQuery = `
+    INSERT INTO app_dotnet_l2_feedback_response (
+      candidate_id, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+    ON CONFLICT (candidate_id)
+    DO UPDATE SET
+      responses = EXCLUDED.responses,
+      overall_feedback = EXCLUDED.overall_feedback,
+      result = EXCLUDED.result,
+      interviewer_name = EXCLUDED.interviewer_name,
+      candidate_email = EXCLUDED.candidate_email,
+      updated_at = CURRENT_TIMESTAMP;
+  `;
+  
+  await client.query(feedbackQuery, [
+    candidateId,
+    candidateEmail,
+    panelName,
+    JSON.stringify(responses),
+    detailedFeedback,
+    result,
+  ]);
+  
+    // Set recruitmentphase based on result
+    let recruitmentPhaseL2 = null;
+    if (result === "Recommended") {
+      recruitmentPhaseL2 = "Shortlisted in L2";
+    } else if (result === "Rejected") {
+      recruitmentPhaseL2 = "Rejected in L2";
+    }
+
+    if (recruitmentPhaseL2) {
+      const updatePhaseQuery = `
+        UPDATE candidate_info
+        SET recruitment_phase = $1
+        WHERE id = $2;
+      `;
+      await client.query(updatePhaseQuery, [recruitmentPhaseL2, candidateId]);
+      console.log(`Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`);
+    }
+
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Feedback and recruitment phase updated successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error saving feedback:', error);
+    res.status(500).json({ error: 'Failed to save feedback.' });
+  } finally {
+    client.release();
+  }
+});
+
+
+// Api to fetch Angular questions
+app.get('/api/angular_feedback-questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, skill_category, skill_description, is_core_skill AS is_top_skill, created_at, updated_at
+      FROM app_angular_l2_feedback_questions
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+// API to save feedback responses
+app.post('/api/angular_submit-feedback', async (req, res) => {
+  const { candidateEmail, responses, detailedFeedback, result } = req.body;
+
+  console.log("Received payload:", { candidateEmail, responses });
+
+  if (!candidateEmail || !responses || !Array.isArray(responses)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    // Fetch candidateId using candidateEmail
+    const candidateQuery = `
+      SELECT id FROM candidate_info WHERE candidate_email = $1;
+    `;
+    const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: 'Candidate not found.' });
+    }
+
+    const candidateId = candidateResult.rows[0].id;
+    console.log("Fetched candidateId:", candidateId);
+
+    await client.query('BEGIN');
+
+    // Save all responses as a single JSON object
+    const query = `
+      INSERT INTO app_angular_l2_feedback_response (
+        candidate_id, responses, overall_feedback, result, updated_at
+      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+      ON CONFLICT (candidate_id)
+      DO UPDATE SET
+        responses = EXCLUDED.responses,
+        overall_feedback = EXCLUDED.overall_feedback,
+        result = EXCLUDED.result,
+        updated_at = CURRENT_TIMESTAMP;
+    `;
+
+    await client.query(query, [
+      candidateId,
+      JSON.stringify(responses), // Serialize responses as JSON
+      detailedFeedback,
+      result,
+    ]);
+
+    await client.query('COMMIT');
+    console.log("Feedback saved successfully for candidateId:", candidateId);
+    res.json({ success: true, message: 'Feedback saved successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error saving feedback:', error);
+    res.status(500).json({ error: 'Failed to save feedback.' });
+  } finally {
+    client.release();
+  }
+});
+// Api to fetch react questions
+app.get('/api/react_feedback-questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, skill_category, skill_description, is_core_skill AS is_top_skill, created_at, updated_at
+      FROM app_react_l2_feedback_questions
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+// API to save feedback responses
+app.post('/api/react_submit-feedback', async (req, res) => {
+  const { candidateEmail, responses, detailedFeedback, result } = req.body;
+
+  console.log("Received payload:", { candidateEmail, responses });
+
+  if (!candidateEmail || !responses || !Array.isArray(responses)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    // Fetch candidateId using candidateEmail
+    const candidateQuery = `
+      SELECT id FROM candidate_info WHERE candidate_email = $1;
+    `;
+    const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: 'Candidate not found.' });
+    }
+
+    const candidateId = candidateResult.rows[0].id;
+    console.log("Fetched candidateId:", candidateId);
+
+    await client.query('BEGIN');
+
+    // Save all responses as a single JSON object
+    const query = `
+      INSERT INTO app_react_l2_feedback_response (
+        candidate_id, responses, overall_feedback, result, updated_at
+      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+      ON CONFLICT (candidate_id)
+      DO UPDATE SET
+        responses = EXCLUDED.responses,
+        overall_feedback = EXCLUDED.overall_feedback,
+        result = EXCLUDED.result,
+        updated_at = CURRENT_TIMESTAMP;
+    `;
+
+    await client.query(query, [
+      candidateId,
+      JSON.stringify(responses), // Serialize responses as JSON
+      detailedFeedback,
+      result,
+    ]);
+
+    await client.query('COMMIT');
+    console.log("Feedback saved successfully for candidateId:", candidateId);
+    res.json({ success: true, message: 'Feedback saved successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error saving feedback:', error);
+    res.status(500).json({ error: 'Failed to save feedback.' });
+  } finally {
+    client.release();
+  }
+});
+
+
+
+
+app.get('/api/get-feedback/:candidateId/:position', async (req, res) => {
+  const { candidateId, position } = req.params;
+
+  let tableName = null;
+
+  if (position.toLowerCase().includes("dotnet") || position.toLowerCase().includes(".net")) {
+    tableName = 'app_dotnet_l2_feedback_response';
+  } else if (position.toLowerCase().includes("java")) {
+    tableName = 'app_java_l2_feedback_response';
+  } else if (position.toLowerCase().includes("react")) {
+    tableName = 'app_react_l2_feedback_response';
+  } else if (position.toLowerCase().includes("angular")) {
+    tableName = 'app_angular_l2_feedback_response';
+  } else {
+    return res.status(400).json({ message: 'Invalid position provided' });
+  }
+
+  try {
+    const query = `
+      SELECT responses, overall_feedback, result
+      FROM ${tableName}
+      WHERE candidate_id = $1
+      ORDER BY updated_at DESC
+      LIMIT 1
+    `;
+
+    const { rows } = await pool.query(query, [candidateId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback found for this candidate' });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error fetching feedback:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 // Start the server
 app.listen(PORT, () => {
