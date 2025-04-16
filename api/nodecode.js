@@ -2952,34 +2952,59 @@ app.get('/api/feedback-for-panel-member', async (req, res) => {
 });
 app.get('/api/feedback-table', async (req, res) => {
   try {
-      const { interview_date, userEmail } = req.query;
-      console.log("Received request with:", { interview_date, userEmail });
+    const { interview_date, userEmail } = req.query;
+    console.log("Received request with:", { interview_date, userEmail });
 
-      if (!interview_date || !userEmail) {
-          console.log("Missing date or userEmail");
-          return res.status(400).json({ error: 'Date and userEmail are required' });
-      }
+    if (!interview_date || !userEmail) {
+      console.log("Missing date or userEmail");
+      return res.status(400).json({ error: 'Date and userEmail are required' });
+    }
 
-      const query = `
-          SELECT candidate_name, candidate_email, position,hr_email,result
-          FROM feedback_table
-          WHERE interview_date = $1
-        AND interviewer_name  = $2;
-      `;
+    // Query from feedback_table
+    const feedbackTableQuery = `
+      SELECT candidate_name, candidate_email, position, hr_email, result, interview_date
+      FROM feedback_table
+      WHERE interview_date = $1
+        AND interviewer_name = $2;
+    `;
+    const feedbackTableResult = await pool.query(feedbackTableQuery, [interview_date, userEmail]);
 
-      console.log("Executing query:", query, [interview_date, userEmail]);
+    // Query from app_dotnet_l2_feedback_response
+    const dotnetQuery = `
+    SELECT candidate_email, result, updated_at AS interview_date
+    FROM app_dotnet_l2_feedback_response
+    WHERE DATE(updated_at) = $1
+      AND interviewer_name = $2;
+  `;
+  
+    const dotnetResult = await pool.query(dotnetQuery, [interview_date, userEmail]);
 
-      const result = await pool.query(query, [interview_date, userEmail]);
+    // Query from app_java_l2_feedback_response
+    const javaQuery = `
+    SELECT candidate_email, result, updated_at AS interview_date
+    FROM app_java_l2_feedback_response
+    WHERE DATE(updated_at) = $1
+      AND interviewer_name = $2;
+  `;
+  
+    const javaResult = await pool.query(javaQuery, [interview_date, userEmail]);
 
-      if (result.rows.length === 0) {
-          console.log("No records found for given date and userEmail");
-          return res.status(404).json({ message: 'No feedback records found' });
-      }
+    // Combine all results
+    const allFeedbacks = [
+      ...feedbackTableResult.rows,
+      ...dotnetResult.rows,
+      ...javaResult.rows
+    ];
 
-      res.json(result.rows);
+    if (allFeedbacks.length === 0) {
+      console.log("No records found for given date and userEmail");
+      return res.status(404).json({ message: 'No feedback records found' });
+    }
+
+    res.json(allFeedbacks);
   } catch (error) {
-      console.error('Error fetching feedback table:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error('Error fetching feedback table:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
