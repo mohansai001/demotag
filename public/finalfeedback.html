@@ -516,21 +516,21 @@
                           ).value = data.prescreening.hr_email || "";
                           document.getElementById(
                             "prescreening-summary"
-                          ).value = data.prescreening.summary || "";
+                          ).value = data.prescreening.feedback || "";
 
                           const prescreeningStatusField =
                             document.getElementById("prescreening-status");
                           prescreeningStatusField.value =
-                            data.prescreening.status || "";
+                            data.prescreening.prescreening_status || "";
 
                           if (
-                            data.prescreening.status?.toLowerCase() ===
+                            data.prescreening.prescreening_status?.toLowerCase() ===
                             "shortlisted"
                           ) {
                             prescreeningStatusField.style.backgroundColor =
                               "lightgreen";
                           } else if (
-                            data.prescreening.status?.toLowerCase() ===
+                            data.prescreening.prescreening_status?.toLowerCase() ===
                             "rejected"
                           ) {
                             prescreeningStatusField.style.backgroundColor =
@@ -600,6 +600,7 @@
                         if (data.l2Technical) {
                           const {
                             detailed_feedback,
+                            overall_feedback,
                             result,
                             interviewer_name,
                           } = data.l2Technical;
@@ -609,7 +610,7 @@
                           ).value = interviewer_name || "";
                           document.getElementById(
                             "l2-technical-feedback"
-                          ).value = detailed_feedback || "";
+                          ).value = detailed_feedback || overall_feedback || "";
                           document.getElementById("l2-technical-result").value =
                             l2Result;
                         }
