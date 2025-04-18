@@ -433,7 +433,7 @@
         let candidateEmailFromURL = getQueryParam("email");
 
         // Fetch all candidate emails from the server
-        fetch("http://localhost:3000/api/getAllCandidateEmails")
+        fetch("https://demotag.vercel.app/api/getAllCandidateEmails")
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -476,7 +476,7 @@
 
             // === Step 1: Fetch candidate basic data (getCandidateData) ===
             fetch(
-              `http://localhost:3000/api/getCandidateData?candidateEmail=${selectedEmail}`
+              `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${selectedEmail}`
             )
               .then((response) => response.json())
               .then((data) => {
@@ -502,7 +502,7 @@
                     "success"
                   );
                   fetch(
-                    `http://localhost:3000/api/final-prescreening?candidateEmail=${selectedEmail}&candidateId=${data.id}&position=${data.role}`
+                    `https://demotag.vercel.app/api/final-prescreening?candidateEmail=${selectedEmail}&candidateId=${data.id}&position=${data.role}`
                   )
                     .then((response) => response.json())
                     .then((data) => {
