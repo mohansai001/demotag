@@ -221,36 +221,83 @@ app.get('/api/final-prescreening', async (req, res) => {
 
     console.log(`Fetching prescreening details for: ${candidateEmail}`);
 
-    // Prescreening form
-    const prescreeningResult = await pool.query(`
-      SELECT feedback, status, summary, hr_email
-      FROM prescreening_form
+    const prescreeningData = {};
+
+    // Get status and hr_email from candidate_info
+    const candidateInfoResult = await pool.query(`
+      SELECT prescreening_status, hr_email
+      FROM candidate_info
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
-    // Feedbackform (Fitment rounds)
+    if (candidateInfoResult.rows.length > 0) {
+      const { prescreening_status, hr_email } = candidateInfoResult.rows[0];
+      prescreeningData.prescreening_status = prescreening_status;
+      prescreeningData.hr_email = hr_email;
+    }
+
+// Fetch feedback based on position
+let techFeedbackQuery = '';
+if (position && position.toLowerCase().includes('java')) {
+  console.log("Position:", position);
+  console.log("Candidate ID:", candidateId);
+  techFeedbackQuery = `
+    SELECT detailed_feedback 
+    FROM app_ec_java_feedback_response 
+    WHERE candidate_id = $1
+  `;
+} else if (position && position.toLowerCase().includes('.net')) {
+  console.log("Position:", position);
+  console.log("Candidate ID:", candidateId);
+  techFeedbackQuery = `
+    SELECT detailed_feedback 
+    FROM app_ec_dotnet_feedback_response 
+    WHERE candidate_id = $1
+  `;
+} else {
+  console.log("Position does not match any known categories.");
+}
+
+if (techFeedbackQuery) {
+  try {
+    console.log("Executing Query:", techFeedbackQuery, "with Candidate ID:", candidateId);
+    const techFeedbackResult = await pool.query(techFeedbackQuery, [candidateId]);
+    console.log("Query Result:", techFeedbackResult.rows); // Log the query result
+
+    if (techFeedbackResult.rows.length > 0) {
+      prescreeningData.feedback = techFeedbackResult.rows[0].detailed_feedback;
+      console.log("Detailed Feedback Found:", prescreeningData.feedback);
+    } else {
+      console.log("No feedback found for the given candidate ID.");
+    }
+  } catch (error) {
+    console.error("Error executing tech feedback query:", error);
+  }
+}
+
+    // Fetch Fitment feedback
     const feedbackResult = await pool.query(`
       SELECT result, detailed_feedback, round_details, interviewer_name
       FROM feedbackform
       WHERE candidate_email = $1
     `, [candidateEmail]);
 
+    // Fetch L2 Technical round
     let l2TechnicalResult = { rows: [] };
-
     if (position.toLowerCase().includes("java")) {
       l2TechnicalResult = await pool.query(`
-        SELECT result, overall_feedback,interviewer_name
+        SELECT result, overall_feedback, interviewer_name
         FROM app_java_l2_feedback_response
         WHERE candidate_id = $1
       `, [candidateId]);
     } else if (position.toLowerCase().includes(".net")) {
       l2TechnicalResult = await pool.query(`
-        SELECT result, overall_feedback,interviewer_name
+        SELECT result, overall_feedback, interviewer_name
         FROM app_dotnet_l2_feedback_response
         WHERE candidate_id = $1
       `, [candidateId]);
     } else {
-      // For all other roles including Cloud (default), fetch from feedback_table
+      // Default: Cloud or other roles
       l2TechnicalResult = await pool.query(`
         SELECT result, detailed_feedback, interviewer_name
         FROM feedback_table
@@ -259,26 +306,25 @@ app.get('/api/final-prescreening', async (req, res) => {
     }
 
     if (
-      prescreeningResult.rows.length === 0 &&
-      feedbackResult.rows.length === 0 &&
-      l2TechnicalResult.rows.length === 0
+      Object.keys(prescreeningData).length === 0 &&
+      !feedbackResult.rows.length &&
+      !l2TechnicalResult.rows.length
     ) {
       return res.status(404).json({ message: 'No data found for this email' });
     }
 
     const response = {
-      prescreening: prescreeningResult.rows[0] || {},
+      prescreening: prescreeningData,
       feedback: feedbackResult.rows || [],
       l2Technical: l2TechnicalResult.rows[0] || {}
     };
-
+    console.log("API Response:", response);
     res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 
 
