@@ -3698,6 +3698,171 @@ app.get('/api/get-feedback/:candidateId/:position', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.get('/api/java_ec_questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, question_text, mandatory_for_candidates, created_at, updated_at
+      FROM app_ec_java_questionnaire
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.get('/api/dotnet_ec_questions', async (req, res) => {
+  try {
+    const query = `
+      SELECT id, question_text, mandatory_for_candidates, created_at, updated_at
+      FROM app_ec_dotnet_questionnaire
+      ORDER BY created_at ASC;
+    `;
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'No feedback questions found.' });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feedback questions:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+
+app.post('/api/java_ec_submit-feedback', async (req, res) => {
+  const { candidateEmail, number_of_years_or_months, detailed_feedback } = req.body;
+
+  console.log("Received payload:", { candidateEmail, number_of_years_or_months, detailed_feedback });
+
+  if (!candidateEmail || !number_of_years_or_months || !Array.isArray(number_of_years_or_months)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail and number_of_years_or_months are required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    const candidateQuery = `
+      SELECT id, FROM candidate_info WHERE candidate_email = $1;
+    `;
+    const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: 'Candidate not found.' });
+    }
+
+    const candidateId = candidateResult.rows[0].id;
+    console.log("Fetched candidateId:", candidateId);
+
+    await client.query('BEGIN');
+
+    const insertQuery = `
+      INSERT INTO app_ec_java_feedback_response 
+      (candidate_id, number_of_years_or_months, detailed_feedback, updated_at)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP);
+    `;
+
+    await client.query(insertQuery, [
+      candidateId,
+      JSON.stringify(number_of_years_or_months),
+      detailed_feedback,
+    ]);
+
+    await client.query('COMMIT');
+    console.log("Feedback inserted successfully for candidateId:", candidateId);
+    res.json({ success: true, message: 'Feedback inserted successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+
+    // If candidate_id already exists (duplicate), return a specific message
+    if (error.code === '23505') {
+      console.error('Feedback already exists for this candidate.');
+      return res.status(409).json({ error: 'Feedback already submitted for this candidate.' });
+    }
+
+    console.error('Error inserting feedback:', error);
+    res.status(500).json({ error: 'Failed to insert feedback.' });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/dotnet_ec_submit-feedback', async (req, res) => {
+  const { candidateEmail, number_of_years_or_months, detailed_feedback } = req.body;
+
+  console.log("Received payload:", { candidateEmail, number_of_years_or_months, detailed_feedback });
+
+  if (!candidateEmail || !number_of_years_or_months || !Array.isArray(number_of_years_or_months)) {
+    console.error("Invalid request payload:", req.body);
+    return res.status(400).json({ error: 'Invalid request payload. candidateEmail and number_of_years_or_months are required.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    const candidateQuery = `
+      SELECT id FROM candidate_info WHERE candidate_email = $1;
+    `;
+    const candidateResult = await client.query(candidateQuery, [candidateEmail]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: 'Candidate not found.' });
+    }
+
+    const candidateId = candidateResult.rows[0].id;
+    console.log("Fetched candidateId:", candidateId);
+
+    await client.query('BEGIN');
+
+    const insertQuery = `
+      INSERT INTO app_ec_dotnet_feedback_response 
+      (candidate_id, number_of_years_or_months, detailed_feedback, updated_at)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP);
+    `;
+
+    await client.query(insertQuery, [
+      candidateId,
+      JSON.stringify(number_of_years_or_months),
+      detailed_feedback,
+    ]);
+
+    await client.query('COMMIT');
+    console.log("Feedback inserted successfully for candidateId:", candidateId);
+    res.json({ success: true, message: 'Feedback inserted successfully.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+
+    if (error.code === '23505') {
+      console.error('Feedback already exists for this candidate.');
+      return res.status(409).json({ error: 'Feedback already submitted for this candidate.' });
+    }
+
+    console.error('Error inserting feedback:', error);
+    res.status(500).json({ error: 'Failed to insert feedback.' });
+  } finally {
+    client.release();
+  }
+});
+
+app.get('/api/rrf-ids', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT rrfid FROM rrf`); // Query the database for RRF IDs
+    res.status(200).json(result.rows); // Send the rows of RRF IDs back as JSON
+  } catch (error) {
+    console.error('Error fetching RRF IDs:', error);
+    res.status(500).json({ error: 'Failed to fetch RRF IDs' });
+  }
+});
 
 
 // Start the server
