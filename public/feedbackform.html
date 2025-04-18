@@ -336,7 +336,9 @@ function downloadPDF() {
         
     document.addEventListener("DOMContentLoaded", function () {
             const candidateEmail = new URLSearchParams(window.location.search).get('candidateEmail');
-            const roundDetails = localStorage.getItem('roundDetails');
+            const roundDetails = new URLSearchParams(window.location.search).get('roundDetails');
+            console.log("Candidate Email:", roundDetails);
+           // const roundDetails = localStorage.getItem('roundDetails');
 
             if (candidateEmail && roundDetails) {
                 // First, check if feedback data exists for the given email and roundDetails
@@ -392,7 +394,7 @@ function downloadPDF() {
 
 
         document.getElementById('submit-button').addEventListener('click', function () {
-            const roundDetails = localStorage.getItem('roundDetails');
+            const roundDetails = new URLSearchParams(window.location.search).get('roundDetails');
             const candidateEmail = document.getElementById('candidate-email').textContent;
             const imochaScore = document.getElementById('imocha-score').textContent;
             const rrfId = document.getElementById('rrf-id').value;
