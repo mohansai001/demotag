@@ -1,958 +1,1290 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pre-screening Form</title>
-    <link rel="icon" href="vam.png" type="image/png">
+    <link rel="icon" href="vam.png" type="image/png" />
     <style>
-        body,
-        html {
-            margin: 0;
-            padding: 10px;
-            background: linear-gradient(120deg, #e6e6fa, #daf7a6);
-            color: #000;
-            height: fit-content;
-            font-family: Arial, sans-serif;
-        }
+      body,
+      html {
+        margin: 0;
+        padding: 10px;
+        background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+        color: #000;
+        height: fit-content;
+        font-family: Arial, sans-serif;
+      }
 
-        .form-container {
-            width: 96%;
-            margin: 0 auto;
-            border: 1px solid #333;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: white;
-        }
+      .form-container {
+        width: 96%;
+        margin: 0 auto;
+        border: 1px solid #333;
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: white;
+      }
 
-        .section {
-            margin-bottom: 20px;
-        }
+      .section {
+        margin-bottom: 20px;
+      }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
 
-        .candidate-container {
-            display: flex;
-            flex-direction: column;
-            flex: 2;
-            max-width: 60%;
-        }
+      .candidate-container {
+        display: flex;
+        flex-direction: column;
+        flex: 2;
+        max-width: 60%;
+      }
 
-        .candidate-info {
-            background-color: white;
-            color: black;
-            font-weight: bold;
-        }
+      .candidate-info {
+        background-color: white;
+        color: black;
+        font-weight: bold;
+      }
 
-        .candidate-photo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
+      .candidate-photo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
 
-        .image-container {
-            width: 350px;
-            height: 350px;
-            border: 2px solid #ccc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            background-color: #f8f8f8;
-            cursor: pointer;
-        }
+      .image-container {
+        width: 350px;
+        height: 350px;
+        border: 2px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #f8f8f8;
+        cursor: pointer;
+      }
 
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            /* Fit the image inside the box while maintaining aspect ratio */
-            display: block;
-            object-position: center;
-            /* Keep image centered */
-        }
+      .image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        /* Fit the image inside the box while maintaining aspect ratio */
+        display: block;
+        object-position: center;
+        /* Keep image centered */
+      }
 
-        .upload-label {
-            cursor: pointer;
-        }
+      .upload-label {
+        cursor: pointer;
+      }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
 
-        table,
-        .experience-table {
-            border-radius: 5px;
-        }
+      table,
+      .experience-table {
+        border-radius: 5px;
+      }
 
-        th,
-        td {
-            border: 0.5px solid #888888;
-            padding: 8px;
-            text-align: left;
-            width: 33.33%;
-        }
+      th,
+      td {
+        border: 0.5px solid #888888;
+        padding: 8px;
+        text-align: left;
+        width: 33.33%;
+      }
 
-        th {
-            background-color: #bbbbbb;
-            color: black;
-        }
+      th {
+        background-color: #bbbbbb;
+        color: black;
+      }
 
-        .pre-screening {
-            background-color: #bbbbbb;
-            color: black;
-        }
+      .pre-screening {
+        background-color: #bbbbbb;
+        color: black;
+      }
 
-        .shortlisted {
-            background-color: #90EE90;
-        }
+      .shortlisted {
+        background-color: #90ee90;
+      }
 
-        .not-shortlisted {
-            background-color: #FFB6C1;
-        }
+      .not-shortlisted {
+        background-color: #ffb6c1;
+      }
 
-        .experience-table th {
-            background-color: #bbbbbb;
-            color: black;
-        }
+      .experience-table th {
+        background-color: #bbbbbb;
+        color: black;
+      }
 
-        table.experience-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+      table.experience-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
 
-        th,
-        td {
-            border: 0.5px solid #888888;
-            padding: 8px;
-            text-align: left;
-            width: 25%;
-        }
+      th,
+      td {
+        border: 0.5px solid #888888;
+        padding: 8px;
+        text-align: left;
+        width: 25%;
+      }
 
-        .centered-text {
-            text-align: center;
-        }
+      .centered-text {
+        text-align: center;
+      }
 
-        .feedback-section {
-            margin-top: 25px;
-        }
+      .feedback-section {
+        margin-top: 25px;
+      }
 
-        .feedback-section-text {
-            margin-top: 5px;
-            height: 100px; 
-            width: 100%; 
-            font-family: Arial, sans-serif;
-        }
+      .feedback-section-text {
+        margin-top: 5px;
+        height: 100px;
+        width: 100%;
+        font-family: Arial, sans-serif;
+      }
 
-        .feedback-section label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
+      .feedback-section label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+      }
 
-        .feedback-section textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            min-height: 100px;
-            resize: vertical;
-            border-radius: 4px;
-            font-size: 1rem;
-            border: 1px solid #888888;
-        }
+      .feedback-section textarea {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        min-height: 100px;
+        resize: vertical;
+        border-radius: 4px;
+        font-size: 1rem;
+        border: 1px solid #888888;
+      }
 
-        .result-section {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
+      .result-section {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-        .result-section label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+      .result-section label {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
 
-        .result-select {
-            padding: 8px;
-            width: 100%;
-            max-width: 200px;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3sease;
-        }
+      .result-select {
+        padding: 8px;
+        width: 100%;
+        max-width: 200px;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3sease;
+      }
 
-        input[type="text"],
-        input[type="number"],
-        input[type="date"] {
-            width: 92%;
-            padding: 0.75rem;
-            border: 1px solid #b8b8b8;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.3sease;
-            font-family: Arial, sans-serif;
-        }
+      input[type="text"],
+      input[type="number"],
+      input[type="date"] {
+        width: 92%;
+        padding: 0.75rem;
+        border: 1px solid #b8b8b8;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3sease;
+        font-family: Arial, sans-serif;
+      }
 
-        select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #b8b8b8;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.3sease;
-            font-family: Arial, sans-serif;
-            cursor: pointer;
-        }
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #b8b8b8;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3sease;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+      }
 
-        .styled-dropdown {
-            padding: 10px 15px;
-            font-size: 14px;
-            border-radius: 5px;
-            border: 1px solid #888888;
-            background-color: #fff;
-            width: 100%;
-            appearance: none;
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-        }
+      .styled-dropdown {
+        padding: 10px 15px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #888888;
+        background-color: #fff;
+        width: 100%;
+        appearance: none;
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+      }
 
-        .styled-dropdown option {
-            padding: 5px;
-            font-size: 14px;
-        }
+      .styled-dropdown option {
+        padding: 5px;
+        font-size: 14px;
+      }
 
-        .styled-dropdown option:nth-child(odd) {
-            background-color: #f4f4f4;
-        }
+      .styled-dropdown option:nth-child(odd) {
+        background-color: #f4f4f4;
+      }
 
-        .styled-dropdown option:nth-child(even) {
-            background-color: #ffffff;
-        }
+      .styled-dropdown option:nth-child(even) {
+        background-color: #ffffff;
+      }
 
-        .styled-dropdown:focus {
-            border-color: #007bff;
-            outline: none;
-        }
+      .styled-dropdown:focus {
+        border-color: #007bff;
+        outline: none;
+      }
 
-        .green-background {
-            background-color: green;
-            color: white;
-        }
+      .green-background {
+        background-color: green;
+        color: white;
+      }
 
-        .red-background {
-            background-color: red;
-            color: white;
-        }
+      .red-background {
+        background-color: red;
+        color: white;
+      }
 
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            display: none;
-            z-index: 9999;
-        }
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        z-index: 9999;
+      }
 
-        .toast.show {
-            display: block;
-        }
+      .toast.show {
+        display: block;
+      }
 
-        .toast.success {
-            background-color: #4CAF50;
-        }
+      .toast.success {
+        background-color: #4caf50;
+      }
 
-        .toast.error {
-            background-color: #f44336;
-        }
+      .toast.error {
+        background-color: #f44336;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="form-container">
-        <center>
-            <h1><strong>TAG Team Prescreening Form</strong></h1>
-        </center>
-        <div style="color: #000000; width: 60%;">
-            <select id="candidate-email-dropdown" class="styled-dropdown">
-                <option value="">Select a Candidate Email</option>
-            </select>
-        </div>
-        <br>
+      <center>
+        <h1><strong>TAG Team Prescreening Form</strong></h1>
+      </center>
+      <div style="color: #000000; width: 60%">
+        <select id="candidate-email-dropdown" class="styled-dropdown">
+          <option value="">Select a Candidate Email</option>
+        </select>
+      </div>
+      <br />
 
-        <div class="header">
-            <div class="candidate-container">
-                <div class="candidate-info">
-                    <table>
-                        <tr>
-                            <td class="details">RRF ID</td>
-                            <td><input type="text" id="rrf-id" placeholder="" readonly></td>
-                        </tr>
-                        <tr>
-                            <td class="details">Job Designation</td>
-                            <td><input type="text" id="position" placeholder="" readonly></td>
-                        </tr>
-                        <tr>
-                            <td class="details">Name of the Candidate</td>
-                            <td><input type="text" id="candidate-name" placeholder="" readonly></td>
-                        </tr>
-                        <tr>
-                            <td>UAN Number</td>
-                            <td><input type="text" id="uan-number" placeholder="Enter UAN Number" minlength="0"
-                                    maxlength="12" oninput="this.value=this.value.replace(/[^0-9]/g, '')"></td>
-                        </tr>
-                        <tr>
-                            <td>Date of Interview</td>
-                            <td><input type="date" id="interview-date" onclick="this.showPicker()"></td>
-                        </tr>
-                        <tr>
-                            <td class="details">TAG Team Member</td>
-                            <td><input type="text" id="hr-email" placeholder="" readonly></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="introduction-tables">
-                    <table>
-                        <tr>
-                            <td>Introduction of ValueMomentum</td>
-                            <td><select id="introduction-value-momentum">
-                                    <option value="" selected>Select</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select></td>
-                        </tr>
-                        <tr>
-                            <td>Introduction of Cloud/App Engineering</td>
-                            <td><select id="introduction-cloud-app">
-                                    <option value="" selected>Select</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select></td>
-                        </tr>
-                        <tr>
-                            <td>Introduction to Roles & Responsibilities</td>
-                            <td><select id="roles-responsibilities">
-                                    <option value="" selected>Select</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select></td>
-                        </tr>
-                        <tr>
-                            <td>Did Candidate qualify using pre-screening Q's</td>
-                            <td><select id="pre-screening">
-                                    <option value="" selected>Select</option>
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="candidate-photo">
-                <input type="file" id="imageUpload" accept="image/*" style="display:none;">
-                <div class="image-container" id="imageContainer">
-                    <label for="imageUpload" id="uploadLabel" class="upload-label">
-                        <center>Upload</center><br>Candidate Image
-                    </label>
-                    <img id="imagePreview" style="display:none;">
-                </div>
-            </div>
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: flex-start;">
+      <div class="header">
+        <div class="candidate-container">
+          <div class="candidate-info">
             <table>
-                <tr>
-                    <th class="pre-screening">Pre-screening Q's</th>
-                    <th>Summary</th>
-                </tr>
-                <tr>
-                    <td>
-                        <select id="status-dropdown" style="font-weight: bold;">
-                            <option value="shortlisted">Shortlisted</option>
-                            <option value="not-shortlisted">Not Shortlisted</option>
-                        </select>
-                    </td>
-                    <td><textarea id="summary" style="height: 100px; width: 100%; font-family: Arial, sans-serif;"></textarea></td>
-                </tr>
+              <tr>
+                <td class="details">RRF ID</td>
+                <td>
+                  <input type="text" id="rrf-id" placeholder="" readonly />
+                </td>
+              </tr>
+              <tr>
+                <td class="details">Job Designation</td>
+                <td>
+                  <input type="text" id="position" placeholder="" readonly />
+                </td>
+              </tr>
+              <tr>
+                <td class="details">Name of the Candidate</td>
+                <td>
+                  <input
+                    type="text"
+                    id="candidate-name"
+                    placeholder=""
+                    readonly
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>UAN Number</td>
+                <td>
+                  <input
+                    type="text"
+                    id="uan-number"
+                    placeholder="Enter UAN Number"
+                    minlength="0"
+                    maxlength="12"
+                    oninput="this.value=this.value.replace(/[^0-9]/g, '')"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Date of Interview</td>
+                <td>
+                  <input
+                    type="date"
+                    id="interview-date"
+                    onclick="this.showPicker()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="details">TAG Team Member</td>
+                <td>
+                  <input type="text" id="hr-email" placeholder="" readonly />
+                </td>
+              </tr>
             </table>
+          </div>
 
-            <!-- Dropdown on the right side -->
-            <div style="margin-left: 50px;">
-                <label for="ec-select">Select the EC</label>
-                <select id="ec-select" style="width: 150px;">
-                    <option value="" selected>Select an option</option>
-                    <option value="Cloud">Cloud EC</option>
-                    <option value="App">App EC</option>
-                    <option value="Data">Data EC</option>
+          <div class="introduction-tables">
+            <table>
+              <tr>
+                <td>Introduction of ValueMomentum</td>
+                <td>
+                  <select id="introduction-value-momentum">
+                    <option value="" selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Introduction of Cloud/App Engineering</td>
+                <td>
+                  <select id="introduction-cloud-app">
+                    <option value="" selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Introduction to Roles & Responsibilities</td>
+                <td>
+                  <select id="roles-responsibilities">
+                    <option value="" selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Did Candidate qualify using pre-screening Q's</td>
+                <td>
+                  <select id="pre-screening">
+                    <option value="" selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="candidate-photo">
+          <input
+            type="file"
+            id="imageUpload"
+            accept="image/*"
+            style="display: none"
+          />
+          <div class="image-container" id="imageContainer">
+            <label for="imageUpload" id="uploadLabel" class="upload-label">
+              <center>Upload</center>
+              <br />Candidate Image
+            </label>
+            <img id="imagePreview" style="display: none" />
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="display: flex; align-items: center; justify-content: flex-start"
+      >
+        <table>
+          <tr>
+            <th class="pre-screening">Pre-screening Q's</th>
+            <th>Summary</th>
+          </tr>
+          <tr>
+            <td>
+              <select id="status-dropdown" style="font-weight: bold">
+                <option value="shortlisted">Shortlisted</option>
+                <option value="not-shortlisted">Not Shortlisted</option>
+              </select>
+            </td>
+            <td>
+              <textarea
+                id="summary"
+                style="
+                  height: 100px;
+                  width: 100%;
+                  font-family: Arial, sans-serif;
+                "
+              ></textarea>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Dropdown on the right side -->
+        <div style="margin-left: 50px">
+          <label for="ec-select">Select the EC</label>
+          <select id="ec-select" style="width: 150px">
+            <option value="" selected>Select an option</option>
+            <option value="Cloud">Cloud EC</option>
+            <option value="App">App EC</option>
+            <option value="Data">Data EC</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="cloud-section" style="display: none">
+        <div class="section">
+          <table class="experience-table">
+            <tr>
+              <th>Cloud Experience</th>
+              <th>Number of years or Months</th>
+              <th>
+                Please ask did he/she worked on Well-Architected Framework
+              </th>
+              <th>Please ask did he/she worked on Zero-trust security</th>
+            </tr>
+            <tr>
+              <td>Total Experience in Azure Cloud from overall experience?</td>
+              <td>
+                <input
+                  type="text"
+                  id="azure-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <select id="azure-well-architected-framework">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
                 </select>
-            </div>
+              </td>
+              <td>
+                <select id="azure-zero-trust-security">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Total Experience in AWS Cloud ?</td>
+              <td>
+                <input
+                  type="text"
+                  id="aws-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <select id="aws-well-architected-framework">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td>
+                <select id="aws-zero-trust-security">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+            </tr>
+          </table>
         </div>
 
-        <div id="cloud-section" style="display: none;">
-            <div class="section">
-                <table class="experience-table">
-                    <tr>
-                        <th>Cloud Experience</th>
-                        <th>Number of years or Months</th>
-                        <th> Please ask did he/she worked on Well-Architected Framework</th>
-                        <th>Please ask did he/she worked on Zero-trust security</th>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Azure Cloud from overall experience?</td>
-                        <td><input type="text" id="azure-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>
-                            <select id="azure-well-architected-framework">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select id="azure-zero-trust-security">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in AWS Cloud ?</td>
-                        <td><input type="text" id="aws-experience" placeholder="Enter total experience in Years/Months">
-                        </td>
-                        <td>
-                            <select id="aws-well-architected-framework">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select id="aws-zero-trust-security">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- Migration Experience -->
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>Migration Experience - Onpremise to Cloud</th>
-                        <th>Number of Projects handled</th>
-                    </tr>
-                    <tr>
-                        <td>As-Is Migration</td>
-                        <td><input type="text" id="as-is-migration" placeholder="Enter number of projects handled">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>PaaS migration to WebApp services</td>
-                        <td><input type="text" id="paas-migration" placeholder="Enter number of projects handled">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Database migration</td>
-                        <td><input type="text" id="database-migration" placeholder="Enter number of projects handled">
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- Pre-sales Experience -->
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>Pre-sales experience</th>
-                        <th>Number of Proposals</th>
-                        <th class="centered-text">If candidate says, worked on proposals. Please ask did he/she handle
-                            end-to-end proposals? Yes or no</th>
-                    </tr>
-                    <tr>
-                        <td>Proposals worked</td>
-                        <td><input type="text" id="proposals-worked" placeholder="Enter number of proposals worked">
-                        </td>
-                        <td><select id="proposals-worked-end-to-end">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select></td>
-                    </tr>
-                    <tr>
-                        <td>Efforts calculations Knowledge</td>
-                        <td><input type="text" id="efforts-calculations" placeholder="Enter number of proposals worked">
-                        </td>
-                        <td><select id="efforts-calculations-end-to-end">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select></td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- DevOps Experience -->
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>DevOps Experience</th>
-                        <th>Level of experience - Theory or Implementation</th>
-                        <th class="centered-text">If candidate says Implementation knowledge, Please ask how many
-                            projects of experience he/she has?</th>
-                    </tr>
-                    <tr>
-                        <td>Knowledge on DevOps Maturity Model</td>
-                        <td><select id="devops-maturity-model">
-                                <option value="" selected>Select</option>
-                                <option value="Theory">Only Theory Knowledge</option>
-                                <option value="Implementation">Only Implementation Knowledge</option>
-                                <option value="Both">Both Theory and Implementation Knowledge</option>
-                            </select></td>
-                        <td><input type="text" id="devops-maturity-model-projects"
-                                placeholder="Enter number of projects handled"></td>
-                    </tr>
-                    <tr>
-                        <td>DORA metrics</td>
-                        <td><select id="dora-metrics">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select></td>
-                        <td><input type="text" id="dora-metrics-projects"
-                                placeholder="Enter number of projects handled"></td>
-                    </tr>
-                    <tr>
-                        <td>Build Release Solutioning</td>
-                        <td><select id="build-release-solutioning">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select></td>
-                        <td><input type="text" id="build-release-solutioning-projects"
-                                placeholder="Enter number of projects handled"></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>Observability</th>
-                        <th>Level of experience</th>
-                        <th class="centered-text">If candidate says Implementation knowledge, please ask how many
-                            projects of experience he/she has?</th>
-                    </tr>
-                    <tr>
-                        <td>Knowledge on Observability</td>
-                        <td>
-                            <select id="observability-knowledge">
-                                <option value="" selected>Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                        <td><input type="text" id="observability-knowledge-projects"
-                                placeholder="Enter number of projects handled"></td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>Containerization</th>
-                        <th>Level of experience</th>
-                        <th class="centered-text">If candidate says Implementation knowledge, please ask how many
-                            projects experience he/she has?</th>
-                    </tr>
-                    <tr>
-                        <td>Knowledge on Containerization</td>
-                        <td>
-                            <select id="containerization-knowledge">
-                                <option value="" selected>Select</option>
-                                <option value="Theory">Only Theory Knowledge</option>
-                                <option value="Implementation">Only Implementation Knowledge</option>
-                                <option value="Both">Both Theory and Implementation Knowledge</option>
-                            </select>
-                        </td>
-                        <td><input type="text" id="containerization-knowledge-projects"
-                                placeholder="Enter number of projects handled"></td>
-                    </tr>
-                </table>
-            </div>
+        <!-- Migration Experience -->
+        <div class="section">
+          <table>
+            <tr>
+              <th>Migration Experience - Onpremise to Cloud</th>
+              <th>Number of Projects handled</th>
+            </tr>
+            <tr>
+              <td>As-Is Migration</td>
+              <td>
+                <input
+                  type="text"
+                  id="as-is-migration"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>PaaS migration to WebApp services</td>
+              <td>
+                <input
+                  type="text"
+                  id="paas-migration"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Database migration</td>
+              <td>
+                <input
+                  type="text"
+                  id="database-migration"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+          </table>
         </div>
 
-        <div id="app-section" style="display: none;">
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>Java Experience</th>
-                        <th>Number of years or Months</th>
-                        <th>Mandatory for Candidates</th>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Java development?</td>
-                        <td><input type="text" id="java-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Java8 development using Streams?</td>
-                        <td><input type="text" id="java8-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Concurrency and Multithreading?</td>
-                        <td><input type="text" id="concurrency-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Nice to have</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Microservice Architecture?</td>
-                        <td><input type="text" id="microservice-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Distributed Transactions?</td>
-                        <td><input type="text" id="distributed-transactions-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Event Driven Architecture?</td>
-                        <td><input type="text" id="event-driven-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Nice to have</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Application Security?</td>
-                        <td><input type="text" id="security-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in using Design Patterns?</td>
-                        <td><input type="text" id="design-patterns-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in using Data Structure & Algorithms?</td>
-                        <td><input type="text" id="data-structures-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Nice to have</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in Spring Boot?</td>
-                        <td><input type="text" id="spring-boot-experience-details"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in writing SQL queries?</td>
-                        <td><input type="text" id="sql-queries-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Mandatory</td>
-                    </tr>
-                    <tr>
-                        <td>Total Experience in JVM tuning & profiling?</td>
-                        <td><input type="text" id="jvm-tuning-experience"
-                                placeholder="Enter total experience in Years/Months"></td>
-                        <td>Nice to have</td>
-                    </tr>
-                </table>
-            </div>
+        <!-- Pre-sales Experience -->
+        <div class="section">
+          <table>
+            <tr>
+              <th>Pre-sales experience</th>
+              <th>Number of Proposals</th>
+              <th class="centered-text">
+                If candidate says, worked on proposals. Please ask did he/she
+                handle end-to-end proposals? Yes or no
+              </th>
+            </tr>
+            <tr>
+              <td>Proposals worked</td>
+              <td>
+                <input
+                  type="text"
+                  id="proposals-worked"
+                  placeholder="Enter number of proposals worked"
+                />
+              </td>
+              <td>
+                <select id="proposals-worked-end-to-end">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Efforts calculations Knowledge</td>
+              <td>
+                <input
+                  type="text"
+                  id="efforts-calculations"
+                  placeholder="Enter number of proposals worked"
+                />
+              </td>
+              <td>
+                <select id="efforts-calculations-end-to-end">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+            </tr>
+          </table>
         </div>
 
-        <div id="data-section" style="display: none;">
-            <div class="section">
-                <h1>
-                    <center>Coming Soon</center>
-                </h1>
-            </div>
+        <!-- DevOps Experience -->
+        <div class="section">
+          <table>
+            <tr>
+              <th>DevOps Experience</th>
+              <th>Level of experience - Theory or Implementation</th>
+              <th class="centered-text">
+                If candidate says Implementation knowledge, Please ask how many
+                projects of experience he/she has?
+              </th>
+            </tr>
+            <tr>
+              <td>Knowledge on DevOps Maturity Model</td>
+              <td>
+                <select id="devops-maturity-model">
+                  <option value="" selected>Select</option>
+                  <option value="Theory">Only Theory Knowledge</option>
+                  <option value="Implementation">
+                    Only Implementation Knowledge
+                  </option>
+                  <option value="Both">
+                    Both Theory and Implementation Knowledge
+                  </option>
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="devops-maturity-model-projects"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>DORA metrics</td>
+              <td>
+                <select id="dora-metrics">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="dora-metrics-projects"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Build Release Solutioning</td>
+              <td>
+                <select id="build-release-solutioning">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="build-release-solutioning-projects"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="section">
+          <table>
+            <tr>
+              <th>Observability</th>
+              <th>Level of experience</th>
+              <th class="centered-text">
+                If candidate says Implementation knowledge, please ask how many
+                projects of experience he/she has?
+              </th>
+            </tr>
+            <tr>
+              <td>Knowledge on Observability</td>
+              <td>
+                <select id="observability-knowledge">
+                  <option value="" selected>Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="observability-knowledge-projects"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+          </table>
         </div>
 
-        <!-- Feedback Section -->
-        <div class="feedback-section">
-            <label for="detailed-feedback">Detailed Feedback: *</label>
-            <textarea id="detailed-feedback" class="feedback-section-text" placeholder="Enter your detailed feedback here..." required></textarea>
+        <div class="section">
+          <table>
+            <tr>
+              <th>Containerization</th>
+              <th>Level of experience</th>
+              <th class="centered-text">
+                If candidate says Implementation knowledge, please ask how many
+                projects experience he/she has?
+              </th>
+            </tr>
+            <tr>
+              <td>Knowledge on Containerization</td>
+              <td>
+                <select id="containerization-knowledge">
+                  <option value="" selected>Select</option>
+                  <option value="Theory">Only Theory Knowledge</option>
+                  <option value="Implementation">
+                    Only Implementation Knowledge
+                  </option>
+                  <option value="Both">
+                    Both Theory and Implementation Knowledge
+                  </option>
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="containerization-knowledge-projects"
+                  placeholder="Enter number of projects handled"
+                />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div id="app-section" style="display: block">
+        <!-- Java Section -->
+        <div id="java-section">
+          <div class="section">
+            <table>
+              <thead>
+                <tr>
+                  <th>Java Experience</th>
+                  <th>Number of years or Months</th>
+                  <th>Mandatory for Candidates</th>
+                </tr>
+              </thead>
+              <tbody id="java-table-body"></tbody>
+            </table>
+          </div>
         </div>
 
-        <div style="display: flex; justify-content: center;">
-            <button id="submit-button"
-                style="background-color: #1f4e79; color: #ffffff; height: 25px; width: 200px; border-radius: 5px">Submit</button>
+        <!-- .NET Section -->
+        <div id="dotnet-section" style="display: block">
+          <div class="section">
+            <table>
+              <thead>
+                <tr>
+                  <th>.NET Experience</th>
+                  <th>Number of years or Months</th>
+                  <th>Mandatory for Candidates</th>
+                </tr>
+              </thead>
+              <tbody id="dotnet-table-body"></tbody>
+            </table>
+          </div>
         </div>
+      </div>
+
+      <div id="data-section" style="display: none">
+        <div class="section">
+          <table class="experience-table">
+            <tr>
+              <th>Data Engineering Experience</th>
+              <th>Number of years or Months</th>
+              <th>Projects Handled</th>
+            </tr>
+            <tr>
+              <td>Total Experience in Data Engineering?</td>
+              <td>
+                <input
+                  type="text"
+                  id="data-engineering-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="data-engineering-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Experience in SQL (PostgreSQL, MySQL, etc.)</td>
+              <td>
+                <input
+                  type="text"
+                  id="sql-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="sql-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Experience in NoSQL (MongoDB, Cassandra, etc.)</td>
+              <td>
+                <input
+                  type="text"
+                  id="nosql-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="nosql-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Experience in ETL Tools (Informatica, Talend, etc.)</td>
+              <td>
+                <input
+                  type="text"
+                  id="etl-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="etl-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Experience in Big Data (Hadoop, Spark, Hive, etc.)</td>
+              <td>
+                <input
+                  type="text"
+                  id="bigdata-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="bigdata-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Experience in Data Warehousing (Snowflake, Redshift, etc.)
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="data-warehousing-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="data-warehousing-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Experience in Data Pipelines (Airflow, Luigi, etc.)</td>
+              <td>
+                <input
+                  type="text"
+                  id="data-pipelines-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="data-pipelines-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Experience in Data Analytics (Python, R, Pandas, etc.)</td>
+              <td>
+                <input
+                  type="text"
+                  id="data-analytics-experience"
+                  placeholder="Enter total experience in Years/Months"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="data-analytics-projects"
+                  placeholder="Enter number of projects"
+                />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Feedback Section -->
+      <div class="feedback-section">
+        <label for="detailed-feedback">Detailed Feedback: *</label>
+        <textarea
+          id="detailed-feedback"
+          class="feedback-section-text"
+          placeholder="Enter your detailed feedback here..."
+          required
+        ></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: center">
+        <button
+          id="submit-button"
+          style="
+            background-color: #1f4e79;
+            color: #ffffff;
+            height: 25px;
+            width: 200px;
+            border-radius: 5px;
+          "
+        >
+          Submit
+        </button>
+      </div>
     </div>
     <div id="toast" class="toast"></div>
-    <br>
+    <br />
 
     <script>
-        function showToast(message, type) {
-            const toast = document.getElementById("toast");
-            toast.className = `toast ${type}`; // success, error
-            toast.textContent = message;
-            toast.style.display = "block";
-            setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000);
+      function showToast(message, type) {
+        const toast = document.getElementById("toast");
+        toast.className = `toast ${type}`; // success, error
+        toast.textContent = message;
+        toast.style.display = "block";
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 3000);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const summaryBox = document.getElementById("status-dropdown");
+        const selectedValue = summaryBox.value;
+        summaryBox.classList.remove("green-background", "red-background");
+        if (selectedValue === "shortlisted") {
+          summaryBox.classList.add("green-background");
+        } else if (selectedValue === "not-shortlisted") {
+          summaryBox.classList.add("red-background");
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const summaryBox = document.getElementById('status-dropdown');
-            const selectedValue = summaryBox.value;
-            summaryBox.classList.remove('green-background', 'red-background');
-            if (selectedValue === 'shortlisted') {
-                summaryBox.classList.add('green-background');
-            } else if (selectedValue === 'not-shortlisted') {
-                summaryBox.classList.add('red-background');
-            }
+        // Retrieve candidate details from localStorage
+        const candidateDetails = JSON.parse(
+          localStorage.getItem("candidateDetails")
+        );
+        if (candidateDetails && candidateDetails.finalSummary) {
+          document.getElementById("summary").value =
+            candidateDetails.finalSummary;
+        }
+      });
 
-            // Retrieve candidate details from localStorage
-            const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
-            if (candidateDetails && candidateDetails.finalSummary) {
-                document.getElementById('summary').value = candidateDetails.finalSummary;
-            }
+      // Event listener for changing the selection
+      document
+        .getElementById("status-dropdown")
+        .addEventListener("change", function () {
+          const summaryBox = document.getElementById("status-dropdown");
+          const selectedValue = this.value;
+          summaryBox.classList.remove("green-background", "red-background");
+
+          if (selectedValue === "shortlisted") {
+            summaryBox.classList.add("green-background");
+          } else if (selectedValue === "not-shortlisted") {
+            summaryBox.classList.add("red-background");
+          }
         });
 
-        // Event listener for changing the selection
-        document.getElementById('status-dropdown').addEventListener('change', function () {
-            const summaryBox = document.getElementById('status-dropdown');
-            const selectedValue = this.value;
-            summaryBox.classList.remove('green-background', 'red-background');
-
-            if (selectedValue === 'shortlisted') {
-                summaryBox.classList.add('green-background');
-            } else if (selectedValue === 'not-shortlisted') {
-                summaryBox.classList.add('red-background');
-            }
+      document
+        .getElementById("imageContainer")
+        .addEventListener("click", function () {
+          document.getElementById("imageUpload").click();
         });
 
-        document.getElementById('imageContainer').addEventListener('click', function () {
-            document.getElementById('imageUpload').click();
+      // Handle image file selection and preview
+      document
+        .getElementById("imageUpload")
+        .addEventListener("change", function (event) {
+          var file = event.target.files[0];
+          var image = document.getElementById("imagePreview");
+          var label = document.querySelector('label[for="imageUpload"]'); // Get the label
+
+          if (file && file.type.startsWith("image/")) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              image.src = e.target.result;
+              image.style.display = "block"; // Show the image
+              label.style.display = "none"; // Hide the label
+              showToast("Image uploaded successfully!", "success");
+            };
+            reader.readAsDataURL(file);
+          } else {
+            image.src = "";
+            image.style.display = "none";
+            label.style.display = "block";
+          }
         });
 
-        // Handle image file selection and preview
-        document.getElementById('imageUpload').addEventListener('change', function (event) {
-            var file = event.target.files[0];
-            var image = document.getElementById('imagePreview');
-            var label = document.querySelector('label[for="imageUpload"]'); // Get the label
+      document.addEventListener("DOMContentLoaded", function () {
+        const candidateDetails = JSON.parse(
+          localStorage.getItem("candidateDetails")
+        );
 
-            if (file && file.type.startsWith('image/')) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    image.src = e.target.result;
-                    image.style.display = 'block'; // Show the image
-                    label.style.display = 'none';  // Hide the label
-                    showToast('Image uploaded successfully!', 'success');
-                };
-                reader.readAsDataURL(file);
+        // Fetch all candidate emails from the server
+        fetch("https://demotag.vercel.app/api/getAllCandidateEmails")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              showToast(data.error, "error");
             } else {
-                image.src = "";
-                image.style.display = 'none';
-                label.style.display = 'block';
+              const emailDropdown = document.getElementById(
+                "candidate-email-dropdown"
+              );
+              data.emails.forEach((email) => {
+                const option = document.createElement("option");
+                option.value = email;
+                option.textContent = email;
+                emailDropdown.appendChild(option);
+              });
+
+              if (candidateDetails && candidateDetails.candidateEmail) {
+                console.log(
+                  "Candidate email found in localStorage:",
+                  candidateDetails.candidateEmail
+                );
+                emailDropdown.value = candidateDetails.candidateEmail;
+
+                fetchCandidateData(candidateDetails.candidateEmail);
+                const finalSummary = localStorage.getItem("finalSummary");
+                if (finalSummary) {
+                  document.getElementById("summary").value = finalSummary;
+                }
+              }
             }
+          })
+          .catch((error) => {
+            console.error("Error fetching candidate emails:", error);
+            showToast("Failed to load candidate emails.", "error");
+          });
+
+        const emailDropdown = document.getElementById(
+          "candidate-email-dropdown"
+        );
+        emailDropdown.addEventListener("change", function (event) {
+          const selectedEmail = event.target.value;
+          if (selectedEmail) {
+            fetchCandidateData(selectedEmail);
+            const finalSummary = localStorage.getItem("finalSummary");
+            if (finalSummary) {
+              document.getElementById("summary").value = finalSummary;
+            }
+          }
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
+        function fetchCandidateData(email) {
+          fetch(
+            `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                showToast(data.error, "error");
+              } else {
+                document.getElementById("candidate-name").value =
+                  data.candidate_name;
+                document.getElementById("position").value = data.role;
 
-            // Fetch all candidate emails from the server
-            fetch('https://demotag.vercel.app/api/getAllCandidateEmails')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        showToast(data.error, 'error');
-                    } else {
-                        const emailDropdown = document.getElementById('candidate-email-dropdown');
-                        data.emails.forEach(email => {
-                            const option = document.createElement('option');
-                            option.value = email;
-                            option.textContent = email;
-                            emailDropdown.appendChild(option);
-                        });
+                // Check if it's an App EC role
+                const appRolesJava = [
+                  "Junior Java Cloud Native Application Engineer - Backend",
+                  "Senior Java Cloud Native Application Engineer - Backend",
+                ];
 
-                        if (candidateDetails && candidateDetails.candidateEmail) {
-                            console.log("Candidate email found in localStorage:", candidateDetails.candidateEmail);
-                            emailDropdown.value = candidateDetails.candidateEmail;
+                const appRolesDotNet = [
+                  "Junior .Net Cloud Native Application Engineer - Backend",
+                  "Senior .Net Cloud Native Application Engineer - Backend",
+                ];
 
-                            fetchCandidateData(candidateDetails.candidateEmail);
-                            const finalSummary = localStorage.getItem('finalSummary');
-                            if (finalSummary) {
-                                document.getElementById('summary').value = finalSummary;
-                            }
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching candidate emails:', error);
-                    showToast("Failed to load candidate emails.", "error");
-                });
+                if ([...appRolesJava, ...appRolesDotNet].includes(data.role)) {
+                  document.getElementById("ec-select").value = "App";
+                  document.getElementById("app-section").style.display =
+                    "block";
+                  document.getElementById("cloud-section").style.display =
+                    "none";
+                  document.getElementById("data-section").style.display =
+                    "none";
 
-            const emailDropdown = document.getElementById('candidate-email-dropdown');
-            emailDropdown.addEventListener('change', function (event) {
-                const selectedEmail = event.target.value;
-                if (selectedEmail) {
-                    fetchCandidateData(selectedEmail);
-                    const finalSummary = localStorage.getItem('finalSummary');
-                    if (finalSummary) {
-                        document.getElementById('summary').value = finalSummary;
-                    }
+                  if (appRolesJava.includes(data.role)) {
+                    document.getElementById("dotnet-section").style.display =
+                      "none";
+                    document.getElementById("java-section").style.display =
+                      "block";
+                  } else if (appRolesDotNet.includes(data.role)) {
+                    document.getElementById("java-section").style.display =
+                      "none";
+                    document.getElementById("dotnet-section").style.display =
+                      "block";
+                  }
                 }
+
+                document.getElementById("rrf-id").value = data.rrf_id;
+                document.getElementById("hr-email").value = data.hr_email;
+              }
+            })
+
+            .catch((error) => {
+              console.error("Error fetching candidate data:", error);
+              showToast("Failed to load candidate data.", "error");
+            });
+        }
+      });
+
+      document
+        .getElementById("ec-select")
+        .addEventListener("change", function () {
+          const selectedValue = this.value;
+          if (selectedValue === "Cloud") {
+            document.getElementById("cloud-section").style.display = "block";
+            document.getElementById("app-section").style.display = "none";
+            document.getElementById("data-section").style.display = "none";
+          } else if (selectedValue === "App") {
+            document.getElementById("app-section").style.display = "block";
+            document.getElementById("cloud-section").style.display = "none";
+            document.getElementById("data-section").style.display = "none";
+          } else if (selectedValue === "Data") {
+            document.getElementById("data-section").style.display = "block";
+            document.getElementById("cloud-section").style.display = "none";
+            document.getElementById("app-section").style.display = "none";
+          } else {
+            // If no option is selected (the default one)
+            document.getElementById("cloud-section").style.display = "none";
+            document.getElementById("app-section").style.display = "none";
+            document.getElementById("data-section").style.display = "none";
+          }
+        });
+
+      document.getElementById("ec-select").dispatchEvent(new Event("change"));
+
+      function validateWordCount(feedback) {
+        const wordCount = feedback.trim().split(/\s+/).filter(Boolean).length;
+        return wordCount >= 100;
+      }
+
+      document
+        .getElementById("submit-button")
+        .addEventListener("click", async () => {
+          const candidateEmail = document.getElementById(
+            "candidate-email-dropdown"
+          ).value;
+
+          const detailedFeedback =
+            document.getElementById("detailed-feedback").value;
+          const selectedRole = document.getElementById("position").value; // Add this dropdown
+          const summaryBox = document.getElementById("status-dropdown").value;
+          console.log("Selected status:", summaryBox);
+
+          if (!candidateEmail || !selectedRole) {
+            alert("Please select role and enter candidate email.");
+            return;
+          }
+
+          let tableSelector = "";
+          let apiEndpoint = "";
+
+          if (selectedRole.toLowerCase().includes("java")) {
+            tableSelector = "#java-table-body tr";
+            apiEndpoint = "/api/java_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes(".net")) {
+            tableSelector = "#dotnet-table-body tr";
+            apiEndpoint = "/api/dotnet_ec_submit-feedback";
+          } else {
+            alert("Selected role not supported.");
+            return;
+          }
+
+          const rows = document.querySelectorAll(tableSelector);
+          const number_of_years_or_months = [];
+
+          rows.forEach((row) => {
+            const skill = row.children[0].innerText;
+            const input = row.children[1].querySelector("input");
+            const experience = input ? input.value : "";
+            number_of_years_or_months.push({ skill, experience });
+          });
+
+          const payload = {
+            candidateEmail,
+            number_of_years_or_months,
+            detailed_feedback: detailedFeedback,
+            status: summaryBox,
+          };
+
+          try {
+            const response = await fetch(apiEndpoint, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
             });
 
-            function fetchCandidateData(email) {
-                fetch(`https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            showToast(data.error, 'error');
-                        } else {
-                            document.getElementById('candidate-name').value = data.candidate_name;
-                            document.getElementById('position').value = data.role;
-                            document.getElementById('rrf-id').value = data.rrf_id;
-                            document.getElementById('hr-email').value = data.hr_email;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching candidate data:', error);
-                        showToast("Failed to load candidate data.", "error");
-                    });
-            }
-        });
-
-        document.getElementById('ec-select').addEventListener('change', function () {
-            const selectedValue = this.value;
-            if (selectedValue === 'Cloud') {
-                document.getElementById('cloud-section').style.display = 'block';
-                document.getElementById('app-section').style.display = 'none';
-                document.getElementById('data-section').style.display = 'none';
-            } else if (selectedValue === 'App') {
-                document.getElementById('app-section').style.display = 'block';
-                document.getElementById('cloud-section').style.display = 'none';
-                document.getElementById('data-section').style.display = 'none';
-            } else if (selectedValue === 'Data') {
-                document.getElementById('data-section').style.display = 'block';
-                document.getElementById('cloud-section').style.display = 'none';
-                document.getElementById('app-section').style.display = 'none';
+            const result = await response.json();
+            if (response.ok) {
+              showToast("✅ Feedback submitted successfully!");
+              window.location.href = 'l1-imocha.html';
             } else {
-                // If no option is selected (the default one)
-                document.getElementById('cloud-section').style.display = 'none';
-                document.getElementById('app-section').style.display = 'none';
-                document.getElementById('data-section').style.display = 'none';
+              showToast(`❌ Error: ${result.error || "Something went wrong."}`);
             }
+          } catch (err) {
+            console.error("Submit error:", err);
+            showToast("❌ Failed to submit feedback. See console for details.");
+          }
         });
 
-        document.getElementById('ec-select').dispatchEvent(new Event('change'));
+      document.addEventListener("DOMContentLoaded", () => {
+        loadQuestions(
+          "/api/java_ec_questions",
+          "java-table-body",
+          "java_experience_"
+        );
+        loadQuestions(
+          "/api/dotnet_ec_questions",
+          "dotnet-table-body",
+          "dotnet_experience_"
+        );
+      });
 
-        function validateWordCount(feedback) {
-            const wordCount = feedback.trim().split(/\s+/).filter(Boolean).length;
-            return wordCount >= 100;
+      async function loadQuestions(apiUrl, tbodyId, prefixToRemove = "") {
+        try {
+          const res = await fetch(apiUrl);
+          const data = await res.json();
+          const tbody = document.getElementById(tbodyId);
+          tbody.innerHTML = "";
+
+          data.forEach((q) => {
+            const label = formatLabel(q.question_text, prefixToRemove);
+            const inputId = q.question_text;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${label}</td>
+            <td><input type="text" id="${inputId}" placeholder="Enter total experience in Years/Months" /></td>
+            <td>${q.mandatory_for_candidates}</td>
+          `;
+            tbody.appendChild(tr);
+          });
+        } catch (error) {
+          console.error("Error loading questions:", error);
         }
+      }
 
-        document.getElementById('submit-button').addEventListener('click', function () {
-            const feedbackTextarea = document.getElementById('detailed-feedback');
-            const feedbackText = feedbackTextarea.value;
-
-            if (!validateWordCount(feedbackText)) {
-                event.preventDefault();
-                showToast('Please provide at least 100 words of feedback.', 'error');
-                return;
-            }
-
-            // Collect all form data
-            const formData = {
-                candidate_email: document.getElementById('candidate-email-dropdown').value,
-                rrf_id: document.getElementById('rrf-id').value,
-                position: document.getElementById('position').value,
-                candidate_name: document.getElementById('candidate-name').value,
-                uan_number: document.getElementById('uan-number').value,
-                interview_date: document.getElementById('interview-date').value,
-                hr_email: document.getElementById('hr-email').value,
-                introduction_value_momentum: document.getElementById('introduction-value-momentum').value,
-                introduction_cloud_app: document.getElementById('introduction-cloud-app').value,
-                roles_responsibilities: document.getElementById('roles-responsibilities').value,
-                pre_screening: document.getElementById('pre-screening').value,
-                status: document.getElementById('status-dropdown').value,
-                summary: document.getElementById('summary').value,
-                ec_select: document.getElementById('ec-select').value,
-                cloud_experience_azure_experience: document.getElementById('azure-experience').value,
-                cloud_experience_azure_well_architected_framework: document.getElementById('azure-well-architected-framework').value,
-                cloud_experience_azure_zero_trust_security: document.getElementById('azure-zero-trust-security').value,
-                cloud_experience_aws_experience: document.getElementById('aws-experience').value,
-                cloud_experience_aws_well_architected_framework: document.getElementById('aws-well-architected-framework').value,
-                cloud_experience_aws_zero_trust_security: document.getElementById('aws-zero-trust-security').value,
-                migration_experience_as_is_migration: document.getElementById('as-is-migration').value,
-                migration_experience_paas_migration: document.getElementById('paas-migration').value,
-                migration_experience_database_migration: document.getElementById('database-migration').value,
-                presales_experience_proposals_worked: document.getElementById('proposals-worked').value,
-                presales_experience_proposals_worked_end_to_end: document.getElementById('proposals-worked-end-to-end').value,
-                presales_experience_efforts_calculations: document.getElementById('efforts-calculations').value,
-                presales_experience_efforts_calculations_end_to_end: document.getElementById('efforts-calculations-end-to-end').value,
-                devops_experience_devops_maturity_model: document.getElementById('devops-maturity-model').value,
-                devops_experience_dora_metrics: document.getElementById('dora-metrics').value,
-                devops_experience_build_release_solutioning: document.getElementById('build-release-solutioning').value,
-                devops_experience_devops_maturity_model_projects: document.getElementById('devops-maturity-model-projects').value,
-                devops_experience_dora_metrics_projects: document.getElementById('dora-metrics-projects').value,
-                devops_experience_build_release_solutioning_projects: document.getElementById('build-release-solutioning-projects').value,
-                observability_experience_observability_knowledge: document.getElementById('observability-knowledge').value,
-                observability_experience_observability_knowledge_projects: document.getElementById('observability-knowledge-projects').value,
-                containerization_experience_containerization_knowledge: document.getElementById('containerization-knowledge').value,
-                containerization_experience_containerization_knowledge_projects: document.getElementById('containerization-knowledge-projects').value,
-                java_experience_java_experience: document.getElementById('java-experience').value,
-                java_experience_java8_experience: document.getElementById('java8-experience').value,
-                java_experience_concurrency_experience: document.getElementById('concurrency-experience').value,
-                java_experience_microservice_experience: document.getElementById('microservice-experience').value,
-                java_experience_distributed_transactions_experience: document.getElementById('distributed-transactions-experience').value,
-                java_experience_event_driven_experience: document.getElementById('event-driven-experience').value,
-                java_experience_security_experience: document.getElementById('security-experience').value,
-                java_experience_design_patterns_experience: document.getElementById('design-patterns-experience').value,
-                java_experience_data_structures_experience: document.getElementById('data-structures-experience').value,
-                java_experience_spring_boot_experience_details: document.getElementById('spring-boot-experience-details').value,
-                java_experience_sql_queries_experience: document.getElementById('sql-queries-experience').value,
-                java_experience_jvm_tuning_experience: document.getElementById('jvm-tuning-experience').value,
-                feedback: document.getElementById('detailed-feedback').value,
-            };
-
-            // Send the data to the backend using fetch
-            fetch('https://demotag.vercel.app/api/feedback-form-db', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        showToast(data.message, 'error');
-                        window.location.href = 'l1-imocha.html';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast("Failed to submit form.", "error");
-                });
-        });
+      function formatLabel(text, prefix) {
+        return text
+          .replace(prefix, "")
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase());
+      }
     </script>
-</body>
+  </body>
 </html>
