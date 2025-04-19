@@ -197,10 +197,10 @@
 
       textarea.maximized {
         position: fixed;
-        top: 10%;
-        left: 10%;
+        top: 24%;
+        left: 16%;
         width: 80%;
-        height: 80%;
+        height: 43%;
         z-index: 9999;
         background: white;
         border: 2px solid #666;
@@ -292,7 +292,7 @@
             <button
               id="maximize-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="position: absolute; top: 5px; right: 5px"
             >
               🗖
@@ -300,7 +300,7 @@
             <button
               id="close-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="
                 display: none;
                 position: fixed;
@@ -348,7 +348,7 @@
             <button
               id="maximize-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="position: absolute; top: 5px; right: 5px"
             >
               🗖
@@ -356,7 +356,7 @@
             <button
               id="close-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="
                 display: none;
                 position: fixed;
@@ -387,7 +387,7 @@
             <button
               id="maximize-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="position: absolute; top: 5px; right: 5px"
             >
               🗖
@@ -395,7 +395,7 @@
             <button
               id="close-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="
                 display: none;
                 position: fixed;
@@ -431,7 +431,7 @@
             <button
               id="maximize-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="position: absolute; top: 5px; right: 5px"
             >
               🗖
@@ -439,7 +439,7 @@
             <button
               id="close-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="
                 display: none;
                 position: fixed;
@@ -476,7 +476,7 @@
             <button
               id="maximize-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="position: absolute; top: 5px; right: 5px"
             >
               🗖
@@ -484,7 +484,7 @@
             <button
               id="close-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="
                 display: none;
                 position: fixed;
@@ -510,7 +510,7 @@
             <button
               id="maximize-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="position: absolute; top: 5px; right: 5px"
             >
               🗖
@@ -518,7 +518,7 @@
             <button
               id="close-btn"
               type="button"
-              onclick="maximizeTextarea()"
+              onclick="maximizeTextarea(this)"
               style="
                 display: none;
                 position: fixed;
@@ -790,37 +790,23 @@
           }
         });
       });
-      function maximizeTextarea() {
-        const textareaIds = [
-          "prescreening-summary",
-          "l2-technical-feedback",
-          "ec-fitment-feedback",
-          "project-fitment-feedback",
-          "client-fitment-feedback",
-          "fitment-feedback",
-        ];
+      function maximizeTextarea(button) {
+        const container = button.parentElement;
+        const textarea = container.querySelector("textarea");
+        const maximizeBtn = container.querySelector(".maximize-btn");
+        const closeBtn = container.querySelector(".close-btn");
 
-        const textareas = textareaIds
-          .map((id) => document.getElementById(id))
-          .filter((el) => el !== null);
+        const isMaximized = textarea.classList.contains("maximized");
 
-        const maximizeBtn = document.getElementById("maximize-btn");
-        const closeBtn = document.getElementById("close-btn");
-
-        const isCurrentlyMaximized = textareas.some((textarea) =>
-          textarea.classList.contains("maximized")
-        );
-
-        textareas.forEach((textarea) => {
-          if (isCurrentlyMaximized) {
-            textarea.classList.remove("maximized");
-          } else {
-            textarea.classList.add("maximized");
-          }
-        });
-
-        maximizeBtn.style.display = isCurrentlyMaximized ? "block" : "none";
-        closeBtn.style.display = isCurrentlyMaximized ? "none" : "block";
+        if (isMaximized) {
+          textarea.classList.remove("maximized");
+          maximizeBtn.style.display = "block";
+          closeBtn.style.display = "none";
+        } else {
+          textarea.classList.add("maximized");
+          maximizeBtn.style.display = "none";
+          closeBtn.style.display = "block";
+        }
       }
     </script>
   </body>
