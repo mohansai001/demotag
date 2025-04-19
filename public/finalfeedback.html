@@ -191,6 +191,19 @@
       textarea {
         min-height: 75px;
         resize: vertical;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      textarea.maximized {
+        position: fixed;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+        z-index: 9999;
+        background: white;
+        border: 2px solid #666;
       }
     </style>
   </head>
@@ -274,7 +287,31 @@
           <td class="header-cell">Prescreening</td>
           <td><input type="text" id="prescreening-feedback" readonly /></td>
           <td><input type="text" id="prescreening-status" readonly /></td>
-          <td><textarea id="prescreening-summary" readonly></textarea></td>
+          <td style="position: relative">
+            <textarea id="prescreening-summary" readonly></textarea>
+            <button
+              id="maximize-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="position: absolute; top: 5px; right: 5px"
+            >
+              🗖
+            </button>
+            <button
+              id="close-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="
+                display: none;
+                position: fixed;
+                top: 12%;
+                right: 11%;
+                z-index: 10000;
+              "
+            >
+              ✖
+            </button>
+          </td>
         </tr>
         <tr>
           <td class="header-cell">L1 or iMocha</td>
@@ -306,13 +343,30 @@
               readonly
             />
           </td>
-          <td>
-            <input
-              type="text"
-              id="l2-technical-feedback"
-              placeholder=""
-              readonly
-            />
+          <td style="position: relative">
+            <textarea id="l2-technical-feedback" readonly></textarea>
+            <button
+              id="maximize-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="position: absolute; top: 5px; right: 5px"
+            >
+              🗖
+            </button>
+            <button
+              id="close-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="
+                display: none;
+                position: fixed;
+                top: 12%;
+                right: 11%;
+                z-index: 10000;
+              "
+            >
+              ✖
+            </button>
           </td>
         </tr>
         <tr>
@@ -328,13 +382,30 @@
           <td>
             <input type="text" id="ec-fitment-result" placeholder="" readonly />
           </td>
-          <td>
-            <input
-              type="text"
-              id="ec-fitment-feedback"
-              placeholder=""
-              readonly
-            />
+          <td style="position: relative">
+            <textarea id="ec-fitment-feedback" readonly></textarea>
+            <button
+              id="maximize-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="position: absolute; top: 5px; right: 5px"
+            >
+              🗖
+            </button>
+            <button
+              id="close-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="
+                display: none;
+                position: fixed;
+                top: 12%;
+                right: 11%;
+                z-index: 10000;
+              "
+            >
+              ✖
+            </button>
           </td>
         </tr>
         <tr>
@@ -355,13 +426,30 @@
               readonly
             />
           </td>
-          <td>
-            <input
-              type="text"
-              id="project-fitment-feedback"
-              placeholder=""
-              readonly
-            />
+          <td style="position: relative">
+            <textarea id="project-fitment-feedback" readonly></textarea>
+            <button
+              id="maximize-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="position: absolute; top: 5px; right: 5px"
+            >
+              🗖
+            </button>
+            <button
+              id="close-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="
+                display: none;
+                position: fixed;
+                top: 12%;
+                right: 11%;
+                z-index: 10000;
+              "
+            >
+              ✖
+            </button>
           </td>
         </tr>
 
@@ -383,13 +471,30 @@
               readonly
             />
           </td>
-          <td>
-            <input
-              type="text"
-              id="client-fitment-feedback"
-              placeholder=""
-              readonly
-            />
+          <td style="position: relative">
+            <textarea id="client-fitment-feedback" readonly></textarea>
+            <button
+              id="maximize-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="position: absolute; top: 5px; right: 5px"
+            >
+              🗖
+            </button>
+            <button
+              id="close-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="
+                display: none;
+                position: fixed;
+                top: 12%;
+                right: 11%;
+                z-index: 10000;
+              "
+            >
+              ✖
+            </button>
           </td>
         </tr>
         <tr>
@@ -400,8 +505,30 @@
           <td>
             <input type="text" id="fitment-result" placeholder="" readonly />
           </td>
-          <td>
-            <input type="text" id="fitment-feedback" placeholder="" readonly />
+          <td style="position: relative">
+            <textarea id="fitment-feedback" readonly></textarea>
+            <button
+              id="maximize-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="position: absolute; top: 5px; right: 5px"
+            >
+              🗖
+            </button>
+            <button
+              id="close-btn"
+              type="button"
+              onclick="maximizeTextarea()"
+              style="
+                display: none;
+                position: fixed;
+                top: 12%;
+                right: 11%;
+                z-index: 10000;
+              "
+            >
+              ✖
+            </button>
           </td>
         </tr>
       </table>
@@ -663,6 +790,38 @@
           }
         });
       });
+      function maximizeTextarea() {
+        const textareaIds = [
+          "prescreening-summary",
+          "l2-technical-feedback",
+          "ec-fitment-feedback",
+          "project-fitment-feedback",
+          "client-fitment-feedback",
+          "fitment-feedback",
+        ];
+
+        const textareas = textareaIds
+          .map((id) => document.getElementById(id))
+          .filter((el) => el !== null);
+
+        const maximizeBtn = document.getElementById("maximize-btn");
+        const closeBtn = document.getElementById("close-btn");
+
+        const isCurrentlyMaximized = textareas.some((textarea) =>
+          textarea.classList.contains("maximized")
+        );
+
+        textareas.forEach((textarea) => {
+          if (isCurrentlyMaximized) {
+            textarea.classList.remove("maximized");
+          } else {
+            textarea.classList.add("maximized");
+          }
+        });
+
+        maximizeBtn.style.display = isCurrentlyMaximized ? "block" : "none";
+        closeBtn.style.display = isCurrentlyMaximized ? "none" : "block";
+      }
     </script>
   </body>
 </html>
