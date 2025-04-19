@@ -3938,6 +3938,43 @@ app.get('/api/rrf-ids', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch RRF IDs' });
   }
 });
+app.post('/api/upload-rrfids', async (req, res) => {
+  const { rrfids } = req.body;
+
+  if (!rrfids || !Array.isArray(rrfids) || rrfids.length === 0) {
+    return res.status(400).json({ error: 'Invalid or missing RRFIDs.' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    let insertedCount = 0;
+
+    for (const rrfid of rrfids) {
+      if (!rrfid) continue;
+
+      // Insert only if the rrfid doesn't exist
+      const insertQuery = `
+        INSERT INTO rrf (rrfid)
+        VALUES ($1)
+        ON CONFLICT (rrfid) DO NOTHING;
+      `;
+
+      const result = await client.query(insertQuery, [rrfid]);
+      insertedCount += result.rowCount;
+    }
+
+    await client.query('COMMIT');
+    res.json({ success: true, inserted: insertedCount });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error uploading RRFIDs:', error);
+    res.status(500).json({ error: 'Failed to upload RRFIDs.' });
+  } finally {
+    client.release();
+  }
+});
 
 
 // Start the server
