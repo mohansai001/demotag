@@ -591,7 +591,7 @@
             document.getElementById("candidate-id").textContent = candidateId;
           }
 
-          // ✅ Exact position-to-API mapping
+          // Position-to-API mapping
           const positionToApiMap = {
             "Junior .Net Cloud Native Application Engineer - Backend":
               "api/dotnet_feedback-questions",
@@ -624,7 +624,7 @@
           const questionsData = await questionsResponse.json();
           populateFeedbackForm(questionsData);
 
-          await fetchAndPopulateExistingFeedback(candidateId,position);
+          await fetchAndPopulateExistingFeedback(candidateId, position);
         } catch (error) {
           console.error("Error loading data:", error);
           showToast(`Failed to load data: ${error.message}`, "error");
@@ -635,10 +635,11 @@
         candidateId,
         position,
         questionsData
-        
       ) {
         try {
-          const response = await fetch(`/api/get-feedback/${candidateId}/${position}`);
+          const response = await fetch(
+            `/api/get-feedback/${candidateId}/${position}`
+          );
           if (!response.ok) {
             throw new Error("Failed to fetch existing feedback.");
           }
@@ -668,10 +669,6 @@
             feedbackData.overall_feedback || "";
           document.getElementById("result").value = feedbackData.result || "";
 
-          // Disable form elements if needed (optional)
-          // document.querySelectorAll('select, textarea').forEach(el => el.disabled = true);
-          // document.getElementById('submit-button').style.display = 'none';
-
           showToast("Existing feedback loaded successfully.", "success");
         } catch (error) {
           console.error("Error loading existing feedback:", error);
@@ -693,37 +690,37 @@
         questions.forEach((question) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-                    <td>${question.skill_category}</td>
-                    <td>${question.skill_description}</td>
-                    <td>${question.is_top_skill ? "Yes" : "No"}</td>
-                    <td>
-                        <select id="deployment-${question.id}" required>
-                            <option value="Poor">Poor</option>
-                            <option value="Average">Average</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select id="configuration-${question.id}" required>
-                            <option value="Poor">Poor</option>
-                            <option value="Average">Average</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select id="troubleshooting-${question.id}" required>
-                            <option value="Poor">Poor</option>
-                            <option value="Average">Average</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </td>
-                    <td><textarea id="justification-${
-                      question.id
-                    }" required></textarea></td>
-                    <td><textarea id="improvements-${
-                      question.id
-                    }" required></textarea></td>
-                `;
+          <td>${question.skill_category}</td>
+          <td>${question.skill_description}</td>
+          <td>${question.is_top_skill ? "Yes" : "No"}</td>
+          <td>
+              <select id="deployment-${question.id}" required>
+                  <option value="Poor">Poor</option>
+                  <option value="Average">Average</option>
+                  <option value="Good">Good</option>
+              </select>
+          </td>
+          <td>
+              <select id="configuration-${question.id}" required>
+                  <option value="Poor">Poor</option>
+                  <option value="Average">Average</option>
+                  <option value="Good">Good</option>
+              </select>
+          </td>
+          <td>
+              <select id="troubleshooting-${question.id}" required>
+                  <option value="Poor">Poor</option>
+                  <option value="Average">Average</option>
+                  <option value="Good">Good</option>
+              </select>
+          </td>
+          <td><textarea id="justification-${
+            question.id
+          }" required></textarea></td>
+          <td><textarea id="improvements-${
+            question.id
+          }" required></textarea></td>
+      `;
           tbody.appendChild(row);
         });
       }
@@ -762,8 +759,8 @@
                   text: `Provide a brief summary in 120 words highlighting key skills, weaknesses, and areas for improvement based on the following data:\n\n${responses
                     .map(
                       (response) => `
-                            ${response.skillCategory}: Deployment - ${response.deployment}, Configuration - ${response.configuration}, Troubleshooting - ${response.troubleshooting}, Justification - ${response.justification}, Improvements - ${response.improvements}
-                        `
+                  ${response.skillCategory}: Deployment - ${response.deployment}, Configuration - ${response.configuration}, Troubleshooting - ${response.troubleshooting}, Justification - ${response.justification}, Improvements - ${response.improvements}
+              `
                     )
                     .join(
                       "\n"
@@ -813,6 +810,19 @@
         }
       }
 
+      // Function to convert Blob to Base64
+      async function convertBlobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            resolve(reader.result.split(",")[1]); // Extract Base64 data
+          };
+          reader.onerror = reject;
+        });
+      }
+
+      // Modified submit button event handler with email functionality
       document
         .getElementById("submit-button")
         .addEventListener("click", async function (e) {
@@ -830,6 +840,10 @@
 
           const candidateEmail =
             document.getElementById("candidate-email").textContent;
+          const candidateName = document.getElementById("candidate-name").value;
+          const hrEmail = document.getElementById("hr-email").value;
+          const position = document.getElementById("position").value;
+
           const responses = Array.from(
             document.querySelectorAll("#skills-table-body tr")
           ).map((row) => {
@@ -852,60 +866,188 @@
           });
 
           try {
-  const urlParams = new URLSearchParams(window.location.search);
-  const position = urlParams.get("position");
+            // Step 1: Generate PDF from the form
+            const formContainer = document.querySelector(".form-container");
+            const originalStyles = {
+              marginLeft: formContainer.style.marginLeft,
+              marginTop: formContainer.style.marginTop,
+            };
 
-  // Position-to-API mapping for submission
-  const positionToSubmitApi = {
-    "Junior .Net Cloud Native Application Engineer - Backend": "/api/dotnet_submit-feedback",
-    "Senior .Net Cloud Native Application Engineer - Backend": "/api/dotnet_submit-feedback",
+            // Reset margins for PDF generation
+            formContainer.style.marginLeft = "0";
+            formContainer.style.marginTop = "0";
 
-    "Junior Java Cloud Native Application Engineer - Backend": "/api/java_submit-feedback",
-    "Senior Java Cloud Native Application Engineer - Backend": "/api/java_submit-feedback",
+            // Create a clone for PDF generation with text instead of inputs
+            function replaceInputsWithText(container) {
+              const clone = container.cloneNode(true);
+              clone
+                .querySelectorAll("input, textarea, select")
+                .forEach((el) => {
+                  const wrapper = document.createElement("span");
+                  wrapper.textContent = el.value || "N/A";
+                  el.parentNode.replaceChild(wrapper, el);
+                });
+              return clone;
+            }
 
-    "Junior Angular Cloud Native Application Engineer - Frontend": "/api/angular_submit-feedback",
-    "Senior Angular Cloud Native Application Engineer - Frontend": "/api/angular_submit-feedback",
+            const clonedForm = replaceInputsWithText(formContainer);
 
-    "Junior React Cloud Native Application Engineer - Frontend": "/api/react_submit-feedback",
-    "Senior React Cloud Native Application Engineer - Frontend": "/api/react_submit-feedback",
-  };
+            // Generate PDF using html2pdf
+            const pdfBlob = await html2pdf()
+              .set({
+                margin: 0.5,
+                filename: "Interview_Feedback_Form.pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: {
+                  unit: "in",
+                  format: [11, 8.5],
+                  orientation: "landscape",
+                },
+              })
+              .from(clonedForm)
+              .outputPdf("blob");
 
-  // Fallback endpoint if position doesn't match
-  const submitApi = positionToSubmitApi[position] || "/api/app_generic_submit-feedback";
+            // Restore original styles
+            formContainer.style.marginLeft = originalStyles.marginLeft;
+            formContainer.style.marginTop = originalStyles.marginTop;
 
-  const response = await fetch(submitApi, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      candidateEmail,
-      responses,
-      detailedFeedback,
-      result,
-    }),
-  });
+            // Convert PDF to Base64
+            const base64PDF = await convertBlobToBase64(pdfBlob);
 
-  const resultData = await response.json();
+            // Step 2: Get Microsoft Graph API token
+            const tokenRequest = {
+              scopes: ["Mail.Send"],
+              account: msalInstance.getAllAccounts()[0],
+            };
 
-  if (response.ok) {
-    showToast("Feedback submitted successfully!", "success");
+            let tokenResponse;
+            try {
+              tokenResponse = await msalInstance.acquireTokenSilent(
+                tokenRequest
+              );
+            } catch (silentError) {
+              console.warn(
+                "Silent token acquisition failed; trying popup.",
+                silentError
+              );
+              tokenResponse = await msalInstance.acquireTokenPopup(
+                tokenRequest
+              );
+            }
 
-    setTimeout(() => {
-      if (window.opener) {
-        window.close();
-      } else if (window.parent && window.parent.closeFeedbackModal) {
-        window.parent.closeFeedbackModal();
-      } else {
-        window.location.href = `L2_App_Technical.html?success=true&candidateEmail=${encodeURIComponent(candidateEmail)}&position=${encodeURIComponent(position)}`;
-      }
-    }, 1500);
-  } else {
-    throw new Error(resultData.error || "Failed to submit feedback");
-  }
-} catch (error) {
-  console.error("Error submitting feedback:", error);
-  showToast(error.message || "Failed to submit feedback", "error");
-}
+            const accessToken = tokenResponse.accessToken;
 
+            // Step 3: Prepare and send email with attachment
+            const emailContent = {
+              message: {
+                subject: `Interview Feedback for ${candidateName} - ${position}`,
+                body: {
+                  contentType: "HTML",
+                  content: `
+            <p>Please find the attached interview feedback form for <strong>${candidateName}</strong> for the position of <strong>${position}</strong>.</p>
+            <p>Interview Result: <strong>${result}</strong></p>
+            <p>Feedback Summary:</p>
+            <p>${detailedFeedback.substring(0, 200)}...</p>
+          `,
+                },
+                toRecipients: [{ emailAddress: { address: hrEmail } }],
+                attachments: [
+                  {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    name: `Interview_Feedback_${candidateName}.pdf`,
+                    contentType: "application/pdf",
+                    contentBytes: base64PDF,
+                  },
+                ],
+              },
+            };
+
+            // Send email via Microsoft Graph API
+            const emailResponse = await fetch(
+              "https://graph.microsoft.com/v1.0/me/sendMail",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(emailContent),
+              }
+            );
+
+            if (!emailResponse.ok) {
+              const emailError = await emailResponse.json();
+              console.error("Email sending error:", emailError);
+              throw new Error("Failed to send email");
+            }
+
+            // Step 4: Submit feedback to the API
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlPosition = urlParams.get("position") || position;
+
+            // Position-to-API mapping for submission
+            const positionToSubmitApi = {
+              "Junior .Net Cloud Native Application Engineer - Backend":
+                "/api/dotnet_submit-feedback",
+              "Senior .Net Cloud Native Application Engineer - Backend":
+                "/api/dotnet_submit-feedback",
+              "Junior Java Cloud Native Application Engineer - Backend":
+                "/api/java_submit-feedback",
+              "Senior Java Cloud Native Application Engineer - Backend":
+                "/api/java_submit-feedback",
+              "Junior Angular Cloud Native Application Engineer - Frontend":
+                "/api/angular_submit-feedback",
+              "Senior Angular Cloud Native Application Engineer - Frontend":
+                "/api/angular_submit-feedback",
+              "Junior React Cloud Native Application Engineer - Frontend":
+                "/api/react_submit-feedback",
+              "Senior React Cloud Native Application Engineer - Frontend":
+                "/api/react_submit-feedback",
+            };
+
+            // Fallback endpoint if position doesn't match
+            const submitApi =
+              positionToSubmitApi[urlPosition] ||
+              "/api/app_generic_submit-feedback";
+
+            const response = await fetch(submitApi, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                candidateEmail,
+                responses,
+                detailedFeedback,
+                result,
+              }),
+            });
+
+            const resultData = await response.json();
+
+            if (response.ok) {
+              showToast(
+                "Feedback submitted and email sent successfully!",
+                "success"
+              );
+
+              setTimeout(() => {
+                if (window.opener) {
+                  window.close();
+                } else if (window.parent && window.parent.closeFeedbackModal) {
+                  window.parent.closeFeedbackModal();
+                } else {
+                  window.location.href = `L2_App_Technical.html?success=true&candidateEmail=${encodeURIComponent(
+                    candidateEmail
+                  )}&position=${encodeURIComponent(urlPosition)}`;
+                }
+              }, 1500);
+            } else {
+              throw new Error(resultData.error || "Failed to submit feedback");
+            }
+          } catch (error) {
+            console.error("Error in submission process:", error);
+            showToast(error.message || "Failed to process submission", "error");
+          }
         });
     </script>
   </body>
