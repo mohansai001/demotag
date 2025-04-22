@@ -3864,7 +3864,7 @@ app.post('/api/java_ec_submit-feedback', async (req, res) => {
   const client = await pool.connect();
   try {
     const candidateQuery = `
-      SELECT id, FROM candidate_info WHERE candidate_email = $1;
+      SELECT id FROM candidate_info WHERE candidate_email = $1;
     `;
     const candidateResult = await client.query(candidateQuery, [candidateEmail]);
 
