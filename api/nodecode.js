@@ -3409,13 +3409,16 @@ app.post("/api/java_submit-feedback", async (req, res) => {
 
   const client = await pool.connect();
   try {
-    // Fetch candidateId using candidateEmail
+    // Begin transaction
+    await client.query("BEGIN");
+
+    // Fetch candidate info using candidateEmail
     const candidateQuery = `
-    SELECT id,hr_email, panel_name FROM candidate_info WHERE candidate_email = $1;
-  `;
-    const candidateResult = await client.query(candidateQuery, [
-      candidateEmail,
-    ]);
+      SELECT id, hr_email, panel_name 
+      FROM candidate_info 
+      WHERE candidate_email = $1;
+    `;
+    const candidateResult = await client.query(candidateQuery, [candidateEmail]);
 
     if (candidateResult.rows.length === 0) {
       console.error("Candidate not found for email:", candidateEmail);
@@ -3424,39 +3427,40 @@ app.post("/api/java_submit-feedback", async (req, res) => {
 
     const candidateRow = candidateResult.rows[0];
     const candidateId = candidateRow.id;
-    const panelName = candidateRow.panel_name;
     const hrEmail = candidateRow.hr_email;
+    const panelName = candidateRow.panel_name;
 
     console.log("Fetched candidateId:", candidateId);
     console.log("Fetched panelName:", panelName);
+    console.log("Fetched hrEmail:", hrEmail);
 
     // Save feedback
     const feedbackQuery = `
-    INSERT INTO app_java_l2_feedback_response (
-      candidate_id,hr_email, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
-    ) VALUES ($1, $2, $3, $4, $5, $6,$7, CURRENT_TIMESTAMP)
-    ON CONFLICT (candidate_id)
-    DO UPDATE SET
-      responses = EXCLUDED.responses,
-      overall_feedback = EXCLUDED.overall_feedback,
-      result = EXCLUDED.result,
-      interviewer_name = EXCLUDED.interviewer_name,
-      hr_email = EXCLUDED.hr_email,
-      candidate_email = EXCLUDED.candidate_email,
-      updated_at = CURRENT_TIMESTAMP;
-  `;
+      INSERT INTO app_java_l2_feedback_response (
+        candidate_id, hr_email, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
+      ON CONFLICT (candidate_id)
+      DO UPDATE SET
+        responses = EXCLUDED.responses,
+        overall_feedback = EXCLUDED.overall_feedback,
+        result = EXCLUDED.result,
+        interviewer_name = EXCLUDED.interviewer_name,
+        hr_email = EXCLUDED.hr_email,
+        candidate_email = EXCLUDED.candidate_email,
+        updated_at = CURRENT_TIMESTAMP;
+    `;
 
     await client.query(feedbackQuery, [
-      candidateId,
-      candidateEmail,
-      panelName,
-      hrEmail,
-      JSON.stringify(responses),
-      detailedFeedback,
-      result,
+      candidateId,                // ✅ candidate_id
+      hrEmail,                    // ✅ hr_email
+      candidateEmail,             // ✅ candidate_email
+      panelName,                  // ✅ interviewer_name
+      JSON.stringify(responses),  // ✅ responses
+      detailedFeedback,           // ✅ overall_feedback
+      result                      // ✅ result
     ]);
 
-    // Set recruitmentphase based on result
+    // Set recruitment_phase based on result
     let recruitmentPhaseL2 = null;
     if (result === "Recommended") {
       recruitmentPhaseL2 = "Shortlisted in L2";
@@ -3471,12 +3475,12 @@ app.post("/api/java_submit-feedback", async (req, res) => {
         WHERE id = $2;
       `;
       await client.query(updatePhaseQuery, [recruitmentPhaseL2, candidateId]);
-      console.log(
-        `Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`
-      );
+      console.log(`Updated recruitment_phase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`);
     }
 
+    // Commit transaction
     await client.query("COMMIT");
+
     res.json({
       success: true,
       message: "Feedback and recruitment phase updated successfully.",
@@ -3489,7 +3493,6 @@ app.post("/api/java_submit-feedback", async (req, res) => {
     client.release();
   }
 });
-
 
 // Api to fetch dontnet questions
 app.get('/api/dotnet_feedback-questions', async (req, res) => {
