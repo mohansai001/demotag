@@ -2179,3 +2179,17 @@ async function fetchImocha() {
 
 // Initialize by fetching HR names when the page loads
 //   document.addEventListener('DOMContentLoaded', fetchHRNames);
+function getECMappingFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("ec_mapping");
+}
+
+function navigateWithECMapping(destinationPage) {
+  const ecMapping = getECMappingFromURL();
+  if (ecMapping) {
+    const url = `${destinationPage}?ec_mapping=${encodeURIComponent(ecMapping)}`;
+    window.location.href = url;
+  } else {
+    window.location.href = destinationPage;
+  }
+}
