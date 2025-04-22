@@ -2317,83 +2317,98 @@ app.get('/api/hr-phases', async (req, res) => {
 });
 
 //phase count
-app.get('/api/phase-counts', async (req, res) => {
+app.get("/api/phase-counts", async (req, res) => {
   try {
-      const query = `
-          -- Fetch Prescreening count from candidate_info
-          SELECT 
-              hr_email,
-              'Prescreening' AS phase,
-              COUNT(*) AS phase_count
-          FROM 
-              candidate_info
-          GROUP BY 
-              hr_email
+    const query = `
+      -- Fetch Prescreening count from candidate_info
+    SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    'Prescreening' AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    candidate_info
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR')
 
-          UNION ALL
+UNION ALL
 
-          -- Fetch Move to L1 (Shortlisted) count from candidate_info
-          SELECT 
-              hr_email,
-              'Move to L1' AS phase,
-              COUNT(*) AS phase_count
-          FROM 
-              candidate_info
-          WHERE 
-              Prescreening_status = 'Shortlisted'
-          GROUP BY 
-              hr_email
+SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    'Move to L1' AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    candidate_info
+WHERE 
+    Prescreening_status = 'Shortlisted'
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR')
 
-          UNION ALL
+UNION ALL
 
-          -- Fetch Rejected count from candidate_info
-          SELECT 
-              hr_email,
-              'Rejected' AS phase,
-              COUNT(*) AS phase_count
-          FROM 
-              candidate_info
-          WHERE 
-              Prescreening_status = 'Rejected'
-          GROUP BY 
-              hr_email
+SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    'Rejected' AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    candidate_info
+WHERE 
+    Prescreening_status = 'Rejected'
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR')
 
-          UNION ALL
+UNION ALL
 
-          -- Fetch all other phase counts from feedbackform
-          SELECT 
-              hr_email,
-              round_details AS phase,
-              COUNT(*) AS phase_count
-          FROM 
-              feedbackform
-          GROUP BY 
-              hr_email, round_details
+SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    round_details AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    feedbackform
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR'), round_details
 
-          UNION ALL
+UNION ALL
 
-          -- Fetch L2 Technical Count from feedback_table
-          SELECT 
-              hr_email,
-              'L2 Technical Round' AS phase,
-              COUNT(*) AS phase_count
-          FROM 
-              feedback_table
-          GROUP BY 
-              hr_email;
-      `;
-      
-      // Execute the query using pool.query
-      const result = await pool.query(query);
-      
-      // Send the result back as JSON
-      res.json(result.rows);
+SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    'L2 Technical Round' AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    feedback_table
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR')
+
+UNION ALL
+
+SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    'L2 Technical Round' AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    app_java_l2_feedback_response
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR')
+
+UNION ALL
+
+SELECT 
+    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+    'L2 Technical Round' AS phase,
+    COUNT(*) AS phase_count
+FROM 
+    app_dotnet_l2_feedback_response
+GROUP BY 
+    COALESCE(TRIM(hr_email), 'Unknown HR');
+
+    `;
+
+    const result = await pool.query(query);
+    res.json(result.rows);
   } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).json({ error: 'Failed to fetch phase counts' });
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Failed to fetch phase counts" });
   }
 });
-
 //admin details
 
 app.post('/api/add-admin', async (req, res) => {
@@ -3380,60 +3395,66 @@ app.get('/api/java_feedback-questions', async (req, res) => {
 });
 
 // API to save feedback responses
-app.post('/api/java_submit-feedback', async (req, res) => {
+app.post("/api/java_submit-feedback", async (req, res) => {    
   const { candidateEmail, responses, detailedFeedback, result } = req.body;
 
   console.log("Received payload:", { candidateEmail, responses });
 
   if (!candidateEmail || !responses || !Array.isArray(responses)) {
     console.error("Invalid request payload:", req.body);
-    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+    return res
+      .status(400)
+      .json({ error: "Invalid request payload. candidateEmail is required." });
   }
 
   const client = await pool.connect();
   try {
     // Fetch candidateId using candidateEmail
     const candidateQuery = `
-    SELECT id, panel_name FROM candidate_info WHERE candidate_email = $1;
+    SELECT id,hr_email, panel_name FROM candidate_info WHERE candidate_email = $1;
   `;
-  const candidateResult = await client.query(candidateQuery, [candidateEmail]);
-  
-  if (candidateResult.rows.length === 0) {
-    console.error("Candidate not found for email:", candidateEmail);
-    return res.status(404).json({ error: 'Candidate not found.' });
-  }
-  
-  const candidateRow = candidateResult.rows[0];
-  const candidateId = candidateRow.id;
-  const panelName = candidateRow.panel_name;
-  
-  console.log("Fetched candidateId:", candidateId);
-  console.log("Fetched panelName:", panelName);
-  
-  // Save feedback
-  const feedbackQuery = `
+    const candidateResult = await client.query(candidateQuery, [
+      candidateEmail,
+    ]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: "Candidate not found." });
+    }
+
+    const candidateRow = candidateResult.rows[0];
+    const candidateId = candidateRow.id;
+    const panelName = candidateRow.panel_name;
+    const hrEmail = candidateRow.hr_email;
+
+    console.log("Fetched candidateId:", candidateId);
+    console.log("Fetched panelName:", panelName);
+
+    // Save feedback
+    const feedbackQuery = `
     INSERT INTO app_java_l2_feedback_response (
-      candidate_id, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+      candidate_id,hr_email, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
+    ) VALUES ($1, $2, $3, $4, $5, $6,$7, CURRENT_TIMESTAMP)
     ON CONFLICT (candidate_id)
     DO UPDATE SET
       responses = EXCLUDED.responses,
       overall_feedback = EXCLUDED.overall_feedback,
       result = EXCLUDED.result,
       interviewer_name = EXCLUDED.interviewer_name,
+      hr_email = EXCLUDED.hr_email,
       candidate_email = EXCLUDED.candidate_email,
       updated_at = CURRENT_TIMESTAMP;
   `;
-  
-  await client.query(feedbackQuery, [
-    candidateId,
-    candidateEmail,
-    panelName,
-    JSON.stringify(responses),
-    detailedFeedback,
-    result,
-  ]);
-  
+
+    await client.query(feedbackQuery, [
+      candidateId,
+      candidateEmail,
+      panelName,
+      hrEmail,
+      JSON.stringify(responses),
+      detailedFeedback,
+      result,
+    ]);
 
     // Set recruitmentphase based on result
     let recruitmentPhaseL2 = null;
@@ -3450,15 +3471,20 @@ app.post('/api/java_submit-feedback', async (req, res) => {
         WHERE id = $2;
       `;
       await client.query(updatePhaseQuery, [recruitmentPhaseL2, candidateId]);
-      console.log(`Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`);
+      console.log(
+        `Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`
+      );
     }
 
-    await client.query('COMMIT');
-    res.json({ success: true, message: 'Feedback and recruitment phase updated successfully.' });
+    await client.query("COMMIT");
+    res.json({
+      success: true,
+      message: "Feedback and recruitment phase updated successfully.",
+    });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error saving feedback:', error);
-    res.status(500).json({ error: 'Failed to save feedback.' });
+    await client.query("ROLLBACK");
+    console.error("Error saving feedback:", error);
+    res.status(500).json({ error: "Failed to save feedback." });
   } finally {
     client.release();
   }
@@ -3487,60 +3513,67 @@ app.get('/api/dotnet_feedback-questions', async (req, res) => {
 });
 
 // API to save feedback responses
-app.post('/api/dotnet_submit-feedback', async (req, res) => { 
+app.post("/api/dotnet_submit-feedback", async (req, res) => {
   const { candidateEmail, responses, detailedFeedback, result } = req.body;
 
   console.log("Received payload:", { candidateEmail, responses });
 
   if (!candidateEmail || !responses || !Array.isArray(responses)) {
     console.error("Invalid request payload:", req.body);
-    return res.status(400).json({ error: 'Invalid request payload. candidateEmail is required.' });
+    return res
+      .status(400)
+      .json({ error: "Invalid request payload. candidateEmail is required." });
   }
 
   const client = await pool.connect();
   try {
     // Fetch candidateId using candidateEmail
     const candidateQuery = `
-    SELECT id, panel_name FROM candidate_info WHERE candidate_email = $1;
+    SELECT id, panel_name,hr_email FROM candidate_info WHERE candidate_email = $1;
   `;
-  const candidateResult = await client.query(candidateQuery, [candidateEmail]);
-  
-  if (candidateResult.rows.length === 0) {
-    console.error("Candidate not found for email:", candidateEmail);
-    return res.status(404).json({ error: 'Candidate not found.' });
-  }
-  
-  const candidateRow = candidateResult.rows[0];
-  const candidateId = candidateRow.id;
-  const panelName = candidateRow.panel_name;
-  
-  console.log("Fetched candidateId:", candidateId);
-  console.log("Fetched panelName:", panelName);
-  
-  // Save feedback
-  const feedbackQuery = `
+    const candidateResult = await client.query(candidateQuery, [
+      candidateEmail,
+    ]);
+
+    if (candidateResult.rows.length === 0) {
+      console.error("Candidate not found for email:", candidateEmail);
+      return res.status(404).json({ error: "Candidate not found." });
+    }
+
+    const candidateRow = candidateResult.rows[0];
+    const candidateId = candidateRow.id;
+    const panelName = candidateRow.panel_name;
+    const hrEmail = candidateRow.hr_email;
+
+    console.log("Fetched candidateId:", candidateId);
+    console.log("Fetched panelName:", panelName);
+
+    // Save feedback
+    const feedbackQuery = `
     INSERT INTO app_dotnet_l2_feedback_response (
-      candidate_id, candidate_email, interviewer_name, responses, overall_feedback, result, updated_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+      candidate_id, candidate_email,hr_email, interviewer_name, responses, overall_feedback, result, updated_at
+    ) VALUES ($1, $2, $3, $4, $5, $6,$7, CURRENT_TIMESTAMP)
     ON CONFLICT (candidate_id)
     DO UPDATE SET
       responses = EXCLUDED.responses,
       overall_feedback = EXCLUDED.overall_feedback,
       result = EXCLUDED.result,
       interviewer_name = EXCLUDED.interviewer_name,
+      hr_email = EXCLUDED.hr_email,
       candidate_email = EXCLUDED.candidate_email,
       updated_at = CURRENT_TIMESTAMP;
   `;
-  
-  await client.query(feedbackQuery, [
-    candidateId,
-    candidateEmail,
-    panelName,
-    JSON.stringify(responses),
-    detailedFeedback,
-    result,
-  ]);
-  
+
+    await client.query(feedbackQuery, [
+      candidateId,
+      candidateEmail,
+      panelName,
+      hrEmail,
+      JSON.stringify(responses),
+      detailedFeedback,
+      result,
+    ]);
+
     // Set recruitmentphase based on result
     let recruitmentPhaseL2 = null;
     if (result === "Recommended") {
@@ -3556,20 +3589,24 @@ app.post('/api/dotnet_submit-feedback', async (req, res) => {
         WHERE id = $2;
       `;
       await client.query(updatePhaseQuery, [recruitmentPhaseL2, candidateId]);
-      console.log(`Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`);
+      console.log(
+        `Updated recruitmentphase to "${recruitmentPhaseL2}" for candidateId ${candidateId}`
+      );
     }
 
-    await client.query('COMMIT');
-    res.json({ success: true, message: 'Feedback and recruitment phase updated successfully.' });
+    await client.query("COMMIT");
+    res.json({
+      success: true,
+      message: "Feedback and recruitment phase updated successfully.",
+    });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error saving feedback:', error);
-    res.status(500).json({ error: 'Failed to save feedback.' });
+    await client.query("ROLLBACK");
+    console.error("Error saving feedback:", error);
+    res.status(500).json({ error: "Failed to save feedback." });
   } finally {
     client.release();
   }
 });
-
 
 // Api to fetch Angular questions
 app.get('/api/angular_feedback-questions', async (req, res) => {
