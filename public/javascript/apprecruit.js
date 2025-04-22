@@ -455,13 +455,13 @@ async function sendCountToDatabase(count) {
 
 async function getValidApiKey(resumeUrl) {
   const apiKeys = [
-    "sec_U9gJ7XetrGWfbji3eM3nE2xknV201Nab",
-    "sec_U9gJ7XetrGWfbji3eM3nE2xknV201Ncd",
-    "sec_U9gJ7XetrGWfbji3eM3nE2xknV201Nef", // Add more keys as needed
-    "sec_U9gJ7XetrGWfbji3eM3nE2xknV201N56",
+    "sec_E4JRJ65jEgOUQLyjvOBOLBgx28e6IAV1",
+    "sec_w01JRJV5FqzTdgtkwHsz9VYyJqTnsOxB",
+    "sec_hHOWE4EocbyJfrqnU7ZLDFKxhiZwSQRY", // Add more keys as needed
+    "sec_q9zdNmA1zOPQY5YrN6oXTucSLAjTzE2P",
+    "sec_ZsT30w926Wlo35LdJ0kpOWXprarObgwP",
     "sec_ELtQJOZKC9dGCpaTRqb8kVzLSiOvfT89",
-    "sec_ELtQJOZKC9dGCpaTRqb8kVzLSiOvfT90",
-    "sec_U9gJ7XetrGWfbji3eM3nE2xknV201N42",
+    "sec_zk4jxZJSQh95LaNGVebPta6bGfEM6yVl",
   ];
   for (let apiKey of apiKeys) {
     try {
