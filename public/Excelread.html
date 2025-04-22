@@ -22,6 +22,24 @@
         text-align: center;
         max-width: 500px;
         width: 100%;
+        position: relative;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .back-button:hover {
+        background-color: #5a6268;
       }
 
       h2 {
@@ -60,6 +78,14 @@
   </head>
   <body>
     <div class="container">
+      <!-- Back button -->
+      <button
+        class="back-button"
+        onclick="window.location.href='dashboard.html'"
+      >
+        ← Back
+      </button>
+
       <h2>Upload Excel with RRFIDs</h2>
 
       <input type="file" id="excelFile" accept=".xlsx, .xls" />
@@ -96,6 +122,8 @@
             statusDiv.innerText = "No RRFIDs found in the file.";
             return;
           }
+
+          statusDiv.innerText = "Uploading RRFIDs..."; // Show uploading status
 
           try {
             const res = await fetch("https://demotag.vercel.app/api/upload-rrfids", {
