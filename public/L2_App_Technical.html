@@ -756,7 +756,7 @@
             {
               parts: [
                 {
-                  text: `Provide a brief summary in 120 words highlighting key skills, weaknesses, and areas for improvement based on the following data:\n\n${responses
+                  text: `Provide a brief summary in 120 words highlighting key skills, weaknesses, and areas for improvement based on the following data and also analyze and provide the suggestion whether candidate is selected or rejected in new line as Recommendation :\n\n${responses
                     .map(
                       (response) => `
                   ${response.skillCategory}: Deployment - ${response.deployment}, Configuration - ${response.configuration}, Troubleshooting - ${response.troubleshooting}, Justification - ${response.justification}, Improvements - ${response.improvements}
@@ -764,7 +764,7 @@
                     )
                     .join(
                       "\n"
-                    )}\n\nAfter the summary, provide a one-line response for each skill category, highlighting strengths and weaknesses.`,
+                    )}\n\nAfter the summary, provide a one-line response for each skill category, highlighting strengths and weaknesses .`,
                 },
               ],
             },
@@ -837,7 +837,32 @@
             showToast("Please fill all required fields", "error");
             return;
           }
+          // Validate justification and improvements fields
+          const rows = document.querySelectorAll("#skills-table-body tr");
+          for (const row of rows) {
+            const justification = row
+              .querySelector("textarea[id^='justification']")
+              .value.trim();
+            const improvements = row
+              .querySelector("textarea[id^='improvements']")
+              .value.trim();
 
+            if (justification.split(/\s+/).length < 25) {
+              showToast(
+                "Each 'Justification' field must have at least 25 words.",
+                "error"
+              );
+              return;
+            }
+
+            if (improvements.split(/\s+/).length < 25) {
+              showToast(
+                "Each 'Improvements' field must have at least 25 words.",
+                "error"
+              );
+              return;
+            }
+          }
           const candidateEmail =
             document.getElementById("candidate-email").textContent;
           const candidateName = document.getElementById("candidate-name").value;
