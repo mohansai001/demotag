@@ -422,10 +422,10 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                         }</p>
                     </div>
                     <div class="feedback-content">
-                        <p><strong>Feedback:</strong> ${
-                          feedback.detailed_feedback ||
-                          "No detailed feedback available."
-                        }</p>
+                        // <p><strong>Feedback:</strong> ${
+                        //   feedback.detailed_feedback ||
+                        //   "No detailed feedback available."
+                        // }</p>
                     </div>
                     <div class="buttons">
                         <button class="btn btn-feedback" onclick="openFeedbackForm('${
