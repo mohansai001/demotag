@@ -2851,16 +2851,17 @@ app.get('/api/get-feedbackform', async (req, res) => {
 });
 
 //submit feedback for feedback form
-app.post('/api/submitFeedback', async (req, res) => {
+app.post("/api/submitFeedback", async (req, res) => {
   let { formData, roundDetails } = req.body;
 
   if (!formData || !roundDetails) {
-    return res.status(400).json({ success: false, message: 'Please fill all the fields' });
+    return res
+      .status(400)
+      .json({ success: false, message: "Please fill all the fields" });
   }
 
-  // Remove "Scheduled" and leading spaces from roundDetails
-  roundDetails = roundDetails.replace('Scheduled', '').trim();
-
+  // Clean up roundDetails
+  roundDetails = roundDetails.replace("Scheduled", "").trim();
   const candidateEmail = formData.candidateEmail;
 
   const checkQuery = `
@@ -2872,8 +2873,8 @@ app.post('/api/submitFeedback', async (req, res) => {
   try {
     const existingFeedback = await pool.query(checkQuery, checkValues);
 
+    // -------------------- UPDATE FLOW --------------------
     if (existingFeedback.rows.length > 0) {
-      // Update feedback if it already exists
       const updateQuery = `
         UPDATE feedbackform 
         SET 
@@ -2886,10 +2887,17 @@ app.post('/api/submitFeedback', async (req, res) => {
             hr_email = $7,
             detailed_feedback = $8,
             result = $9,
-            submitted_at = NOW()
-        WHERE candidate_email = $10 AND round_details = $11
+            submitted_at = NOW(),
+            organizational_fitment = $10,
+            customer_communication = $11,
+            continuous_learning = $12,
+            attitude_personality = $13,
+            communication_skills = $14,
+            project_fitment = $15
+        WHERE candidate_email = $16 AND round_details = $17
         RETURNING *;
       `;
+
       const updateValues = [
         formData.imochaScore,
         formData.rrfId,
@@ -2900,6 +2908,12 @@ app.post('/api/submitFeedback', async (req, res) => {
         formData.hrEmail,
         formData.detailedFeedback,
         formData.result,
+        formData.organizationalFitment,
+        formData.customerCommunication,
+        formData.continuousLearning,
+        formData.attitudePersonality,
+        formData.communicationSkills,
+        formData.projectFitment,
         candidateEmail,
         roundDetails
       ];
@@ -2907,15 +2921,14 @@ app.post('/api/submitFeedback', async (req, res) => {
       const updateResult = await pool.query(updateQuery, updateValues);
 
       const feedbackResult = formData.result;
-      let recruitmentPhase = '';
+      let recruitmentPhase = "";
 
-      if (feedbackResult === 'Recommended') {
+      if (feedbackResult === "Recommended") {
         recruitmentPhase = `Shortlisted in ${roundDetails}`;
-      } else if (feedbackResult === 'Rejected') {
+      } else if (feedbackResult === "Rejected") {
         recruitmentPhase = `Rejected in ${roundDetails}`;
       }
 
-      // Update candidate_info table with recruitmentPhase if needed
       if (recruitmentPhase) {
         const updateCandidateQuery = `
           UPDATE candidate_info 
@@ -2928,46 +2941,55 @@ app.post('/api/submitFeedback', async (req, res) => {
 
       return res.status(200).json({
         success: true,
-        message: 'Feedback updated successfully',
-        data: updateResult.rows[0]
+        message: "Feedback updated successfully",
+        data: updateResult.rows[0],
       });
     }
 
-    // Insert new feedback if no existing record
+    // -------------------- INSERT FLOW --------------------
     const insertQuery = `
       INSERT INTO feedbackform 
-          (round_details, candidate_email, imocha_score, rrf_id, position, candidate_name, interview_date, 
-          interviewer_name, hr_email, detailed_feedback, result, submitted_at)
+        (round_details, candidate_email, imocha_score, rrf_id, position, candidate_name, interview_date, 
+         interviewer_name, hr_email, detailed_feedback, result, submitted_at,
+         organizational_fitment, customer_communication, continuous_learning,
+         attitude_personality, communication_skills, project_fitment)
       VALUES 
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW()) 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(),
+         $12, $13, $14, $15, $16, $17) 
       RETURNING *;
     `;
+
     const insertValues = [
       roundDetails,
-      candidateEmail, 
-      formData.imochaScore, 
-      formData.rrfId, 
-      formData.position, 
+      candidateEmail,
+      formData.imochaScore,
+      formData.rrfId,
+      formData.position,
       formData.candidateName,
-      formData.interviewDate, 
-      formData.interviewerName, 
-      formData.hrEmail, 
-      formData.detailedFeedback, 
-      formData.result
+      formData.interviewDate,
+      formData.interviewerName,
+      formData.hrEmail,
+      formData.detailedFeedback,
+      formData.result,
+      formData.organizationalFitment,
+      formData.customerCommunication,
+      formData.continuousLearning,
+      formData.attitudePersonality,
+      formData.communicationSkills,
+      formData.projectFitment
     ];
 
     const insertResult = await pool.query(insertQuery, insertValues);
 
     const feedbackResult = formData.result;
-    let recruitmentPhase = '';
+    let recruitmentPhase = "";
 
-    if (feedbackResult === 'Recommended') {
+    if (feedbackResult === "Recommended") {
       recruitmentPhase = `Shortlisted in ${roundDetails}`;
-    } else if (feedbackResult === 'Rejected') {
+    } else if (feedbackResult === "Rejected") {
       recruitmentPhase = `Rejected in ${roundDetails}`;
     }
 
-    // Update candidate_info table with recruitmentPhase if needed
     if (recruitmentPhase) {
       const updateCandidateQuery = `
         UPDATE candidate_info 
@@ -2980,13 +3002,12 @@ app.post('/api/submitFeedback', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Feedback submitted successfully',
-      data: insertResult.rows[0]
+      message: "Feedback submitted successfully",
+      data: insertResult.rows[0],
     });
-
   } catch (error) {
-    console.error('Error submitting feedback:', error);
-    res.status(500).json({ success: false, message: 'Error submitting feedback' });
+    console.error("Error submitting feedback:", error);
+    res.status(500).json({ success: false, message: "Error submitting feedback" });
   }
 });
 
