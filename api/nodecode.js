@@ -3588,15 +3588,16 @@ app.post("/api/dotnet_submit-feedback", async (req, res) => {
       updated_at = CURRENT_TIMESTAMP;
   `;
 
-    await client.query(feedbackQuery, [
-      candidateId,
-      candidateEmail,
-      panelName,
-      hrEmail,
-      JSON.stringify(responses),
-      detailedFeedback,
-      result,
-    ]);
+  await client.query(feedbackQuery, [
+    candidateId,
+    candidateEmail,
+    hrEmail,          // Correct placement
+    panelName,        // Correct placement
+    JSON.stringify(responses),
+    detailedFeedback,
+    result,
+  ]);
+  
 
     // Set recruitmentphase based on result
     let recruitmentPhaseL2 = null;
