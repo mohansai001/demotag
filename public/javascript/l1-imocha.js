@@ -63,7 +63,8 @@ window.onload = function () {
 
     document.getElementById("statusText").innerText = candidateDetails.statusText;
     document.getElementById("role").innerText = candidateDetails.role;
-    document.getElementById("finalSummary").innerText = candidateDetails.finalSummary;
+    document.getElementById("finalSummary").innerText =
+  candidateDetails.finalSummary.split("- Recommendation:")[0].trim();
     document.getElementById("globalHrEmail").innerText = candidateDetails.globalHrEmail;
     document.getElementById("globalRrfId").innerText = candidateDetails.globalRrfId;
 
