@@ -73,13 +73,13 @@ function getFeedbackFormUrl(recruitmentPhase) {
     "Shortlisted in L2": "L2-Technical.html",
     "Client Fitment Round Scheduled": "feedbackform.html",
     "Shortlisted in Client Fitment Round": "feedbackform.html",
-    "Project Fitment Round Scheduled": "feedbackform.html",
+    "Project Fitment Round Scheduled": "projectfitment.html",
     "Shortlisted in Project Fitment Round": "feedbackform.html",
     "Fitment Round Scheduled": "feedbackform.html",
     "Shortlisted in Fitment Round": "feedbackform.html",
     "EC Fitment Round Scheduled": "feedbackform.html",
     "Shortlisted in EC Fitment Round": "feedbackform.html",
-    "Project Fitment Round": "feedbackform.html",
+    "Project Fitment Round": "projectfitment.html",
     "Fitment Round": "feedbackform.html",
     "L2 Technical": "L2-Technical.html",
     "Client Fitment Round": "feedbackform.html",
@@ -382,11 +382,21 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                             <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
                         </button>
                     </div>
-                    <div class="buttons">
-                        <button class="btn btn-resume"><a href="${candidate.resume}" target="_blank">Candidate Resume</a></button>
-                        <button class="btn btn-mocha"><a href="${candidate.imocha_report}" target="_blank">iMocha Result</a></button>
-                        <button class="btn btn-feedback" onclick="openFeedbackForm('${candidate.candidate_email}', '${roundDetails}')">Feedback Form</button>
-                    </div>
+<div class="buttons">
+    <button class="btn btn-resume">
+        <a href="${candidate.resume}" target="_blank">Candidate Resume</a>
+    </button>
+    <button class="btn btn-mocha">
+        <a href="${candidate.imocha_report}" target="_blank">iMocha Result</a>
+    </button>
+    <button class="btn btn-feedback" 
+        onclick="openFeedbackForm('${candidate.candidate_email}', '${roundDetails}')">
+        Feedback Form
+    </button>
+  <button class="btn btn-previous-feedbacks" onclick="openPreviousFeedbacks('${candidate.candidate_email}')">Previous Feedbacks</button>
+
+</div>
+
                 `;
 
         meetingContainer.appendChild(candidateCard);
@@ -422,7 +432,7 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
                         }</p>
                     </div>
                     <div class="feedback-content">
-                
+                    
                     </div>
                     <div class="buttons">
                         <button class="btn btn-feedback" onclick="openFeedbackForm('${
@@ -442,6 +452,10 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
     console.error("Unexpected error:", error);
   }
 }
+
+  function viewPreviousFeedback(candidateEmail) {
+    window.location.href = `finalfeedback.html?email=${encodeURIComponent(candidateEmail)}`;
+  }
 
 // Fetch previous feedback for a candidate
 async function fetchFeedbackForCandidate(candidateEmail) {
@@ -552,38 +566,40 @@ async function openFeedbackForm(candidateEmail, recruitmentPhase) {
 
     const data = await response.json();
     const { eng_center, role } = data;
-
     const windowFeatures = "width=1000,height=800,top=100,left=100";
 
-    // Check if roundDetails is valid for L2
+    // Round-specific HTML logic
     const isL2Round =
       recruitmentPhase === "L2 Technical" ||
       recruitmentPhase === "Shortlisted in L2";
 
-    if (eng_center === "App EC" && isL2Round) {
+    if (recruitmentPhase === "Project Fitment Round") {
       feedbackWindows[candidateEmail] = window.open(
-        `L2_App_Technical.html?candidateEmail=${encodeURIComponent(
-          candidateEmail
-        )}&roundDetails=${encodeURIComponent(
-          recruitmentPhase
-        )}&position=${encodeURIComponent(role)}`,
+        `projectfitment.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+        `feedbackWindow_${candidateEmail}`,
+        windowFeatures
+      );
+    } else if (recruitmentPhase === "EC Fitment Round") {
+      feedbackWindows[candidateEmail] = window.open(
+        `ecfitment.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+        `feedbackWindow_${candidateEmail}`,
+        windowFeatures
+      );
+    } else if (eng_center === "App EC" && isL2Round) {
+      feedbackWindows[candidateEmail] = window.open(
+        `L2_App_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}&position=${encodeURIComponent(role)}`,
         `feedbackWindow_${candidateEmail}`,
         windowFeatures
       );
     } else if (eng_center === "Data") {
       feedbackWindows[candidateEmail] = window.open(
-        `L2_Data_Technical.html?candidateEmail=${encodeURIComponent(
-          candidateEmail
-        )}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+        `L2_Data_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
         `feedbackWindow_${candidateEmail}`,
         windowFeatures
       );
     } else {
-      // Default fallback - open feedbackform.html instead
       feedbackWindows[candidateEmail] = window.open(
-        `feedbackform.html?candidateEmail=${encodeURIComponent(
-          candidateEmail
-        )}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
+        `feedbackform.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
         `feedbackWindow_${candidateEmail}`,
         windowFeatures
       );
@@ -593,6 +609,7 @@ async function openFeedbackForm(candidateEmail, recruitmentPhase) {
     alert("Failed to open feedback form. Please try again.");
   }
 }
+
 
 // Enhanced closeFeedbackModal function
 function closeFeedbackModal() {
@@ -681,3 +698,19 @@ document.getElementById("nextMonthBtn").addEventListener("click", () => {
   monthSelector.value = currentMonth;
   yearSelector.value = currentYear;
 });
+function openPreviousFeedbacks(email) {
+  const iframeUrl = `finalfeedback.html?email=${encodeURIComponent(email)}`;
+
+  const popup = document.createElement("div");
+  popup.className = "custom-feedback-popup"; // give it your new custom class name
+
+  popup.innerHTML = `
+    <div class="custom-popup-content">
+      <button class="custom-close-btn" onclick="this.parentElement.parentElement.remove()">X</button>
+      <iframe src="${iframeUrl}" width="100%" height="600px" style="border:none;"></iframe>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+}
+
