@@ -248,7 +248,8 @@ document.getElementById("closeButton").addEventListener("click", function () {
 // Save the new step
 // Save the new step
 document.getElementById("saveButton").addEventListener("click", function () {
-  const name = document.getElementById("name").value;
+  const nameSelect = document.getElementById("name");
+  const name = nameSelect.value;
   const position = document.getElementById("position").value;
 
   if (name && position) {
@@ -258,20 +259,15 @@ document.getElementById("saveButton").addEventListener("click", function () {
     const newStep = document.createElement("div");
     newStep.classList.add("step");
     newStep.innerHTML = `
-      <div class="step-circle"></div> <!-- Number will be updated later -->
+      <div class="step-circle"></div>
       <div class="step-title">${name}</div>
     `;
 
     if (position === "before") {
-      // Find all steps titled "Fitment"
-      const fitmentSteps = Array.from(stepsContainer.children).filter(step =>
+      const fitmentSteps = Array.from(stepsContainer.children).filter((step) =>
         step.querySelector(".step-title").textContent.includes("Fitment")
       );
-
-      // Select the last Fitment step in the list
       const lastFitmentStep = fitmentSteps[fitmentSteps.length - 1];
-
-      // Insert before the last found Fitment step
       if (lastFitmentStep) {
         stepsContainer.insertBefore(newStep, lastFitmentStep);
       } else {
@@ -281,12 +277,14 @@ document.getElementById("saveButton").addEventListener("click", function () {
       stepsContainer.appendChild(newStep);
     }
 
-    // Update step numbers correctly
     updateStepNumbers(stepsContainer);
 
-    // Close the popup
+    // Remove the selected option from the dropdown
+    nameSelect.remove(nameSelect.selectedIndex);
+    nameSelect.selectedIndex = 0;
+
+    document.getElementById("position").selectedIndex = 0;
     document.getElementById("popupForm").style.display = "none";
-    document.getElementById("name").value = ""; // Reset input
   }
 });
  
