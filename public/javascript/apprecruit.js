@@ -238,7 +238,10 @@ async function uploadResume() {
         displaySuccessPopup(
           "Resume uploaded successfully: " + processedFile.name
         );
-        closePopup(); // Assuming this closes another popup or message
+     closePopup();
+        setTimeout(function() {
+          closeSuccessPopup(); // You should have a function that closes the popup
+        }, 3000); // Assuming this closes another popup or message
 
         document.querySelector(".role-selection-container").style.display =
           "none";
