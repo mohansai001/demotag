@@ -112,6 +112,7 @@
         background-color: #fff;
         box-sizing: border-box;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        height: 41px;
       }
 
       input:focus,
@@ -209,7 +210,9 @@
   </head>
 
   <body>
-    <div class="form-container">
+    <button onclick="downloadFormAsPDF()">Download PDF</button>
+
+    <div id="form-to-download" class="form-container">
       <center>
         <h1><strong>Final Feedback</strong></h1>
       </center>
@@ -808,6 +811,74 @@
           closeBtn.style.display = "block";
         }
       }
+      async function downloadFormAsPDF() {
+        const formElement = document.getElementById("form-to-download");
+        if (!formElement) {
+          alert("Form container not found!");
+          return;
+        }
+
+        // Clone the form
+        const clonedForm = formElement.cloneNode(true);
+        clonedForm.style.position = "absolute";
+        clonedForm.style.top = "0";
+        clonedForm.style.left = "0";
+        clonedForm.style.zIndex = "-9999";
+        clonedForm.style.opacity = "1";
+        clonedForm.style.pointerEvents = "none";
+        clonedForm.style.width = formElement.offsetWidth + "px";
+        document.body.appendChild(clonedForm);
+
+        // Replace all textareas with plain text divs
+        const textareas = clonedForm.querySelectorAll("textarea");
+        textareas.forEach((ta) => {
+          const textValue = ta.value || ta.placeholder || "";
+          const textDiv = document.createElement("div");
+          textDiv.textContent = textValue;
+          textDiv.style.margin = "5px 0";
+          textDiv.style.whiteSpace = "pre-wrap";
+          textDiv.style.padding = "6px";
+          textDiv.style.border = "1px solid #ccc";
+          textDiv.style.backgroundColor = "#f3f3f3";
+          textDiv.style.fontFamily = "Arial, sans-serif";
+          textDiv.style.fontSize = "12px";
+          ta.replaceWith(textDiv);
+        });
+
+        // Wait a tick to ensure rendering
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        const canvas = await html2canvas(clonedForm, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+        });
+
+        document.body.removeChild(clonedForm); // Cleanup
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jspdf.jsPDF("p", "mm", "a4");
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        let heightLeft = pdfHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight();
+
+        while (heightLeft > 0) {
+          position = heightLeft - pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+          heightLeft -= pdf.internal.pageSize.getHeight();
+        }
+
+        pdf.save("candidate_form.pdf");
+      }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </body>
 </html>
