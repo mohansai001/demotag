@@ -24,7 +24,9 @@ async function fetchCandidatesInfo() {
   loadingOverlay.style.display = "flex"; // Show the loading overlay
 
   try {
-    const response = await fetch("https://demotag.vercel.app/api/get-shortlisted-candidates");
+    const response = await fetch(
+      "https://demotag.vercel.app/api/get-shortlisted-candidates"
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
@@ -33,10 +35,25 @@ async function fetchCandidatesInfo() {
     console.log("API Response:", data);
 
     const candidates = Array.isArray(data) ? data : data.candidates || [];
+
+    // Get login email from localStorage
+    const loggedInEmail = localStorage.getItem("userEmail");
+
+
+    if (!loggedInEmail) {
+      console.error("Login email not found in localStorage.");
+      return;
+    }
+
     const tableBody = document.querySelector("#candidates-table tbody");
     tableBody.innerHTML = "";
 
-    for (const candidate of candidates) {
+    // Filter candidates whose hr_email matches loggedInEmail
+    const filteredCandidates = candidates.filter(
+      (candidate) => candidate.hr_email?.toLowerCase() === loggedInEmail?.toLowerCase()
+    );
+
+    for (const candidate of filteredCandidates) {
       const row = document.createElement("tr");
       row.classList.add("candidate");
       row.dataset.status =
@@ -60,12 +77,15 @@ async function fetchCandidatesInfo() {
         candidate.recruitment_phase === "Rejected in L2" ||
         candidate.recruitment_phase === "Rejected in Client Fitment Round" ||
         candidate.recruitment_phase === "Rejected in Project Fitment Round" ||
-         candidate.recruitment_phase === "Shortlisted in Fitment Round" ||
+        candidate.recruitment_phase === "Shortlisted in Fitment Round" ||
         candidate.recruitment_phase === "Rejected in Fitment Round"
       ) {
         nextRound = "No Further Rounds"; // Display 'No Further Rounds' for rejected candidates
       } else {
-        nextRound = await getNextRound(candidate.rrf_id, candidate.recruitment_phase);
+        nextRound = await getNextRound(
+          candidate.rrf_id,
+          candidate.recruitment_phase
+        );
       }
 
       console.log(`Final Next Round for ${candidate.rrf_id}:`, nextRound);
@@ -96,20 +116,22 @@ async function fetchCandidatesInfo() {
               : '<span class="no-next-round">Waiting For Feedback</span>'
           }
         </td>
-         <td>
-            <button class="feedbackButton" data-email="${candidate.candidate_email}">Feedback</button>
+        <td>
+          <button class="feedbackButton" data-email="${candidate.candidate_email}">Feedback</button>
         </td>
       `;
 
       const button = row.querySelector(".schedule-btn");
       if (button && nextRound && nextRound !== "No Further Rounds") {
-        button.addEventListener("click", () => handleScheduleClick(candidate.rrf_id, nextRound));
+        button.addEventListener("click", () =>
+          handleScheduleClick(candidate.rrf_id, nextRound)
+        );
       }
 
       tableBody.appendChild(row);
     }
 
-    await sendEmailsForCompletedCandidates(candidates);
+    await sendEmailsForCompletedCandidates(filteredCandidates);
   } catch (error) {
     console.error("Error fetching candidates:", error);
   } finally {
