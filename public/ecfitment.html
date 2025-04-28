@@ -471,26 +471,39 @@ function downloadPDF() {
             };
 
             // Send data to backend
-            fetch('https://demotag.vercel.app/api/submitFeedback', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ formData, roundDetails })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Feedback submitted successfully', 'success');
-                          sendEmailWithPDF(formData.hrEmail, roundDetails); 
-                    } else {
-                        showToast('Error submitting feedback', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error submitting feedback', 'error');
-                });
+          fetch('https://demotag.vercel.app/api/submitFeedback', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ formData, roundDetails })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        showToast('Feedback submitted successfully', 'success');
+        sendEmailWithPDF(formData.hrEmail, roundDetails);
+
+        // After success, wait 1.5 seconds, then close or redirect
+        setTimeout(() => {
+            if (window.opener) {
+                window.close();
+            } else if (window.parent && window.parent.closeFeedbackModal) {
+                window.parent.closeFeedbackModal();
+            } else {
+                window.location.href = `ecfitment.html?success=true&candidateEmail=${encodeURIComponent(formData.candidateEmail)}&position=${encodeURIComponent(formData.position)}`;
+            }
+        }, 1500);
+
+    } else {
+        showToast('Error submitting feedback', 'error');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    showToast('Error submitting feedback', 'error');
+});
+
         });
 
 // Function to send the PDF via email using Microsoft Graph API
