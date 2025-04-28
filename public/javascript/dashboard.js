@@ -1835,383 +1835,427 @@ populateTaskDate();
 //Hr details chart
 
 document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document.getElementById("hrChart").getContext("2d");
-    const filterInput = document.getElementById("filterInput");
+  const ctx = document.getElementById("hrChart").getContext("2d");
+  const filterInput = document.getElementById("filterInput");
 
-    const colorPalette = [
-        '#6CD8FF', '#7BFFD1', '#FF8AF0', '#A18AFF', '#FFB677',
-        '#5CE1E6', '#FF6B8B', '#A5FF8A', '#FF9A63', '#C68AFF',
-        '#6BFFD6', '#FFA4D4', '#88FFB5', '#FF8A63', '#D18AFF',
-        '#6E8BFF', '#00C1A5', '#FF7D6B', '#AD93FF', '#4AC6E9', '#FFB259'
-    ];
+  const colorPalette = [
+      '#6CD8FF', '#7BFFD1', '#FF8AF0', '#A18AFF', '#FFB677',
+      '#5CE1E6', '#FF6B8B', '#A5FF8A', '#FF9A63', '#C68AFF',
+      '#6BFFD6', '#FFA4D4', '#88FFB5', '#FF8A63', '#D18AFF',
+      '#6E8BFF', '#00C1A5', '#FF7D6B', '#AD93FF', '#4AC6E9', '#FFB259'
+  ];
 
-    const getInitials = (email) => {
-        const username = email.split('@')[0];
-        const parts = username.split(/[._]/);
-        return parts.map(p => p[0]?.toUpperCase()).join('');
-    };
+  // Normalize email function to handle various formats consistently
+  const normalizeEmail = (email) => {
+      if (!email || typeof email !== 'string') return '';
+      // Convert to lowercase
+      const lowerEmail = email.toLowerCase().trim();
+      // Add domain if missing
+      if (!lowerEmail.includes('@')) {
+          return `${lowerEmail}@valuemomentum.com`;
+      }
+      return lowerEmail;
+  };
 
-    // Create custom legend tooltip element
-    const legendTooltip = document.createElement("div");
-    legendTooltip.id = "legendTooltip";
-    legendTooltip.style.position = "fixed";
-    legendTooltip.style.display = "none";
-    legendTooltip.style.background = "rgba(0,0,0,0.8)";
-    legendTooltip.style.color = "white";
-    legendTooltip.style.padding = "6px 10px";
-    legendTooltip.style.borderRadius = "4px";
-    legendTooltip.style.fontFamily = "'Segoe UI', sans-serif";
-    legendTooltip.style.fontSize = "12px";
-    legendTooltip.style.pointerEvents = "none";
-    legendTooltip.style.zIndex = "9999";
-    document.body.appendChild(legendTooltip);
+  const getInitials = (email) => {
+      const username = email.split('@')[0];
+      const parts = username.split(/[._]/);
+      return parts.map(p => p[0]?.toUpperCase()).join('');
+  };
 
-    let hrChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: [
-                "Prescreening",
-                "Technical L1",
-                "Technical L2",
-                "EC Fitment",
-                "Project Fitment",
-                "Client Interview",
-                "Shortlisted",
-            ],
-            datasets: [],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: "top",
-                    labels: {
-                        boxWidth: 16,
-                        padding: 20,
-                        font: {
-                            family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                            size: 12,
-                            weight: '500'
-                        },
-                        usePointStyle: true,
-                        pointStyle: 'circle'
-                    },
-                    onHover: function (event, legendItem, legend) {
-                        const dataset = legend.chart.data.datasets[legendItem.datasetIndex];
-                        if (dataset.fullLabel) {
-                            legendTooltip.innerText = dataset.fullLabel;
-                            legendTooltip.style.display = "block";
-                            legendTooltip.style.left = event.native.clientX + 10 + "px";
-                            legendTooltip.style.top = event.native.clientY + 10 + "px";
-                        }
-                        event.native.target.style.cursor = "pointer";
-                    },
-                    onLeave: function (event) {
-                        legendTooltip.style.display = "none";
-                        event.native.target.style.cursor = "default";
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    titleFont: {
-                        family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                        size: 12,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                        size: 12
-                    },
-                    padding: 12,
-                    cornerRadius: 4,
-                    displayColors: true,
-                    mode: 'index',
-                    intersect: false,
-                    callbacks: {
-                        label: function (context) {
-                            const dataset = context.dataset;
-                            const fullLabel = dataset.fullLabel || dataset.label;
-                            const value = context.raw;
-                            return `${fullLabel}: ${value}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                            size: 11,
-                            weight: '500'
-                        }
-                    }
-                },
-                y: {
-                    stacked: true,
-                    beginAtZero: true,
-                    ticks: {
-                        font: {
-                            family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                            size: 11
-                        },
-                        precision: 0
-                    },
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
-                    }
-                }
-            },
-            elements: {
-                bar: {
-                    borderRadius: 4,
-                    borderWidth: 0,
-                    borderSkipped: false
-                }
-            },
-            animation: {
-                duration: 800,
-                easing: 'easeOutQuart'
-            }
-        }
-    });
+  // Create custom legend tooltip element
+  const legendTooltip = document.createElement("div");
+  legendTooltip.id = "legendTooltip";
+  legendTooltip.style.position = "fixed";
+  legendTooltip.style.display = "none";
+  legendTooltip.style.background = "rgba(0,0,0,0.8)";
+  legendTooltip.style.color = "white";
+  legendTooltip.style.padding = "6px 10px";
+  legendTooltip.style.borderRadius = "4px";
+  legendTooltip.style.fontFamily = "'Segoe UI', sans-serif";
+  legendTooltip.style.fontSize = "12px";
+  legendTooltip.style.pointerEvents = "none";
+  legendTooltip.style.zIndex = "9999";
+  document.body.appendChild(legendTooltip);
 
-    const hrColorMap = new Map();
-    let allHrData = {}; // Store all data for filtering
+  let hrChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+          labels: [
+              "Prescreening",
+              "Technical L1",
+              "Technical L2",
+              "EC Fitment",
+              "Project Fitment",
+              "Client Interview",
+              "Shortlisted",
+          ],
+          datasets: [],
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  position: "top",
+                  labels: {
+                      boxWidth: 16,
+                      padding: 20,
+                      font: {
+                          family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+                          size: 12,
+                          weight: '500'
+                      },
+                      usePointStyle: true,
+                      pointStyle: 'circle'
+                  },
+                  onHover: function (event, legendItem, legend) {
+                      const dataset = legend.chart.data.datasets[legendItem.datasetIndex];
+                      if (dataset.fullLabel) {
+                          legendTooltip.innerText = dataset.fullLabel;
+                          legendTooltip.style.display = "block";
+                          legendTooltip.style.left = event.native.clientX + 10 + "px";
+                          legendTooltip.style.top = event.native.clientY + 10 + "px";
+                      }
+                      event.native.target.style.cursor = "pointer";
+                  },
+                  onLeave: function (event) {
+                      legendTooltip.style.display = "none";
+                      event.native.target.style.cursor = "default";
+                  }
+              },
+              tooltip: {
+                  backgroundColor: 'rgba(0,0,0,0.8)',
+                  titleFont: {
+                      family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+                      size: 12,
+                      weight: 'bold'
+                  },
+                  bodyFont: {
+                      family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+                      size: 12
+                  },
+                  padding: 12,
+                  cornerRadius: 4,
+                  displayColors: true,
+                  mode: 'index',
+                  intersect: false,
+                  callbacks: {
+                      label: function (context) {
+                          const dataset = context.dataset;
+                          const fullLabel = dataset.fullLabel || dataset.label;
+                          const value = context.raw;
+                          return `${fullLabel}: ${value}`;
+                      }
+                  }
+              }
+          },
+          scales: {
+              x: {
+                  stacked: true,
+                  grid: {
+                      display: false
+                  },
+                  ticks: {
+                      font: {
+                          family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+                          size: 11,
+                          weight: '500'
+                      }
+                  }
+              },
+              y: {
+                  stacked: true,
+                  beginAtZero: true,
+                  ticks: {
+                      font: {
+                          family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+                          size: 11
+                      },
+                      precision: 0
+                  },
+                  grid: {
+                      color: 'rgba(0,0,0,0.05)'
+                  }
+              }
+          },
+          elements: {
+              bar: {
+                  borderRadius: 4,
+                  borderWidth: 0,
+                  borderSkipped: false
+              }
+          },
+          animation: {
+              duration: 800,
+              easing: 'easeOutQuart'
+          }
+      }
+  });
 
-    // Enhanced filtering functionality
-    function applyFilters() {
-        const searchTerm = filterInput.value.toLowerCase();
+  const hrColorMap = new Map();
+  let allHrData = {}; // Store all data for filtering
+  let displayNameMap = new Map(); // Map normalized emails to display names
 
-        // If search term matches a phase, filter by phase
-        if (hrChart.data.labels.some(label => label.toLowerCase() === searchTerm)) {
-            const phaseIndex = hrChart.data.labels.findIndex(label => label.toLowerCase() === searchTerm);
-            hrChart.data.datasets = Object.entries(allHrData).map(([email, data]) => ({
-                label: getInitials(email),
-                fullLabel: email,
-                data: data.map((value, index) => (index === phaseIndex ? value : 0)),
-                backgroundColor: hrColorMap.get(email),
-                hoverBackgroundColor: Chart.helpers.color(hrColorMap.get(email)).lighten(0.2).rgbString(),
-                borderWidth: 0,
-                borderRadius: 4
-            }));
-            hrChart.update();
-            return;
-        }
+  // Enhanced filtering functionality
+  function applyFilters() {
+      const searchTerm = filterInput.value.toLowerCase();
 
-        // If search term matches an email or initials, show all phases for that user
-        const filteredDatasets = Object.entries(allHrData)
-            .filter(([email]) => {
-                const initials = getInitials(email);
-                return email.toLowerCase().includes(searchTerm) || initials.toLowerCase().includes(searchTerm);
-            })
-            .map(([email, data]) => ({
-                label: getInitials(email),
-                fullLabel: email,
-                data: data,
-                backgroundColor: hrColorMap.get(email),
-                hoverBackgroundColor: Chart.helpers.color(hrColorMap.get(email)).lighten(0.2).rgbString(),
-                borderWidth: 0,
-                borderRadius: 4
-            }));
+      // If search term matches a phase, filter by phase
+      if (hrChart.data.labels.some(label => label.toLowerCase() === searchTerm)) {
+          const phaseIndex = hrChart.data.labels.findIndex(label => label.toLowerCase() === searchTerm);
+          hrChart.data.datasets = Object.entries(allHrData).map(([email, data]) => ({
+              label: getInitials(email),
+              fullLabel: displayNameMap.get(email) || email,
+              data: data.map((value, index) => (index === phaseIndex ? value : 0)),
+              backgroundColor: hrColorMap.get(email),
+              hoverBackgroundColor: Chart.helpers.color(hrColorMap.get(email)).lighten(0.2).rgbString(),
+              borderWidth: 0,
+              borderRadius: 4
+          }));
+          hrChart.update();
+          return;
+      }
 
-        hrChart.data.datasets = filteredDatasets;
-        hrChart.update();
-    }
+      // If search term matches an email or initials, show all phases for that user
+      const filteredDatasets = Object.entries(allHrData)
+          .filter(([email]) => {
+              const initials = getInitials(email);
+              const displayName = displayNameMap.get(email) || email;
+              return email.toLowerCase().includes(searchTerm) || 
+                     initials.toLowerCase().includes(searchTerm) ||
+                     displayName.toLowerCase().includes(searchTerm);
+          })
+          .map(([email, data]) => ({
+              label: getInitials(email),
+              fullLabel: displayNameMap.get(email) || email,
+              data: data,
+              backgroundColor: hrColorMap.get(email),
+              hoverBackgroundColor: Chart.helpers.color(hrColorMap.get(email)).lighten(0.2).rgbString(),
+              borderWidth: 0,
+              borderRadius: 4
+          }));
 
-    // Set up event listener for filter input
-    filterInput.addEventListener('input', applyFilters);
+      hrChart.data.datasets = filteredDatasets;
+      hrChart.update();
+  }
 
-    async function fetchPhaseCounts() {
-        try {
-            const response = await fetch("https://demotag.vercel.app/api/phase-counts");
-            if (!response.ok) throw new Error("Failed to fetch data");
+  // Set up event listener for filter input
+  filterInput.addEventListener('input', applyFilters);
 
-            const data = await response.json();
+  async function fetchPhaseCounts() {
+      try {
+          const response = await fetch("https://demotag.vercel.app/api/phase-counts");
+          if (!response.ok) throw new Error("Failed to fetch data");
 
-            const phaseMap = {
-                "Prescreening": 0,
-                "Move to L1": 1,
-                "L2 Technical Round": 2,
-                "EC Fitment Round": 3,
-                "Project Fitment Round": 4,
-                "Client Fitment Round": 5,
-                "Fitment Round": 6,
-            };
+          const data = await response.json();
 
-            allHrData = {}; // Reset all data
+          const phaseMap = {
+              "Prescreening": 0,
+              "Move to L1": 1,
+              "L2 Technical Round": 2,
+              "EC Fitment Round": 3,
+              "Project Fitment Round": 4,
+              "Client Fitment Round": 5,
+              "Fitment Round": 6,
+          };
 
-            data.forEach((item) => {
-                if (!item.hr_email || item.hr_email.trim() === "") return;
+          allHrData = {}; // Reset all data
+          displayNameMap.clear(); // Reset display name map
 
-                const hrEmail = item.hr_email.trim();
-                const phase = item.phase;
-                const count = parseInt(item.phase_count, 10) || 0;
+          data.forEach((item) => {
+              if (!item.hr_email || item.hr_email.trim() === "") return;
 
-                if (!allHrData[hrEmail]) {
-                    allHrData[hrEmail] = new Array(Object.keys(phaseMap).length).fill(0);
-                }
+              const normalizedEmail = normalizeEmail(item.hr_email);
+              const phase = item.phase;
+              const count = parseInt(item.phase_count, 10) || 0;
 
-                if (phaseMap[phase] !== undefined) {
-                    allHrData[hrEmail][phaseMap[phase]] = count;
-                }
-            });
+              // Set the display name (use original email for display purposes)
+              if (!displayNameMap.has(normalizedEmail)) {
+                  displayNameMap.set(normalizedEmail, item.hr_email.trim());
+              }
 
-            // Initialize HR color mapping
-            Object.keys(allHrData).forEach((hrEmail, index) => {
-                if (!hrColorMap.has(hrEmail)) {
-                    const colorIndex = index % colorPalette.length;
-                    hrColorMap.set(hrEmail, colorPalette[colorIndex]);
-                }
-            });
+              if (!allHrData[normalizedEmail]) {
+                  allHrData[normalizedEmail] = new Array(Object.keys(phaseMap).length).fill(0);
+              }
 
-            // Apply initial filters
-            applyFilters();
-        } catch (error) {
-            console.error("Error fetching phase counts:", error);
-        }
-    }
+              if (phaseMap[phase] !== undefined) {
+                  allHrData[normalizedEmail][phaseMap[phase]] = count;
+              }
+          });
 
-    fetchPhaseCounts();
-    setInterval(fetchPhaseCounts, 300000); // Refresh every 5 minutes
+          // Initialize HR color mapping
+          Object.keys(allHrData).forEach((hrEmail, index) => {
+              if (!hrColorMap.has(hrEmail)) {
+                  const colorIndex = index % colorPalette.length;
+                  hrColorMap.set(hrEmail, colorPalette[colorIndex]);
+              }
+          });
+
+          // Apply initial filters
+          applyFilters();
+      } catch (error) {
+          console.error("Error fetching phase counts:", error);
+      }
+  }
+
+  fetchPhaseCounts();
+  setInterval(fetchPhaseCounts, 300000); // Refresh every 5 minutes
 });
 
 async function populatePhaseTable() {
-    try {
-        const response = await fetch("https://demotag.vercel.app/api/phase-counts");
-        if (!response.ok) throw new Error("Failed to fetch phase counts");
+  try {
+      const response = await fetch("https://demotag.vercel.app/api/phase-counts");
+      if (!response.ok) throw new Error("Failed to fetch phase counts");
 
-        const data = await response.json();
+      const data = await response.json();
 
-        const phaseMap = {
-            "Prescreening": 0,
-            "Move to L1": 1,
-            "L2 Technical Round": 2,
-            "EC Fitment Round": 3,
-            "Project Fitment Round": 4,
-            "Client Fitment Round": 5,
-            "Fitment Round": 6,
-        };
+      const phaseMap = {
+          "Prescreening": 0,
+          "Move to L1": 1,
+          "L2 Technical Round": 2,
+          "EC Fitment Round": 3,
+          "Project Fitment Round": 4,
+          "Client Fitment Round": 5,
+          "Fitment Round": 6,
+      };
 
-        const tableBody = document.querySelector("#phaseTable tbody");
-        tableBody.innerHTML = ""; // Clear existing rows
+      const tableBody = document.querySelector("#phaseTable tbody");
+      tableBody.innerHTML = ""; // Clear existing rows
 
-        const hrData = {};
+      const hrData = {};
+      const emailNameMap = new Map(); // Map to track email to display name
 
-        // Aggregate data for each HR
-        data.forEach((item) => {
-            if (!item.hr_email || item.hr_email.trim() === "") return;
+      // Normalize email function
+      const normalizeEmail = (email) => {
+          if (!email || typeof email !== 'string') return '';
+          // Convert to lowercase
+          const lowerEmail = email.toLowerCase().trim();
+          // Add domain if missing
+          if (!lowerEmail.includes('@')) {
+              return `${lowerEmail}@valuemomentum.com`;
+          }
+          return lowerEmail;
+      };
 
-            const hrEmail = item.hr_email.trim();
-            const phase = item.phase;
-            const count = parseInt(item.phase_count, 10) || 0;
+      // Aggregate data for each HR
+      data.forEach((item) => {
+          if (!item.hr_email || item.hr_email.trim() === "") return;
 
-            if (!hrData[hrEmail]) {
-                hrData[hrEmail] = new Array(Object.keys(phaseMap).length).fill(0);
-            }
+          const originalEmail = item.hr_email.trim();
+          const normalizedEmail = normalizeEmail(originalEmail);
+          const phase = item.phase;
+          const count = parseInt(item.phase_count, 10) || 0;
 
-            if (phaseMap[phase] !== undefined) {
-                hrData[hrEmail][phaseMap[phase]] = count;
-            }
-        });
+          // Save the original email for display purposes
+          if (!emailNameMap.has(normalizedEmail)) {
+              emailNameMap.set(normalizedEmail, originalEmail);
+          }
 
-        // Convert HR data to an array and handle duplicates
-        const nameMap = new Map(); // To track unique names
-        const sortedData = Object.entries(hrData)
-            .map(([email, counts]) => {
-                const parts = email.split("@")[0].split(".");
-                const baseName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase(); // Capitalize first letter
-                const additionalName = parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase() : "";
+          if (!hrData[normalizedEmail]) {
+              hrData[normalizedEmail] = new Array(Object.keys(phaseMap).length).fill(0);
+          }
 
-                let displayName = baseName;
-                if (nameMap.has(baseName)) {
-                    // If the base name already exists, append the additional name
-                    displayName = `${baseName} ${additionalName}`;
-                }
-                nameMap.set(displayName, true);
+          if (phaseMap[phase] !== undefined) {
+              hrData[normalizedEmail][phaseMap[phase]] = count;
+          }
+      });
 
-                return { name: displayName, counts };
-            })
-            .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+      // Convert HR data to an array and handle duplicates
+      const nameMap = new Map(); // To track unique names
+      const sortedData = Object.entries(hrData)
+          .map(([normalizedEmail, counts]) => {
+              // Get the original email for display
+              const email = emailNameMap.get(normalizedEmail) || normalizedEmail;
+              
+              // Generate a display name from the email
+              const parts = email.split("@")[0].split(".");
+              const baseName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase(); // Capitalize first letter
+              const additionalName = parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase() : "";
 
-        // Pagination variables
-        const rowsPerPage = 5;
-        let currentPage = 1;
+              let displayName = baseName;
+              if (additionalName) {
+                  displayName = `${baseName} ${additionalName}`;
+              }
 
-        // Function to render the table for the current page
-        function renderTable(page, filteredData = sortedData) {
-            tableBody.innerHTML = ""; // Clear existing rows
-            const startIndex = (page - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
+              return { name: displayName, counts, email: normalizedEmail };
+          })
+          .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
 
-            const paginatedData = filteredData.slice(startIndex, endIndex);
+      // Pagination variables
+      const rowsPerPage = 5;
+      let currentPage = 1;
 
-            if (paginatedData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8">No matching records found</td></tr>`;
-                return;
-            }
+      // Function to render the table for the current page
+      function renderTable(page, filteredData = sortedData) {
+          tableBody.innerHTML = ""; // Clear existing rows
+          const startIndex = (page - 1) * rowsPerPage;
+          const endIndex = startIndex + rowsPerPage;
 
-            paginatedData.forEach(({ name, counts }) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${name}</td>
-                    ${counts.map(count => `<td>${count}</td>`).join("")}
-                `;
-                tableBody.appendChild(row);
-            });
+          const paginatedData = filteredData.slice(startIndex, endIndex);
 
-            renderPaginationControls(filteredData);
-        }
+          if (paginatedData.length === 0) {
+              tableBody.innerHTML = `<tr><td colspan="8">No matching records found</td></tr>`;
+              return;
+          }
 
-        // Function to render pagination controls
-        function renderPaginationControls(filteredData = sortedData) {
-            const paginationContainer = document.querySelector("#paginationControls");
-            paginationContainer.innerHTML = ""; // Clear existing controls
+          paginatedData.forEach(({ name, counts, email }) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                  <td>${name}</td>
+                  ${counts.map(count => `<td>${count}</td>`).join("")}
+              `;
+              tableBody.appendChild(row);
+          });
 
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+          renderPaginationControls(filteredData);
+      }
 
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement("button");
-                button.textContent = i;
-                button.style.margin = "0 5px";
-                button.style.padding = "5px 10px";
-                button.style.border = "1px solid #ccc";
-                button.style.borderRadius = "4px";
-                button.style.backgroundColor = i === currentPage ? "#007bff" : "#fff";
-                button.style.color = i === currentPage ? "#fff" : "#000";
+      // Function to render pagination controls
+      function renderPaginationControls(filteredData = sortedData) {
+          const paginationContainer = document.querySelector("#paginationControls");
+          paginationContainer.innerHTML = ""; // Clear existing controls
 
-                button.addEventListener("click", () => {
-                    currentPage = i;
-                    renderTable(currentPage, filteredData);
-                });
+          const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
-                paginationContainer.appendChild(button);
-            }
-        }
+          for (let i = 1; i <= totalPages; i++) {
+              const button = document.createElement("button");
+              button.textContent = i;
+              button.style.margin = "0 5px";
+              button.style.padding = "5px 10px";
+              button.style.border = "1px solid #ccc";
+              button.style.borderRadius = "4px";
+              button.style.backgroundColor = i === currentPage ? "#007bff" : "#fff";
+              button.style.color = i === currentPage ? "#fff" : "#000";
 
-        // Add search functionality
-        const searchInput = document.getElementById("hrSearchInput");
-        searchInput.addEventListener("input", () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const filteredData = sortedData.filter(({ name }) =>
-                name.toLowerCase().includes(searchTerm)
-            );
-            currentPage = 1; // Reset to the first page
-            renderTable(currentPage, filteredData);
-        });
+              button.addEventListener("click", () => {
+                  currentPage = i;
+                  renderTable(currentPage, filteredData);
+              });
 
-        // Render the first page
-        renderTable(currentPage);
-    } catch (error) {
-        console.error("Error populating phase table:", error);
-        const tableBody = document.querySelector("#phaseTable tbody");
-        tableBody.innerHTML = `<tr><td colspan="8">Error loading data</td></tr>`;
-    }
+              paginationContainer.appendChild(button);
+          }
+      }
+
+      // Add search functionality
+      const searchInput = document.getElementById("hrSearchInput");
+      searchInput.addEventListener("input", () => {
+          const searchTerm = searchInput.value.toLowerCase();
+          const filteredData = sortedData.filter(({ name, email }) =>
+              name.toLowerCase().includes(searchTerm) || 
+              email.toLowerCase().includes(searchTerm)
+          );
+          currentPage = 1; // Reset to the first page
+          renderTable(currentPage, filteredData);
+      });
+
+      // Render the first page
+      renderTable(currentPage);
+  } catch (error) {
+      console.error("Error populating phase table:", error);
+      const tableBody = document.querySelector("#phaseTable tbody");
+      tableBody.innerHTML = `<tr><td colspan="8">Error loading data</td></tr>`;
+  }
 }
 
 // Call the function to populate the table
