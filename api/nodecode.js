@@ -2319,90 +2319,103 @@ app.get('/api/hr-phases', async (req, res) => {
 //phase count
 app.get("/api/phase-counts", async (req, res) => {
   try {
+    const search = req.query.search || ''; // Get search query from URL (default empty if not provided)
+
     const query = `
       -- Fetch Prescreening count from candidate_info
-    SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    'Prescreening' AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    candidate_info
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR')
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          'Prescreening' AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          candidate_info
+      WHERE 
+          COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR')
 
-UNION ALL
+      UNION ALL
 
-SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    'Move to L1' AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    candidate_info
-WHERE 
-    Prescreening_status = 'Shortlisted'
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR')
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          'Move to L1' AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          candidate_info
+      WHERE 
+          Prescreening_status = 'Shortlisted' 
+          AND COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR')
 
-UNION ALL
+      UNION ALL
 
-SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    'Rejected' AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    candidate_info
-WHERE 
-    Prescreening_status = 'Rejected'
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR')
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          'Rejected' AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          candidate_info
+      WHERE 
+          Prescreening_status = 'Rejected' 
+          AND COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR')
 
-UNION ALL
+      UNION ALL
 
-SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    round_details AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    feedbackform
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR'), round_details
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          round_details AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          feedbackform
+      WHERE 
+          COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR'), round_details
 
-UNION ALL
+      UNION ALL
 
-SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    'L2 Technical Round' AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    feedback_table
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR')
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          'L2 Technical Round' AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          feedback_table
+      WHERE 
+          COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR')
 
-UNION ALL
+      UNION ALL
 
-SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    'L2 Technical Round' AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    app_java_l2_feedback_response
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR')
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          'L2 Technical Round' AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          app_java_l2_feedback_response
+      WHERE 
+          COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR')
 
-UNION ALL
+      UNION ALL
 
-SELECT 
-    COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
-    'L2 Technical Round' AS phase,
-    COUNT(*) AS phase_count
-FROM 
-    app_dotnet_l2_feedback_response
-GROUP BY 
-    COALESCE(TRIM(hr_email), 'Unknown HR');
-
+      SELECT 
+          COALESCE(TRIM(hr_email), 'Unknown HR') AS hr_email,
+          'L2 Technical Round' AS phase,
+          COUNT(*) AS phase_count
+      FROM 
+          app_dotnet_l2_feedback_response
+      WHERE 
+          COALESCE(TRIM(hr_email), 'Unknown HR') ILIKE '%' || $1 || '%'
+      GROUP BY 
+          COALESCE(TRIM(hr_email), 'Unknown HR');
     `;
 
-    const result = await pool.query(query);
+    const result = await pool.query(query, [search]);
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching data:", error);
