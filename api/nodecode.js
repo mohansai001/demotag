@@ -1069,61 +1069,152 @@ app.get('/api/candidate-counts', async (req, res) => {
 
 
 
+
 const testIds = {
-  cloudEC: ["1292779","1292781","1295883","1292990","1292769","1292775","1292733","1292976","1292950","1292733","1292976","1292765"],
-  dataEC: ["1303946","1293813","1293971","1263132","1304065","1233151","1294495","1302835","1294495","1304066","1304100","1292173","1293822","1303985","1303999","1304109","1304111","1304149"],
-  appEC: ["1229987","1228853","1288123","1228781","1228715","1228712","1302022","1228695","1304441"],
+  cloudEC: [
+    "1292779",
+    "1292781",
+    "1295883",
+    "1292990",
+    "1292769",
+    "1292775",
+    "1292733",
+    "1292976",
+    "1292950",
+    "1292733",
+    "1292976",
+    "1292765",
+  ],
+  dataEC: [
+    "1303946",
+    "1293813",
+    "1293971",
+    "1263132",
+    "1304065",
+    "1233151",
+    "1294495",
+    "1302835",
+    "1294495",
+    "1304066",
+    "1304100",
+    "1292173",
+    "1293822",
+    "1303985",
+    "1303999",
+    "1304109",
+    "1304111",
+    "1304149",
+  ],
+  appEC: [
+    "1304441",
+    "1228695",
+    "1302022",
+    "1228712", 
+
+  
+  ],
 };
 
 // Function to fetch completed test attempts
-async function getCompletedTestAttempts(testIds, startDateTime, endDateTime) {
-  try {
-    const requests = testIds.map((testId) => {
-      return axios.post(
-        `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
-        { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
-        { headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" } }
-      );
-    });
-
-    const responses = await Promise.allSettled(requests);
-    const allTestAttempts = [];
-
-    responses.forEach((response) => {
-      if (response.status === "fulfilled") {
-        allTestAttempts.push(...response.value.data.result.testAttempts);
-      } else {
-        console.error("Failed to fetch test attempts:", response.reason.message);
-      }
-    });
-
-    return allTestAttempts;
-  } catch (error) {
-    console.error("Error fetching test attempts:", error.message);
-    return [];
-  }
+// Utility function to delay execution
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Function to fetch report for an invitation ID
-async function getReport(invitationId) {
-  try {
-    const response = await axios.get(`${IMOCHA_BASE_URL}/reports/${invitationId}`, {
-      headers: { "x-api-key": IMOCHA_API_KEY, "Content-Type": "application/json" },
-    });
+// Modified function with rate limiting and retries
+async function getCompletedTestAttempts(testIds, startDateTime, endDateTime) {
+  const allTestAttempts = [];
+  const MAX_RETRIES = 3;
+  const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds between all requests
 
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching report for invitation ID ${invitationId}:`, error.message);
-    return null;
+  for (const testId of testIds) {
+    let retryCount = 0;
+    let success = false;
+
+    while (retryCount < MAX_RETRIES && !success) {
+      try {
+        // Add global delay for all requests
+        await delay(DELAY_BETWEEN_REQUESTS); 
+
+        const response = await axios.post(
+          `${IMOCHA_BASE_URL}/candidates/testattempts?state=completed`,
+          { testId, StartDateTime: startDateTime, EndDateTime: endDateTime },
+          {
+            headers: {
+              "x-api-key": IMOCHA_API_KEY,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        allTestAttempts.push(...response.data.result.testAttempts);
+        success = true;
+      } catch (error) {
+        retryCount++;
+        if (retryCount === MAX_RETRIES) {
+          console.error(`Failed to fetch test attempts for testId ${testId} after ${MAX_RETRIES} retries:`, error.message);
+        } else {
+          console.warn(`Retrying (${retryCount}/${MAX_RETRIES}) for testId ${testId}`);
+          await delay(DELAY_BETWEEN_REQUESTS * retryCount); // backoff
+        }
+      }
+    }
+  }
+
+  return allTestAttempts;
+}
+
+
+
+// Modified report fetching function with rate limiting
+async function getReport(invitationId) {
+  const MAX_RETRIES = 3;
+  const BASE_DELAY = 1000; // 1 second initial delay
+
+  for (let retry = 0; retry < MAX_RETRIES; retry++) {
+    try {
+      // Add delay that increases with each retry
+      if (retry > 0) {
+        await delay(BASE_DELAY * Math.pow(2, retry - 1));
+      }
+
+      const response = await axios.get(
+        `${IMOCHA_BASE_URL}/reports/${invitationId}`,
+        {
+          headers: {
+            "x-api-key": IMOCHA_API_KEY,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      if (retry === MAX_RETRIES - 1) {
+        console.error(
+          `Failed to fetch report for invitation ID ${invitationId} after ${MAX_RETRIES} retries:`,
+          error.message
+        );
+        return null;
+      }
+    }
   }
 }
 
 // Function to fetch and save test results in DB
-async function fetchAndSaveTestResults(testIdsArray, startDateTime, endDateTime) {
+async function fetchAndSaveTestResults(
+  testIdsArray,
+  startDateTime,
+  endDateTime
+) {
   console.log("Fetching test results...");
 
   try {
-    const testAttempts = await getCompletedTestAttempts(testIdsArray, startDateTime, endDateTime);
+    const testAttempts = await getCompletedTestAttempts(
+      testIdsArray,
+      startDateTime,
+      endDateTime
+    );
 
     for (const attempt of testAttempts) {
       const report = await getReport(attempt.testInvitationId);
@@ -1193,19 +1284,6 @@ app.post("/api/callTestAttempts/appEC", async (req, res) => {
   await fetchAndSaveTestResults(testIds.appEC, startDateTime, endDateTime);
   res.json({ message: "App EC test attempts processed" });
 });
-
-// Run fetchAndSaveTestResults every 5 minutes for each category
-setInterval(() => {
-  console.log("Scheduled task running...");
-  
-  const now = new Date();
-  const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
-  const currentTime = new Date().toISOString();
-
-  fetchAndSaveTestResults(testIds.cloudEC, last24Hours, currentTime);
-  fetchAndSaveTestResults(testIds.dataEC, last24Hours, currentTime);
-  fetchAndSaveTestResults(testIds.appEC, last24Hours, currentTime);
-}, 10000); // 5 minutes
 
 
 app.get('/api/test-counts', async (req, res) => {
