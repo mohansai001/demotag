@@ -292,7 +292,10 @@
                     <td class="header">Communication Skills: *</label></td>
                     <td><textarea id="communication-skills" placeholder="Enter feedback..." required></textarea></td>
                 </tr>
-            
+                <tr>
+                    <td class="header">Project Fitment: *</label></td>
+                    <td><textarea id="project-fitment" placeholder="Enter feedback..." required></textarea></td>
+                </tr>
              
             </table>   
         
@@ -415,7 +418,7 @@ function downloadPDF() {
                             document.getElementById('continuous-learning').value = data.continuous_learning || '';
                             document.getElementById('attitude-personality').value = data.attitude_personality || '';
                             document.getElementById('communication-skills').value = data.communication_skills || '';
-                       
+                            document.getElementById('project-fitment').value = data.project_fitment || '';
                             document.getElementById('detailed-feedback').value = data.detailed_feedback || '';
                             document.getElementById('result').value = data.result || '';
 
@@ -448,7 +451,7 @@ function downloadPDF() {
     const continuousLearning = document.getElementById('continuous-learning').value.trim();
     const attitudePersonality = document.getElementById('attitude-personality').value.trim();
     const communicationSkills = document.getElementById('communication-skills').value.trim();
-
+    const projectFitment = document.getElementById('project-fitment').value.trim();
 
             // Creating the formData object
             const formData = {
@@ -467,9 +470,10 @@ function downloadPDF() {
         continuousLearning,
         attitudePersonality,
         communicationSkills,
-    
+        projectFitment
             };
 
+            // Send data to backend
             fetch('https://demotag.vercel.app/api/submitFeedback', {
     method: 'POST',
     headers: {
@@ -502,6 +506,7 @@ function downloadPDF() {
     console.error('Error:', error);
     showToast('Error submitting feedback', 'error');
 });
+
         });
 
 // Function to send the PDF via email using Microsoft Graph API
