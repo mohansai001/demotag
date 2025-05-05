@@ -3129,25 +3129,37 @@ app.get('/api/feedback-table', async (req, res) => {
     `;
     const feedbackTableResult = await pool.query(feedbackTableQuery, [interview_date, userEmail]);
 
-    // Query from app_dotnet_l2_feedback_response
-    const dotnetQuery = `
-    SELECT candidate_email, result, updated_at AS interview_date
-    FROM app_dotnet_l2_feedback_response
-    WHERE DATE(updated_at) = $1
-      AND interviewer_name = $2;
-  `;
-  
-    const dotnetResult = await pool.query(dotnetQuery, [interview_date, userEmail]);
+// Dotnet query
+const dotnetQuery = `
+  SELECT 
+    f.candidate_email,
+    c.candidate_name,
+    c.role AS position,
+    f.result,
+    f.updated_at AS interview_date
+  FROM app_dotnet_l2_feedback_response f
+  LEFT JOIN candidate_info c ON f.candidate_email = c.candidate_email
+  WHERE DATE(f.updated_at) = $1
+    AND f.interviewer_name = $2;
+`;
 
-    // Query from app_java_l2_feedback_response
-    const javaQuery = `
-    SELECT candidate_email, result, updated_at AS interview_date
-    FROM app_java_l2_feedback_response
-    WHERE DATE(updated_at) = $1
-      AND interviewer_name = $2;
-  `;
-  
-    const javaResult = await pool.query(javaQuery, [interview_date, userEmail]);
+const dotnetResult = await pool.query(dotnetQuery, [interview_date, userEmail]);
+
+// Java query
+const javaQuery = `
+  SELECT 
+    f.candidate_email,
+    c.candidate_name,
+    c.role AS position,
+    f.result,
+    f.updated_at AS interview_date
+  FROM app_java_l2_feedback_response f
+  LEFT JOIN candidate_info c ON f.candidate_email = c.candidate_email
+  WHERE DATE(f.updated_at) = $1
+    AND f.interviewer_name = $2;
+`;
+
+const javaResult = await pool.query(javaQuery, [interview_date, userEmail]);
 
     // Combine all results
     const allFeedbacks = [
