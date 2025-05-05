@@ -858,31 +858,44 @@ After the summary, provide:
             return;
           }
           // Validate justification and improvements fields
-          const rows = document.querySelectorAll("#skills-table-body tr");
-          for (const row of rows) {
-            const justification = row
-              .querySelector("textarea[id^='justification']")
-              .value.trim();
-            const improvements = row
-              .querySelector("textarea[id^='improvements']")
-              .value.trim();
+    const rows = document.querySelectorAll("#skills-table-body tr");
+          rows.forEach((row, index) => {
+            const justificationField = row.querySelector(
+              "textarea[id^='justification']"
+            );
+            const improvementsField = row.querySelector(
+              "textarea[id^='improvements']"
+            );
+
+            const justification = justificationField.value.trim();
+            const improvements = improvementsField.value.trim();
 
             if (justification.split(/\s+/).length < 25) {
               showToast(
-                "Each 'Justification' field must have at least 25 words.",
+                `Row ${
+                  index + 1
+                }: The 'Justification' field must have at least 25 words.`,
                 "error"
               );
-              return;
+              justificationField.focus(); // Optionally focus the problematic field
+              throw new Error(
+                `Validation failed on Row ${index + 1} (Justification)`
+              );
             }
 
             if (improvements.split(/\s+/).length < 25) {
               showToast(
-                "Each 'Improvements' field must have at least 25 words.",
+                `Row ${
+                  index + 1
+                }: The 'Improvements' field must have at least 25 words.`,
                 "error"
               );
-              return;
+              improvementsField.focus(); // Optionally focus the problematic field
+              throw new Error(
+                `Validation failed on Row ${index + 1} (Improvements)`
+              );
             }
-          }
+          });
           const candidateEmail =
             document.getElementById("candidate-email").textContent;
           const candidateName = document.getElementById("candidate-name").value;
