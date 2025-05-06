@@ -364,40 +364,51 @@ async function fetchMeetingsForSelectedDate(selectedDate) {
         const candidateCard = document.createElement("div");
         candidateCard.classList.add("meeting-card");
 
-        candidateCard.innerHTML = `
-                    <div class="meeting-header">
-                        <div>
-                            <h4 class="meeting-title">Meeting with - ${candidate.candidate_name}</h4>
-                        </div>
-                    </div>
-                    <div class="meeting-details">
-                        <div class="meeting-info">
-                            <div class="meeting-location">Interview Details: ${roundDetails}</div>
-                            <div class="meeting-location">Role: ${candidate.role}</div>
-                            <div class="meeting-location">Email: ${candidate.candidate_email}</div>
-                            <div class="meeting-location">🕐 ${formattedDate} , ${candidate.l_2_interviewtime}</div>
-                        </div>
-                        <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}', '${candidate.meeting_link}')">
-                            <img src="teams.png" alt="Teams Logo" class="teams-logo">
-                            <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
-                        </button>
-                    </div>
+       // Check if iMocha report is available
+const hasImochaReport =
+candidate.imocha_report &&
+candidate.imocha_report.trim() !== "" &&
+candidate.imocha_report.toLowerCase() !== "null";
+
+// Conditionally create the iMocha button
+const imochaButtonHtml = hasImochaReport
+? `<button class="btn btn-mocha">
+        <a href="${candidate.imocha_report}" target="_blank">iMocha Result</a>
+   </button>`
+: ""; // Empty if not available
+
+candidateCard.innerHTML = `
+<div class="meeting-header">
+    <div>
+        <h4 class="meeting-title">Meeting with - ${candidate.candidate_name}</h4>
+    </div>
+</div>
+<div class="meeting-details">
+    <div class="meeting-info">
+        <div class="meeting-location">Interview Details: ${roundDetails}</div>
+        <div class="meeting-location">Role: ${candidate.role}</div>
+        <div class="meeting-location">Email: ${candidate.candidate_email}</div>
+        <div class="meeting-location">🕐 ${formattedDate}, ${candidate.l_2_interviewtime}</div>
+    </div>
+    <button class="btn-teams" onclick="joinMeetingAndShowFeedback('${candidate.candidate_email}', '${candidate.recruitment_phase}', '${candidate.meeting_link}')">
+        <img src="teams.png" alt="Teams Logo" class="teams-logo">
+        <a href="${candidate.meeting_link}" target="_blank" class="join-link">Join Meeting</a>
+    </button>
+</div>
 <div class="buttons">
     <button class="btn btn-resume">
         <a href="${candidate.resume}" target="_blank">Candidate Resume</a>
     </button>
-    <button class="btn btn-mocha">
-        <a href="${candidate.imocha_report}" target="_blank">iMocha Result</a>
-    </button>
+    ${imochaButtonHtml}
     <button class="btn btn-feedback" 
         onclick="openFeedbackForm('${candidate.candidate_email}', '${roundDetails}')">
         Feedback Form
     </button>
-  <button class="btn btn-previous-feedbacks" onclick="openPreviousFeedbacks('${candidate.candidate_email}')">Previous Feedbacks</button>
-
+    <button class="btn btn-previous-feedbacks" onclick="openPreviousFeedbacks('${candidate.candidate_email}')">
+        Previous Feedbacks
+    </button>
 </div>
-
-                `;
+`;
 
         meetingContainer.appendChild(candidateCard);
       });
