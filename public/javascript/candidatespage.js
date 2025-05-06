@@ -52,6 +52,16 @@ async function fetchCandidatesInfo() {
     const filteredCandidates = candidates.filter(
       (candidate) => candidate.hr_email?.toLowerCase() === loggedInEmail?.toLowerCase()
     );
+       if (filteredCandidates.length === 0) {
+      const noRecordsRow = document.createElement("tr");
+      const noRecordsCell = document.createElement("td");
+      noRecordsCell.colSpan = 11; // Make sure it spans all table columns
+      noRecordsCell.textContent = "No records available for your account.";
+      noRecordsCell.classList.add("no-records-message");
+      noRecordsCell.style.textAlign = "center";
+      noRecordsRow.appendChild(noRecordsCell);
+      tableBody.appendChild(noRecordsRow);
+    }
 
     for (const candidate of filteredCandidates) {
       const row = document.createElement("tr");
