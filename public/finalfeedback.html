@@ -574,10 +574,10 @@
                   document.getElementById("account").value = data.eng_center;
 
                   imochaScore = data.l_1_score; // Save iMocha score for later use
-                  showToast(
-                    "Candidate details fetched successfully!",
-                    "success"
-                  );
+                  // showToast(
+                  //   "Candidate details fetched successfully!",
+                  //   "success"
+                  // );
                   fetch(
                     `https://demotag.vercel.app/api/final-prescreening?candidateEmail=${selectedEmail}&candidateId=${data.id}&position=${data.role}`
                   )
@@ -713,10 +713,10 @@
                           }
                         }
 
-                        showToast(
-                          "Prescreening details fetched successfully!",
-                          "success"
-                        );
+                        // showToast(
+                        //   "Prescreening details fetched successfully!",
+                        //   "success"
+                        // );
                       }
                     })
                     .catch((error) => {
