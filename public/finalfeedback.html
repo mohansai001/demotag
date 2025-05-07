@@ -899,6 +899,29 @@
 
         pdf.save("candidate_form.pdf");
       }
+      //hide rounds
+   window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          const feedbackIds = [
+            "prescreening-summary",
+            "l2-technical-feedback",
+            "ec-fitment-feedback",
+            "project-fitment-feedback",
+            "client-fitment-feedback",
+            "fitment-feedback",
+          ];
+
+          feedbackIds.forEach((id) => {
+            const feedbackElement = document.getElementById(id);
+            if (feedbackElement && feedbackElement.value.trim() === "") {
+              const row = feedbackElement.closest("tr");
+              if (row) {
+                row.style.display = "none";
+              }
+            }
+          });
+        }, 4000); // 10 seconds = 10000 milliseconds
+      });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
