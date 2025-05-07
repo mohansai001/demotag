@@ -768,14 +768,13 @@
           closeBtn.style.display = "block";
         }
       }
-      async function downloadFormAsPDF() {
+     async function downloadFormAsPDF() {
         const formElement = document.getElementById("form-to-download");
         if (!formElement) {
           alert("Form container not found!");
           return;
         }
 
-        // Clone the form
         const clonedForm = formElement.cloneNode(true);
         clonedForm.style.position = "absolute";
         clonedForm.style.top = "0";
@@ -786,34 +785,82 @@
         clonedForm.style.width = formElement.offsetWidth + "px";
         document.body.appendChild(clonedForm);
 
-        // Replace all textareas with plain text divs
+        const buttonsAndIcons = clonedForm.querySelectorAll(
+          "button, .icon, [type='button'], [type='submit'], svg, i, img.icon"
+        );
+        buttonsAndIcons.forEach((el) => (el.style.display = "none"));
+
         const textareas = clonedForm.querySelectorAll("textarea");
         textareas.forEach((ta) => {
           const textValue = ta.value || ta.placeholder || "";
           const textDiv = document.createElement("div");
           textDiv.textContent = textValue;
-          textDiv.style.margin = "5px 0";
-          textDiv.style.whiteSpace = "pre-wrap";
-          textDiv.style.padding = "6px";
-          textDiv.style.border = "1px solid #ccc";
-          textDiv.style.backgroundColor = "#f3f3f3";
-          textDiv.style.fontFamily = "Arial, sans-serif";
-          textDiv.style.fontSize = "12px";
+          Object.assign(textDiv.style, {
+            margin: "5px 0",
+            whiteSpace: "pre-wrap",
+            padding: "6px",
+            border: "1px solid #ccc",
+            backgroundColor: "#f3f3f3",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "14px", // increased font size for clarity
+          });
           ta.replaceWith(textDiv);
         });
 
-        // Wait a tick to ensure rendering
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        const canvas = await html2canvas(clonedForm, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: "#ffffff",
+        const inputs = clonedForm.querySelectorAll(
+          "input[type='checkbox'], input[type='radio']"
+        );
+        inputs.forEach((input) => {
+          const label = input.closest("label")
+            ? input.closest("label").innerText
+            : input.name;
+          const statusDiv = document.createElement("div");
+          statusDiv.textContent = `${label}: ${
+            input.checked ? "Checked" : "Unchecked"
+          }`;
+          Object.assign(statusDiv.style, {
+            margin: "5px 0",
+            padding: "6px",
+            border: "1px solid #ccc",
+            backgroundColor: "#f3f3f3",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "14px",
+          });
+          input.replaceWith(statusDiv);
         });
 
-        document.body.removeChild(clonedForm); // Cleanup
+        const inputFields = clonedForm.querySelectorAll(
+          "input[type='text'], input[type='email'], input[type='number'], input[type='date'], input[type='tel'], input[type='url']"
+        );
+        inputFields.forEach((input) => {
+          const textValue = input.value || input.placeholder || "";
+          const textDiv = document.createElement("div");
+          textDiv.textContent = textValue;
+          Object.assign(textDiv.style, {
+            margin: "5px 0",
+            padding: "6px",
+            border: "1px solid #ccc",
+            backgroundColor: "#f3f3f3",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "14px",
+          });
+          input.replaceWith(textDiv);
+        });
 
-        const imgData = canvas.toDataURL("image/png");
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        const scale = 3; // Increased from 2 → better resolution
+        const canvas = await html2canvas(clonedForm, {
+          scale: scale,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          width: clonedForm.scrollWidth,
+          height: clonedForm.scrollHeight,
+        });
+
+        document.body.removeChild(clonedForm);
+
+        const imgData = canvas.toDataURL("image/jpeg", 1.0); // use JPEG + highest quality
         const pdf = new jspdf.jsPDF("p", "mm", "a4");
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -822,13 +869,31 @@
         let heightLeft = pdfHeight;
         let position = 0;
 
-        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        pdf.addImage(
+          imgData,
+          "JPEG",
+          0,
+          position,
+          pdfWidth,
+          pdfHeight,
+          "",
+          "FAST"
+        );
         heightLeft -= pdf.internal.pageSize.getHeight();
 
         while (heightLeft > 0) {
           position = heightLeft - pdfHeight;
           pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+          pdf.addImage(
+            imgData,
+            "JPEG",
+            0,
+            position,
+            pdfWidth,
+            pdfHeight,
+            "",
+            "FAST"
+          );
           heightLeft -= pdf.internal.pageSize.getHeight();
         }
 
