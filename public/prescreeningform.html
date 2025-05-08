@@ -934,6 +934,10 @@
         ></textarea>
       </div>
 
+         <button type="button" id="generate-feedback-btn">
+        Generate Feedback (AI)
+      </button>
+
       <div style="display: flex; justify-content: center">
         <button
           id="submit-button"
@@ -1285,6 +1289,93 @@
           .replace(/_/g, " ")
           .replace(/\b\w/g, (char) => char.toUpperCase());
       }
+
+         async function generateFeedbackWithGemini(
+        candidateEmail,
+        selectedRole,
+        skills
+      ) {
+        try {
+          const geminiPrompt = `
+      Please generate a detailed prescreening evaluation feedback for the following candidate:
+      - Email: ${candidateEmail}
+      - Role: ${selectedRole}
+      - Skills & experience: ${skills
+        .map((s) => `${s.skill}: ${s.experience}`)
+        .join(", ")}
+      Feedback should be professional, actionable, and at least 100 words.
+    `;
+
+          const geminiResponse = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyD1NqvfelSR6l-8FEIIFiZM3aJmbo2mw-Q",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: geminiPrompt }] }],
+              }),
+            }
+          );
+
+          const geminiData = await geminiResponse.json();
+          const generatedText =
+            geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+          return generatedText.trim();
+        } catch (error) {
+          console.error("Error generating feedback with Gemini:", error);
+          return "";
+        }
+      }
+
+      document
+        .getElementById("generate-feedback-btn")
+        .addEventListener("click", async () => {
+          const candidateEmail = document.getElementById(
+            "candidate-email-dropdown"
+          ).value;
+          const selectedRole = document.getElementById("position").value;
+
+          let tableSelector = "";
+          if (selectedRole.toLowerCase().includes("java")) {
+            tableSelector = "#java-table-body tr";
+          } else if (selectedRole.toLowerCase().includes(".net")) {
+            tableSelector = "#dotnet-table-body tr";
+          } else {
+            alert("Selected role not supported for feedback generation.");
+            return;
+          }
+
+          const rows = document.querySelectorAll(tableSelector);
+          const skills = [];
+          rows.forEach((row) => {
+            const skill = row.children[0].innerText;
+            const input = row.children[1].querySelector("input");
+            const experience = input ? input.value : "";
+            skills.push({ skill, experience });
+          });
+
+          showToast("Generating feedback... please wait.", "success");
+
+          const generatedFeedback = await generateFeedbackWithGemini(
+            candidateEmail,
+            selectedRole,
+            skills
+          );
+
+          if (generatedFeedback && validateWordCount(generatedFeedback)) {
+            document.getElementById("detailed-feedback").value =
+              generatedFeedback;
+            showToast("✅ Feedback generated!", "success");
+          } else {
+            showToast(
+              "⚠️ Feedback generation incomplete or too short. Please review.",
+              "error"
+            );
+            document.getElementById("detailed-feedback").value =
+              generatedFeedback || "";
+          }
+        });
     </script>
   </body>
 </html>
