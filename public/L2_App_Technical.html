@@ -456,9 +456,8 @@
             <td>Skills</td>
             <td>Description</td>
             <td>Top Skills</td>
-            <td>Design & Architecture Understanding</td>
-            <td>Coding & Integration Skills - Practical Implementation</td>
-            <td>Debugging & Root Cause Analysis</td>
+            <td>Rating</td>
+           
             <td>Justification</td>
             <td>Improvements</td>
           </tr>
@@ -654,10 +653,7 @@
             const questionId = response.questionId;
             document.getElementById(`deployment-${questionId}`).value =
               response.deploymentRating;
-            document.getElementById(`configuration-${questionId}`).value =
-              response.configurationRating;
-            document.getElementById(`troubleshooting-${questionId}`).value =
-              response.troubleshootingRating;
+          
             document.getElementById(`justification-${questionId}`).value =
               response.justification;
             document.getElementById(`improvements-${questionId}`).value =
@@ -740,10 +736,7 @@
             skillDescription: row.cells[1].textContent,
             isTopSkill: row.cells[2].textContent === "Yes",
             deployment: row.querySelector(`#deployment-${questionId}`).value,
-            configuration: row.querySelector(`#configuration-${questionId}`)
-              .value,
-            troubleshooting: row.querySelector(`#troubleshooting-${questionId}`)
-              .value,
+         
             justification: row.querySelector(`#justification-${questionId}`)
               .value,
             improvements: row.querySelector(`#improvements-${questionId}`)
@@ -769,8 +762,7 @@ ${responses
     (response) => `
 Skill Category: ${response.skillCategory}
 - Deployment: ${response.deployment}
-- Configuration: ${response.configuration}
-- Troubleshooting: ${response.troubleshooting}
+
 - Justification: ${response.justification}
 - Suggested Improvements: ${response.improvements}
 `
@@ -910,12 +902,7 @@ After the summary, provide:
               questionId,
               deploymentRating: row.querySelector(`#deployment-${questionId}`)
                 .value,
-              configurationRating: row.querySelector(
-                `#configuration-${questionId}`
-              ).value,
-              troubleshootingRating: row.querySelector(
-                `#troubleshooting-${questionId}`
-              ).value,
+           
               justification: row.querySelector(`#justification-${questionId}`)
                 .value,
               improvements: row.querySelector(`#improvements-${questionId}`)
