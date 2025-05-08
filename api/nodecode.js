@@ -3140,7 +3140,7 @@ const dotnetQuery = `
   FROM app_dotnet_l2_feedback_response f
   LEFT JOIN candidate_info c ON f.candidate_email = c.candidate_email
   WHERE DATE(f.updated_at) = $1
-    AND f.interviewer_name = $2;
+   AND f.interviewer_name ILIKE $2;
 `;
 
 const dotnetResult = await pool.query(dotnetQuery, [interview_date, userEmail]);
@@ -3156,7 +3156,7 @@ const javaQuery = `
   FROM app_java_l2_feedback_response f
   LEFT JOIN candidate_info c ON f.candidate_email = c.candidate_email
   WHERE DATE(f.updated_at) = $1
-    AND f.interviewer_name = $2;
+    AND f.interviewer_name ILIKE $2;
 `;
 
 const javaResult = await pool.query(javaQuery, [interview_date, userEmail]);
