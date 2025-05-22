@@ -53,29 +53,29 @@
         cursor: pointer;
       }
       .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            display: none;
-            z-index: 9999;
-        }
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        z-index: 9999;
+      }
 
-        .toast.show {
-            display: block;
-        }
+      .toast.show {
+        display: block;
+      }
 
-        .toast.success {
-            background-color: #4CAF50;
-        }
+      .toast.success {
+        background-color: #4caf50;
+      }
 
-        .toast.error {
-            background-color: #f44336;
-        }
+      .toast.error {
+        background-color: #f44336;
+      }
     </style>
   </head>
 
@@ -107,9 +107,9 @@
           <option value="">Select Your Team</option>
           <option value="tag">TAG Team</option>
           <option value="panel">Panel Login</option>
-          <option value="app-ec">App EC</option>
-          <option value="data-ec">Data EC</option>
-          <option value="cloud-ec">Cloud EC</option>
+          <option value="app-ec">App EC Lead</option>
+          <option value="data-ec">Data EC Lead</option>
+          <option value="cloud-ec">Cloud EC Lead</option>
           <option value="admin-Login">Admin</option>
         </select>
 
@@ -168,18 +168,17 @@
     <div id="toast" class="toast"></div>
 
     <script>
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show", type);
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show', type);
+        // Remove the toast after 4 seconds
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 4000);
+      }
 
-            // Remove the toast after 4 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
-        }
-      
       // MSAL Configuration
       const msalConfig = {
         auth: {
@@ -193,7 +192,7 @@
       const msalInstance = new msal.PublicClientApplication(msalConfig);
 
       // Scopes
-     const loginRequest = {
+      const loginRequest = {
         scopes: ["openid", "profile", "user.read", "Mail.Send"],
       };
 
@@ -232,6 +231,8 @@
 
       // Handle Login Button Click
       const loginButton = document.getElementById("msal-login-button");
+      // Handle Login Button Click
+      // Handle Login Button Click
       loginButton.addEventListener("click", async function () {
         const team = document.getElementById("team-select").value;
 
@@ -253,7 +254,15 @@
               console.log("Logged in email:", email);
               showModal(`Welcome, ${account.name}!`);
 
-              // Check admin status and EC mapping
+              // If panel, skip DB check and redirect directly
+              if (team === "panel") {
+                window.location.href = `panelpage.html?ec_mapping=${encodeURIComponent(
+                  team
+                )}`;
+                return;
+              }
+
+              // For other teams, check admin status and get ec_mapping
               const response = await fetch(
                 "https://demotag.vercel.app/api/check-admin",
                 {
@@ -276,10 +285,6 @@
               // Redirect based on the selected team
               if (["tag", "app-ec", "data-ec", "cloud-ec"].includes(team)) {
                 window.location.href = `Dashboard.html?ec_mapping=${encodeURIComponent(
-                  ec_mapping
-                )}`;
-              } else if (team === "panel") {
-                window.location.href = `panelpage.html?ec_mapping=${encodeURIComponent(
                   ec_mapping
                 )}`;
               }
@@ -306,7 +311,10 @@
           // Redirect to admin page on successful login
           window.location.href = "admin.html";
         } else {
-         showToast('Invalid username or password. Please try again.', 'success');
+          showToast(
+            "Invalid username or password. Please try again.",
+            "success"
+          );
         }
       }
     </script>

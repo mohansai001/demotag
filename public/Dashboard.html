@@ -1,4 +1,5 @@
 <html>
+
 <head>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -188,7 +189,7 @@
   .dashboard-chart {
     background-color: white;
     border-radius: 8px;
-      width:49%;
+    width: 49%;
     margin-top: 15px;
     height: 245px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -217,7 +218,7 @@
   .dashboard-chart1 {
     background-color: white;
     border-radius: 8px;
-        width: 49%;
+    width: 49%;
     margin-top: 15px;
     height: 245px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -261,7 +262,8 @@
     z-index: 1001;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
-    flex-direction: column; /* Stack items vertically */
+    flex-direction: column;
+    /* Stack items vertically */
     justify-content: flex-start;
     border-radius: 5px;
   }
@@ -272,16 +274,20 @@
   }
 
   .logout-option {
-    margin-top: auto; /* Push the logout option to the bottom */
-    padding: 15px 20px; /* Ensure padding on the logout item */
+    margin-top: auto;
+    /* Push the logout option to the bottom */
+    padding: 15px 20px;
+    /* Ensure padding on the logout item */
     display: flex;
     align-items: center;
-    width: 100%; /* Full width of the sidebar */
+    width: 100%;
+    /* Full width of the sidebar */
     cursor: pointer;
   }
 
   .logout-option i {
-    margin-right: 10px; /* Space between icon and text */
+    margin-right: 10px;
+    /* Space between icon and text */
   }
 
   #toggle-sidebar-btn {
@@ -314,7 +320,8 @@
   }
 
   .sidebar-option i {
-    margin-right: 10px; /* Space between icon and text */
+    margin-right: 10px;
+    /* Space between icon and text */
   }
 
   .sidebar-option:hover {
@@ -1083,7 +1090,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9986;
-/*     margin-top: -667px; */
+    /*     margin-top: -667px; */
   }
 
   #shortlistedPopup {
@@ -1096,7 +1103,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9986;
-/*     margin-top: -667px; */
+    /*     margin-top: -667px; */
   }
 
   #rejectedPopup {
@@ -1109,7 +1116,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9986;
-/*     margin-top: -667px; */
+    /*     margin-top: -667px; */
   }
 
   /* Popup content styling */
@@ -1338,7 +1345,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     width: 93%;
-    height: 350px;
+    height: 450px;
     padding: 20px;
     text-align: center;
     margin-top: 0;
@@ -1382,6 +1389,7 @@
   .partition {
     display: flex;
   }
+
   .main-content {
     flex: 1;
     display: flex;
@@ -1389,14 +1397,17 @@
     margin-bottom: 20px;
     margin-right: 0;
   }
+
   .right-panel {
     width: fit-content;
     margin-left: 0;
   }
+
   .filter-container {
     position: relative;
     top: 6px;
-    right: 0; /* Remove the offset from the right */
+    right: 0;
+    /* Remove the offset from the right */
     background: white;
     padding: 10px;
     border-radius: 8px;
@@ -1405,24 +1416,27 @@
     align-items: center;
     gap: 10px;
     z-index: 931;
-    width: fit-content; /* Width will automatically adjust to the content */
-    margin: 0 auto; /* This will center it horizontally */
-}
+    width: fit-content;
+    /* Width will automatically adjust to the content */
+    margin: 0 auto;
+    /* This will center it horizontally */
+  }
 
-.filter-container h2 {
+  .filter-container h2 {
     font-size: 14px;
     margin: 0;
-  color:black;
-}
+    color: black;
+  }
 
-.filter-container select,
-.filter-container button {
+  .filter-container select,
+  .filter-container button {
     padding: 5px;
     font-size: 14px;
     border-radius: 6px;
     border: 1px solid #b8b8b8;
-}
-.toast {
+  }
+
+  .toast {
     position: fixed;
     top: 20px;
     right: 20px;
@@ -1433,34 +1447,119 @@
     font-size: 14px;
     display: none;
     z-index: 9999;
-}
+  }
 
-.toast.show {
+  .toast.show {
     display: block;
-}
+  }
 
-.toast.success {
+  .toast.success {
     background-color: #4CAF50;
-}
+  }
 
-.toast.error {
+  .toast.error {
     background-color: #f44336;
-}
+  }
+
+  /* Styling for the table */
+  /* Styling for the table */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .styled-table thead tr {
+    background-color: #f4f4f4;
+    color: black;
+    font-weight: bold;
+  }
+
+  .styled-table th,
+  .styled-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+
+  .styled-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+
+  .styled-table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+  }
+
+  .styled-table tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+
+  .styled-table tbody td {
+    color: #333;
+  }
+
+  .styled-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Differentiation for HR Name column */
+  .hr-name-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-right: 2px solid #ddd;
+  }
+
+  /* Styling for phase headers */
+  .phase-header {
+    background-color: #f4f4f4;
+    color: black;
+    font-weight: normal;
+  }
+
+  /* Pagination controls styling */
+  #paginationControls button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f4f4f4;
+    color: black;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #paginationControls button:hover {
+    background-color: #007bff;
+    color: white;
+  }
+
+  #paginationControls button.active {
+    background-color: #007bff;
+    color: white;
+  }
+
 </style>
 
 <body>
   <div id="toast" class="toast"></div>
   <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰Menu</button>
 
-<!-- Sidebar -->
+  <!-- Sidebar -->
   <div id="sidebar" class="sidebar-menu hidden">
     <div class="sidebar-option active" data-target="dashboard" data-tooltip="Dashboard"
       onclick="navigateTo('Dashboard.html')">
       <i class="fas fa-tachometer-alt"></i>
       <span>Dashboard</span>
     </div>
+    <div class="sidebar-option active" data-target="RRF" data-tooltip="RRF" onclick="navigateTo('Excelread.html')">
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Upload RRF</span>
+    </div>
     <div class="sidebar-option" data-target="interviews" data-tooltip="Interviews"
-      onclick="navigateTo('ECselection.html')">
+      onclick="navigateWithECMapping('ECselection.html')">
       <i class="fas fa-users"></i>
       <span>Recruit</span>
     </div>
@@ -1484,235 +1583,237 @@
     </div>
   </div>
 
- <div class="filter-container">
+  <div class="filter-container">
     <h2>Filter Candidates by Date</h2>
     <select id="filterSelect" onchange="toggleDateInputs()">
-        <option value="24_hours">Last 24 Hours</option>
-        <option value="last_week">Last 1 Week</option>
-        <option value="last_15_days">Last 15 Days</option>
-        <option value="custom_range">Custom Range</option>
+      <option value="24_hours">Last 24 Hours</option>
+      <option value="last_week">Last 1 Week</option>
+      <option value="last_15_days">Last 15 Days</option>
+      <option value="custom_range">Custom Range</option>
     </select>
 
     <div id="customDateRange" style="display: none; color:black;">
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate">
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate">
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="startDate">
+      <label for="endDate">End Date:</label>
+      <input type="date" id="endDate">
     </div>
 
     <button onclick="updateFilter()">Apply Filter</button>
-</div>
+  </div>
 
 
   <div class="partition">
-  <div class="main-content">
-    <div class="dashboard-charts">
-      <!-- Doughnut Chart -->
-      <div class="dashboard-chart">
-        <h3>EC Overview</h3>
-        <div class="chart-containers">
-          <canvas id="departmentChart" style="max-height: 148px;"></canvas>
+    <div class="main-content">
+      <div class="dashboard-charts">
+        <!-- Doughnut Chart -->
+        <div class="dashboard-chart">
+          <h3>EC Overview</h3>
+          <div class="chart-containers">
+            <canvas id="departmentChart" style="max-height: 148px;"></canvas>
+          </div>
+        </div>
+        <!-- Bar Chart -->
+        <div class="dashboard-chart">
+          <h3>Applicants per EC</h3>
+          <div class="chart-containers">
+            <canvas id="departmentRoleChart" style="max-height: 135px;"></canvas>
+          </div>
         </div>
       </div>
-      <!-- Bar Chart -->
-      <div class="dashboard-chart">
-        <h3>Applicants per EC</h3>
-        <div class="chart-containers">
-          <canvas id="departmentRoleChart" style="max-height: 135px;"></canvas>
+
+      <div class="dashboard-charts">
+        <!-- Doughnut Chart -->
+        <div class="dashboard-chart" hidden>
+          <h3>Cloud EC Overview</h3>
+          <div class="chart-containers">
+            <canvas id="statusChart" style="max-height: 148px; "></canvas>
+          </div>
+        </div>
+        <div class="dashboard-chart" hidden>
+          <h3>Cloud EC Job Roles</h3>
+          <div class="chart-containers">
+            <canvas id="roleChart" style="max-height: 135px; "></canvas>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="dashboard-charts">
-      <!-- Doughnut Chart -->
-      <div class="dashboard-chart" hidden >
-        <h3>Cloud EC Overview</h3>
-        <div class="chart-containers">
-          <canvas id="statusChart" style="max-height: 148px; "></canvas>
+      <div class="dashboard-charts">
+        <div class="dashboard-chart1" hidden>
+          <h3>App EC Overview</h3>
+          <div class="chart-containers">
+            <canvas id="newStatusChart" style="max-height: 148px; "></canvas>
+          </div>
+        </div>
+        <div class="dashboard-chart1" hidden>
+          <h3>App EC Job Roles</h3>
+          <div class="chart-containers">
+            <canvas id="newRoleChart" style="max-height: 135px; "></canvas>
+          </div>
         </div>
       </div>
-      <div class="dashboard-chart" hidden >
-        <h3>Cloud EC Job Roles</h3>
-        <div class="chart-containers">
-          <canvas id="roleChart" style="max-height: 135px; "></canvas>
+
+      <div class="dashboard-charts">
+        <div class="dashboard-chart1" hidden>
+          <h3>Data EC Overview</h3>
+          <div class="chart-containers">
+            <canvas id="secondStatusChart" style="max-height: 148px; "></canvas>
+          </div>
+        </div>
+        <div class="dashboard-chart1" hidden>
+          <h3>Data EC Job Roles</h3>
+          <div class="chart-containers">
+            <canvas id="secondRoleChart" style="max-height: 135px; "></canvas>
+          </div>
         </div>
       </div>
-    </div>
-
-  <div class="dashboard-charts">
-    <div class="dashboard-chart1" hidden>
-      <h3>App EC Overview</h3>
-      <div class="chart-containers">
-        <canvas id="newStatusChart" style="max-height: 148px; "></canvas>
-      </div>
-    </div>
-    <div class="dashboard-chart1" hidden>
-      <h3>App EC Job Roles</h3>
-      <div class="chart-containers">
-        <canvas id="newRoleChart" style="max-height: 135px; "></canvas>
-      </div>
-    </div>
-  </div>
-
-  <div class="dashboard-charts">
-    <div class="dashboard-chart1" hidden>
-      <h3>Data EC Overview</h3>
-      <div class="chart-containers">
-        <canvas id="secondStatusChart" style="max-height: 148px; "></canvas>
-      </div>
-    </div>
-    <div class="dashboard-chart1" hidden>
-      <h3>Data EC Job Roles</h3>
-      <div class="chart-containers" >
-        <canvas id="secondRoleChart" style="max-height: 135px; "></canvas>
-      </div>
-    </div>
-  </div>
 
 
-  <div id="content">
-    <div class="dashboard-container">
-      <div class="cards" id="card">
-        <h2 id="uploadCount">0</h2>
-        <p>Applications</p>
-      </div>
-      <!-- Popup Modal -->
-      <div id="popup">
-        <div
-          style="background: white; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; position: relative; margin-top: 88px;">
-          <!-- Cross Button -->
-          <span onclick="closePopup()"
-            style="position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
-          <h2 style="
+      <div id="content">
+        <div class="dashboard-container">
+          <div class="cards" id="card">
+            <h2 id="uploadCount">0</h2>
+            <p>Applications</p>
+          </div>
+          <!-- Popup Modal -->
+          <div id="popup">
+            <div
+              style="background: white; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; position: relative; margin-top: 88px;">
+              <!-- Cross Button -->
+              <span onclick="closePopup()"
+                style="position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
+              <h2 style="
                  margin-left: 258px;
                  color: black;">Candidate Applications</h2>
-          <!-- Table with filters directly above columns -->
-          <div style="max-width: 100%;">
-            <table id="applicationsTable"
-              style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-              <thead style="background-color: #f4f4f4;">
-                <tr>
-                  <th colspan="7" id="headerSpinner" style="padding: 12px; text-align: center; display: none;">
-                    <div style="
+              <!-- Table with filters directly above columns -->
+              <div style="max-width: 100%;">
+                <table id="applicationsTable"
+                  style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                  <thead style="background-color: #f4f4f4;">
+                    <tr>
+                      <th colspan="7" id="headerSpinner" style="padding: 12px; text-align: center; display: none;">
+                        <div style="
                                 width: 30px;
                                 height: 30px;
                                 border: 4px solid #f3f3f3;
                                 border-top: 4px solid #3498db;
                                 border-radius: 50%;
                                 animation: spin 1s linear infinite;">
-                    </div>
-                  </th>
-                </tr>
-                <tr>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    RRF ID
-                    <input type="text" id="rrfFilter" placeholder="Search by RRF" style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Candidate Name
-                    <input type="text" id="nameFilter" placeholder="Search by name"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Candidate Email
-                    <input type="text" id="emailFilter" placeholder="Search by email"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Status
-                    <input type="text" id="statusFilter" placeholder="Search by status"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Dynamically loaded data will be inserted here -->
-              </tbody>
-            </table>
+                        </div>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        RRF ID
+                        <input type="text" id="rrfFilter" placeholder="Search by RRF"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Candidate Name
+                        <input type="text" id="nameFilter" placeholder="Search by name"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Candidate Email
+                        <input type="text" id="emailFilter" placeholder="Search by email"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Status
+                        <input type="text" id="statusFilter" placeholder="Search by status"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Dynamically loaded data will be inserted here -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="pagination" style="margin-top: 20px; text-align: center;"></div>
+            </div>
           </div>
-          <div id="pagination" style="margin-top: 20px; text-align: center;"></div>
-        </div>
-      </div>
-      <div class="cards" id="shortlistedCard">
-        <h2 id="shortlistedCount">0</h2>
-        <p>Shortlisted</p>
-      </div>
-      <!-- Popup Modal for Shortlisted Candidates -->
-      <div id="shortlistedPopup">
-        <div
-          style="background: white; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; position: relative; margin-top: 88px;">
-          <!-- Cross Button -->
-          <span onclick="closeShortlistedPopup()"
-            style="position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
-          <h2 style="
+          <div class="cards" id="shortlistedCard">
+            <h2 id="shortlistedCount">0</h2>
+            <p>Shortlisted</p>
+          </div>
+          <!-- Popup Modal for Shortlisted Candidates -->
+          <div id="shortlistedPopup">
+            <div
+              style="background: white; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; position: relative; margin-top: 88px;">
+              <!-- Cross Button -->
+              <span onclick="closeShortlistedPopup()"
+                style="position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
+              <h2 style="
                  margin-left: 258px;
                  color: black;">Shortlisted Candidates</h2>
-          <div style="max-width: 100%;">
-            <table id="shortlistedTable"
-              style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-              <thead style="background-color: #f4f4f4;">
-                <tr>
-                  <th colspan="7" id="shortlistedSpinner" style="padding: 12px; text-align: center; display: none;">
-                    <div style="
+              <div style="max-width: 100%;">
+                <table id="shortlistedTable"
+                  style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                  <thead style="background-color: #f4f4f4;">
+                    <tr>
+                      <th colspan="7" id="shortlistedSpinner" style="padding: 12px; text-align: center; display: none;">
+                        <div style="
                                 width: 30px;
                                 height: 30px;
                                 border: 4px solid #f3f3f3;
                                 border-top: 4px solid #3498db;
                                 border-radius: 50%;
                                 animation: spin 1s linear infinite;">
-                    </div>
-                  </th>
-                </tr>
-                <tr>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Rrf Id
-                    <input type="text" id="rrfFilter" placeholder="Search by rrf" style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Candidate Name
-                    <input type="text" id="shortlistedNameFilter" placeholder="Search by name"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Candidate Email
-                    <input type="text" id="shortlistedEmailFilter" placeholder="Search by email"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Status
-                    <input type="text" id="shortlistedStatusFilter" placeholder="Search by status"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Data will be dynamically inserted here -->
-              </tbody>
-            </table>
+                        </div>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Rrf Id
+                        <input type="text" id="rrfFilter" placeholder="Search by rrf"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Candidate Name
+                        <input type="text" id="shortlistedNameFilter" placeholder="Search by name"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Candidate Email
+                        <input type="text" id="shortlistedEmailFilter" placeholder="Search by email"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Status
+                        <input type="text" id="shortlistedStatusFilter" placeholder="Search by status"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Data will be dynamically inserted here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="cards" id="rejectedCard">
-        <h2 id="rejectedCount">0</h2>
-        <p>Rejected</p>
-      </div>
-      <!-- Popup Modal for Rejected Candidates -->
-      <div id="rejectedPopup">
-        <div
-          style="background: white; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; position: relative;margin-top: 88px;">
-          <!-- Cross Button -->
-          <span onclick="closeRejectedPopup()"
-            style="position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
-          <h2 style="
+          <div class="cards" id="rejectedCard">
+            <h2 id="rejectedCount">0</h2>
+            <p>Rejected</p>
+          </div>
+          <!-- Popup Modal for Rejected Candidates -->
+          <div id="rejectedPopup">
+            <div
+              style="background: white; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; position: relative;margin-top: 88px;">
+              <!-- Cross Button -->
+              <span onclick="closeRejectedPopup()"
+                style="position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
+              <h2 style="
                  margin-left: 258px;
                  color: black;">Rejected Candidates</h2>
-          <div style="max-width: 100%;">
-            <table id="rejectedTable"
-              style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-              <thead style="background-color: #f4f4f4;">
-                <tr>
-                  <th colspan="7" id="rejectedSpinner" style="padding: 12px; text-align: center; display: none;">
-                    <div style="
+              <div style="max-width: 100%;">
+                <table id="rejectedTable"
+                  style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                  <thead style="background-color: #f4f4f4;">
+                    <tr>
+                      <th colspan="7" id="rejectedSpinner" style="padding: 12px; text-align: center; display: none;">
+                        <div style="
                                 width: 30px;
                                 height: 30px;
                                 border: 4px solid #f3f3f3;
@@ -1720,382 +1821,425 @@
                                 border-radius: 50%;
                                 margin-left:50px;
                                 animation: spin 1s linear infinite;">
-                    </div>
-                  </th>
-                </tr>
-                <tr>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Rrf Id
-                    <input type="text" id="rrfFilter" placeholder="Search by rrf" style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Candidate Name
-                    <input type="text" id="rejectedNameFilter" placeholder="Search by name"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Candidate Email
-                    <input type="text" id="rejectedEmailFilter" placeholder="Search by email"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                  <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
-                    Status
-                    <input type="text" id="rejectedStatusFilter" placeholder="Search by status"
-                      style="width: 100%; margin-top: 5px;">
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Data will be dynamically inserted here -->
-              </tbody>
-            </table>
+                        </div>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Rrf Id
+                        <input type="text" id="rrfFilter" placeholder="Search by rrf"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Candidate Name
+                        <input type="text" id="rejectedNameFilter" placeholder="Search by name"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Candidate Email
+                        <input type="text" id="rejectedEmailFilter" placeholder="Search by email"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                      <th style="padding: 12px; text-align: left; font-weight: bold; border-bottom: 2px solid #ddd;">
+                        Status
+                        <input type="text" id="rejectedStatusFilter" placeholder="Search by status"
+                          style="width: 100%; margin-top: 5px;">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Data will be dynamically inserted here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="cards" id="imochaInviteCard">
+            <h2 id="inviteCount">Loading...</h2>
+            <p>Imocha Invite</p>
+          </div>
+
+          <div class="cards" id="imochaCompletedCard">
+            <h2 id="availableScoreCount">Loading...</h2>
+            <p>Imocha Completed</p>
+          </div>
+
+
+
+        </div>
+      </div>
+
+
+
+      <div class="hrcardnew">
+        <div class="hrcard">
+          <h3 style="color: black; margin-top:5px;">Leadership Dashboard</h3>
+          <!-- Filter Input for HR Details -->
+          <div class="filter-container" style="margin-top: 10px;">
+ <input type="text" id="filterInput" placeholder="Search by email, short name"
+              style="width: 100%; padding: 5px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <canvas id="hrChart"></canvas>
+        </div>
+
+        <!-- Table for Phase Counts -->
+        <div class="phase-table-container"
+        style="margin-top: 20px; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <h3 style="color: black; margin-bottom: 10px; text-align: center;">TAG Overview</h3>
+      
+        <!-- Search Input for HR Name -->
+        <div style="margin-bottom: 10px; text-align: center;">
+          <input type="text" id="hrSearchInput" placeholder="Search by TAG Name"
+            style="width: 25%; padding: 5px; border: 1px solid #ccc; border-radius: 4px;" />
+        </div>
+      
+        <table id="phaseTable" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; margin-top: 10px;">
+          <thead>
+            <tr>
+              <th style="background-color: darkcyan; color: white; font-weight: bold; border-right: 2px solid #ddd; padding: 12px 15px;">
+                TAG Name
+              </th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Prescreening</th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Technical L1</th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Technical L2</th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">EC Fitment</th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Project Fitment</th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Client Interview</th>
+              <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Shortlisted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="8" style="padding: 12px 15px;">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="paginationControls" style="margin-top: 10px; text-align: center;"></div>
+      </div>
+      </div>
+
+      <h4 style="color:black; padding-left: 200px;">By Role</h4>
+      <div class="wrapper">
+        <div class="containerss">
+
+          <div class="grid">
+            <!-- DevOps Card -->
+            <div class="cardss">
+              <div class="icon software-icon"></></div>
+              <div class="job-title">
+                DevOps
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="devops-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Platform Card -->
+            <div class="cardss">
+              <div class="icon design-icon">✏️</div>
+              <div class="job-title">
+                Platform
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Part-time</span>
+                <span class="tag">Hybrid</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="platform-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Migration Card -->
+            <div class="cardss">
+              <div class="icon sales-icon">📈</div>
+              <div class="job-title">
+                Migration
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">On-site</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="site-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- CloudOps Card -->
+            <div class="cardss">
+              <div class="icon hr-icon">👤</div>
+              <div class="job-title">
+                CloudOps
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Contract</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="cloudops-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Data Engineer Card -->
+            <div class="cardss">
+              <div class="icon database-icon">🗄️</div>
+              <div class="job-title">
+                Data Engineer
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="data-engineer-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Data – BI Visualization Engineer Card -->
+            <div class="cardss">
+              <div class="icon chart-icon">📊</div>
+              <div class="job-title">
+                Data – BI Visualization Engineer
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Part-time</span>
+                <span class="tag">Hybrid</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="bi-visualization-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Data Analyst Card -->
+            <div class="cardss">
+              <div class="icon analysis-icon">📈</div>
+              <div class="job-title">
+                Data Analyst
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">On-site</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="data-analyst-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Data Modeller Card -->
+            <div class="cardss">
+              <div class="icon model-icon">🔢</div>
+              <div class="job-title">
+                Data Modeller
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Contract</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="data-modeller-applicants">Loading...</div>
+              </div>
+            </div>
+            <!-- Cloud Native Application Engineer - Backend -->
+            <div class="cardss">
+              <div class="icon backend-icon">🖥️</div>
+              <div class="job-title">
+                Cloud Native Application Engineer - Backend
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="cloud-native-backend-applicants">Loading...</div>
+              </div>
+            </div>
+
+            <!-- Cloud Native Application Engineer - Frontend -->
+            <div class="cardss">
+              <div class="icon frontend-icon">🎨</div>
+              <div class="job-title">
+                Cloud Native Application Engineer - Frontend
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="cloud-native-frontend-applicants">Loading...</div>
+              </div>
+            </div>
+
+            <!-- LCNC Platform Engineer -->
+            <div class="cardss">
+              <div class="icon lcnc-icon">🔧</div>
+              <div class="job-title">
+                LCNC Platform Engineer
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Contract</span>
+                <span class="tag">Hybrid</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="lcnc-platform-engineer-applicants">Loading...</div>
+              </div>
+            </div>
+
+            <!-- Integration Engineer -->
+            <div class="cardss">
+              <div class="icon integration-icon">🔗</div>
+              <div class="job-title">
+                Integration Engineer
+                <span class="more-icon">...</span>
+              </div>
+              <div class="tags">
+                <span class="tag">Full-time</span>
+                <span class="tag">Remote</span>
+              </div>
+              <div class="details">
+                <div class="applicants" id="integration-engineer-applicants">Loading...</div>
+              </div>
+            </div>
+
+            <div class="cardss" id="qa-engineer-card" style="display: none;">
+              <h3>QA Engineer</h3>
+              <p>Quality Assurance Engineer role</p>
+            </div>
+
+
           </div>
         </div>
       </div>
-          <div class="cards" id="imochaInviteCard">
-  <h2 id="inviteCount">Loading...</h2>
-  <p>Imocha Invite</p>
-</div>
-
-<div class="cards" id="imochaCompletedCard">
-  <h2 id="availableScoreCount">Loading...</h2>
-  <p>Imocha Completed</p>
-</div>
-
-      
-     
     </div>
-  </div>
-
-  <div class="hrcardnew">
-    <div class="hrcard">
-      <h3 style="color: black; margin-top:5px;">HR Selection Details</h3>
-      <canvas id="hrChart"></canvas>
-    </div>
-  </div>
-  
-  <h4 style="color:black; padding-left: 200px;">By Role</h4>
-  <div class="wrapper">
-    <div class="containerss">
-
-    <div class="grid">
-    <!-- DevOps Card -->
-    <div class="cardss">
-      <div class="icon software-icon">&lt;/&gt;</div>
-      <div class="job-title">
-        DevOps
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Full-time</span>
-        <span class="tag">Remote</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="devops-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- Platform Card -->
-    <div class="cardss">
-      <div class="icon design-icon">✏️</div>
-      <div class="job-title">
-        Platform
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Part-time</span>
-        <span class="tag">Hybrid</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="platform-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- Migration Card -->
-    <div class="cardss">
-      <div class="icon sales-icon">📈</div>
-      <div class="job-title">
-        Migration
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Full-time</span>
-        <span class="tag">On-site</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="site-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- CloudOps Card -->
-    <div class="cardss">
-      <div class="icon hr-icon">👤</div>
-      <div class="job-title">
-        CloudOps
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Contract</span>
-        <span class="tag">Remote</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="cloudops-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- Data Engineer Card -->
-    <div class="cardss">
-      <div class="icon database-icon">🗄️</div>
-      <div class="job-title">
-        Data Engineer
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Full-time</span>
-        <span class="tag">Remote</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="data-engineer-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- Data – BI Visualization Engineer Card -->
-    <div class="cardss">
-      <div class="icon chart-icon">📊</div>
-      <div class="job-title">
-        Data – BI Visualization Engineer
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Part-time</span>
-        <span class="tag">Hybrid</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="bi-visualization-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- Data Analyst Card -->
-    <div class="cardss">
-      <div class="icon analysis-icon">📈</div>
-      <div class="job-title">
-        Data Analyst
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Full-time</span>
-        <span class="tag">On-site</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="data-analyst-applicants">Loading...</div>
-      </div>
-    </div>
-    <!-- Data Modeller Card -->
-    <div class="cardss">
-      <div class="icon model-icon">🔢</div>
-      <div class="job-title">
-        Data Modeller
-        <span class="more-icon">...</span>
-      </div>
-      <div class="tags">
-        <span class="tag">Contract</span>
-        <span class="tag">Remote</span>
-      </div>
-      <div class="details">
-        <div class="applicants" id="data-modeller-applicants">Loading...</div>
-      </div>
-    </div>
-<!-- Cloud Native Application Engineer - Backend -->
-<div class="cardss">
-  <div class="icon backend-icon">🖥️</div>
-  <div class="job-title">
-    Cloud Native Application Engineer - Backend
-    <span class="more-icon">...</span>
-  </div>
-  <div class="tags">
-    <span class="tag">Full-time</span>
-    <span class="tag">Remote</span>
-  </div>
-  <div class="details">
-    <div class="applicants" id="cloud-native-backend-applicants">Loading...</div>
-  </div>
-</div>
-
-<!-- Cloud Native Application Engineer - Frontend -->
-<div class="cardss">
-  <div class="icon frontend-icon">🎨</div>
-  <div class="job-title">
-    Cloud Native Application Engineer - Frontend
-    <span class="more-icon">...</span>
-  </div>
-  <div class="tags">
-    <span class="tag">Full-time</span>
-    <span class="tag">Remote</span>
-  </div>
-  <div class="details">
-    <div class="applicants" id="cloud-native-frontend-applicants">Loading...</div>
-  </div>
-</div>
-
-<!-- LCNC Platform Engineer -->
-<div class="cardss">
-  <div class="icon lcnc-icon">🔧</div>
-  <div class="job-title">
-    LCNC Platform Engineer
-    <span class="more-icon">...</span>
-  </div>
-  <div class="tags">
-    <span class="tag">Contract</span>
-    <span class="tag">Hybrid</span>
-  </div>
-  <div class="details">
-    <div class="applicants" id="lcnc-platform-engineer-applicants">Loading...</div>
-  </div>
-</div>
-
-<!-- Integration Engineer -->
-<div class="cardss">
-  <div class="icon integration-icon">🔗</div>
-  <div class="job-title">
-    Integration Engineer
-    <span class="more-icon">...</span>
-  </div>
-  <div class="tags">
-    <span class="tag">Full-time</span>
-    <span class="tag">Remote</span>
-  </div>
-  <div class="details">
-    <div class="applicants" id="integration-engineer-applicants">Loading...</div>
-  </div>
-</div>
-      
-<div class="cardss" id="qa-engineer-card" style="display: none;">
-    <h3>QA Engineer</h3>
-    <p>Quality Assurance Engineer role</p>
-</div>
-
-      
-  </div>
-    </div>
-  </div>
-</div>
 
 
-  <div class="right-panel">
-  <div class="container-RRF" id="" style="cursor: pointer;">
-    <div class="header-count" style="color:black;">Total RRF Count</div>
-    <div class="chart-container">
-      <div class="donut-chart"></div>
-      <div class="center-circle">
-        <p class="total-number-RRF">0</p>
-        <span class="total-label">Total Applicants</span>
+    <div class="right-panel">
+      <div class="container-RRF" id="" style="cursor: pointer;">
+        <div class="header-count" style="color:black;">Total RRF Count</div>
+        <div class="chart-container">
+          <div class="donut-chart"></div>
+          <div class="center-circle">
+            <p class="total-number-RRF">0</p>
+            <span class="total-label">Total Applicants</span>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="dot dot-job-boards"></div>
+            <div>
+              <span class="">0</span>
+              <span class="label">App</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="dot dot-referrals"></div>
+            <div>
+              <span class="">0</span>
+              <span class="label">Cloud</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="dot dot-social"></div>
+            <div>
+              <span class="">0</span>
+              <span class="label">Data</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="metrics-grid">
-      <div class="metric">
-        <div class="dot dot-job-boards"></div>
+
+      <div class="container-RRF" id="clickableContainer" style="cursor: pointer;">
+        <div class="header-count" style="color:black;">L1 iMocha Results</div>
+        <div class="chart-container">
+          <div class="donut-chart"></div>
+          <div class="center-circle">
+            <p class="total-number">1</p>
+            <span class="total-label">Total Applicants</span>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="dot dot-job-boards"></div>
+            <div>
+              <span class="number">0</span>
+              <span class="label">App</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="dot dot-referrals"></div>
+            <div>
+              <span class="number">0</span>
+              <span class="label">Cloud</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="dot dot-social"></div>
+            <div>
+              <span class="number">0</span>
+              <span class="label">Data</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="candidate-status" style="display:none;">
+        <header class="headers" style="text-align: center; width: 100% ;margin-top:-5px;">
+          <h1 class="titles" style="font-size: large;">Candidates Status</h1>
+        </header>
         <div>
-          <span class="">0</span>
-          <span class="label">App</span>
+          <h5 class="task-date" style="color: black;"></h5>
         </div>
-      </div>
-      <div class="metric">
-        <div class="dot dot-referrals"></div>
-        <div>
-          <span class="">0</span>
-          <span class="label">Cloud</span>
+        <div class="tasks-list">
+          <div class="task-item">
+            <div class="progress-ring" id="prescreeningProgressRing" style="--progress: ;">
+            </div>
+            <div class="task-details">
+              <h2 class="task-name">Resume Screening</h2>
+              <div class="task-info">
+                <span class="task-type">Evaluation</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="metric">
-        <div class="dot dot-social"></div>
-        <div>
-          <span class="">0</span>
-          <span class="label">Data</span>
+        <div class="task-item">
+          <div class="progress-ring" id="l1ProgressRing" style="--progress: ;">10%</div>
+          <div class="task-details">
+            <h2 class="task-name">L1 Imocha(online)</h2>
+            <div class="task-info">
+              <span class="task-type">Engagement</span>
+              <span class="task-date"></span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-</div>
-
-<div class="container-RRF" id="clickableContainer" style="cursor: pointer;">
-  <div class="header-count" style="color:black;">L1 iMocha Results</div>
-  <div class="chart-container">
-    <div class="donut-chart"></div>
-    <div class="center-circle">
-      <p class="total-number">1</p>
-      <span class="total-label">Total Applicants</span>
-    </div>
-  </div>
-  <div class="metrics-grid">
-    <div class="metric">
-      <div class="dot dot-job-boards"></div>
-      <div>
-        <span class="number">0</span>
-        <span class="label">App</span>
-      </div>
-    </div>
-    <div class="metric">
-      <div class="dot dot-referrals"></div>
-      <div>
-        <span class="number">0</span>
-        <span class="label">Cloud</span>
-      </div>
-    </div>
-    <div class="metric">
-      <div class="dot dot-social"></div>
-      <div>
-        <span class="number">0</span>
-        <span class="label">Data</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="candidate-status">
-  <header class="headers" style="text-align: center; width: 100% ;margin-top:-5px;">
-    <h1 class="titles" style="font-size: large;">Candidates Status</h1>
-  </header>
-  <div>
-    <h5 class="task-date" style="color: black;"></h5>
-  </div>
-  <div class="tasks-list">
-    <div class="task-item">
-      <div class="progress-ring" id="prescreeningProgressRing" style="--progress: ;">
-      </div>
-      <div class="task-details">
-        <h2 class="task-name">Resume Screening</h2>
-        <div class="task-info">
-          <span class="task-type">Evaluation</span>
+        <div class="task-item">
+          <div class="progress-ring" id="l2ProgressRing" style="--progress:  ">30%</div>
+          <div class="task-details">
+            <h2 class="task-name">L2 Interview</h2>
+            <div class="task-info">
+              <span class="task-type">Relationship</span>
+              <span class="task-date"></span>
+            </div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="progress-ring" style="--progress: ">0%</div>
+          <div class="task-details">
+            <h2 class="task-name">Fitment Round</h2>
+            <div class="task-info">
+              <span class="task-type">Selection</span>
+              <span class="task-date"></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="task-item">
-    <div class="progress-ring" id="l1ProgressRing" style="--progress: ;">10%</div>
-    <div class="task-details">
-      <h2 class="task-name">L1 Imocha(online)</h2>
-      <div class="task-info">
-        <span class="task-type">Engagement</span>
-        <span class="task-date"></span>
-      </div>
-    </div>
-  </div>
-  <div class="task-item">
-    <div class="progress-ring" id="l2ProgressRing" style="--progress:  ">30%</div>
-    <div class="task-details">
-      <h2 class="task-name">L2 Interview</h2>
-      <div class="task-info">
-        <span class="task-type">Relationship</span>
-        <span class="task-date"></span>
-      </div>
-    </div>
-  </div>
-  <div class="task-item">
-    <div class="progress-ring" style="--progress: ">0%</div>
-    <div class="task-details">
-      <h2 class="task-name">Fitment Round</h2>
-      <div class="task-info">
-        <span class="task-type">Selection</span>
-        <span class="task-date"></span>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-</div>
 
 
   <!-- Popup Modal -->
