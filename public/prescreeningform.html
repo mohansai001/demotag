@@ -162,7 +162,7 @@
         width: 100%;
         padding: 8px;
         box-sizing: border-box;
-        min-height: 100px;
+        min-height: 250px;
         resize: vertical;
         border-radius: 4px;
         font-size: 1rem;
@@ -772,6 +772,53 @@
           </div>
         </div>
       </div>
+      <!-- React Section -->
+      <div id="react-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>React Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="react-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Angular Section -->
+      <div id="angular-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>Angular Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="angular-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mendix Section -->
+      <div id="mendix-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>Mendix Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="mendix-table-body"></tbody>
+          </table>
+        </div>
+      </div>
 
       <div id="data-section" style="display: none">
         <div class="section">
@@ -934,7 +981,7 @@
         ></textarea>
       </div>
 
-         <button type="button" id="generate-feedback-btn">
+      <button type="button" id="generate-feedback-btn">
         Generate Feedback (AI)
       </button>
 
@@ -1038,7 +1085,7 @@
         );
 
         // Fetch all candidate emails from the server
-        fetch("https://demotag.vercel.app/api/getAllCandidateEmails")
+        fetch("http://localhost:3000/api/getAllCandidateEmails")
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -1090,7 +1137,7 @@
 
         function fetchCandidateData(email) {
           fetch(
-            `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`
+            `http://localhost:3000/api/getCandidateData?candidateEmail=${email}`
           )
             .then((response) => response.json())
             .then((data) => {
@@ -1101,7 +1148,7 @@
                   data.candidate_name;
                 document.getElementById("position").value = data.role;
 
-                // Check if it's an App EC role
+                // Define EC roles
                 const appRolesJava = [
                   "Junior Java Cloud Native Application Engineer - Backend",
                   "Senior Java Cloud Native Application Engineer - Backend",
@@ -1112,7 +1159,30 @@
                   "Senior .Net Cloud Native Application Engineer - Backend",
                 ];
 
-                if ([...appRolesJava, ...appRolesDotNet].includes(data.role)) {
+                const appRolesReact = [
+                  "Junior React Cloud Native Application Engineer - Frontend",
+                  "Senior React Cloud Native Application Engineer - Frontend",
+                ];
+
+                const appRolesAngular = [
+                  "Junior Angular Cloud Native Application Engineer - Frontend",
+                  "Senior Angular Cloud Native Application Engineer - Frontend",
+                ];
+
+                const appRolesMendix = [
+                  "Junior Mendix LCNC Platform Engineer",
+                  "Senior Mendix LCNC Platform Engineer",
+                ];
+
+                const isAppEC = [
+                  ...appRolesJava,
+                  ...appRolesDotNet,
+                  ...appRolesReact,
+                  ...appRolesAngular,
+                  ...appRolesMendix,
+                ].includes(data.role);
+
+                if (isAppEC) {
                   document.getElementById("ec-select").value = "App";
                   document.getElementById("app-section").style.display =
                     "block";
@@ -1121,15 +1191,33 @@
                   document.getElementById("data-section").style.display =
                     "none";
 
+                  // Hide all sections initially
+                  document.getElementById("java-section").style.display =
+                    "none";
+                  document.getElementById("dotnet-section").style.display =
+                    "none";
+                  document.getElementById("react-section").style.display =
+                    "none";
+                  document.getElementById("angular-section").style.display =
+                    "none";
+                  document.getElementById("mendix-section").style.display =
+                    "none";
+
+                  // Show relevant tech section
                   if (appRolesJava.includes(data.role)) {
-                    document.getElementById("dotnet-section").style.display =
-                      "none";
                     document.getElementById("java-section").style.display =
                       "block";
                   } else if (appRolesDotNet.includes(data.role)) {
-                    document.getElementById("java-section").style.display =
-                      "none";
                     document.getElementById("dotnet-section").style.display =
+                      "block";
+                  } else if (appRolesReact.includes(data.role)) {
+                    document.getElementById("react-section").style.display =
+                      "block";
+                  } else if (appRolesAngular.includes(data.role)) {
+                    document.getElementById("angular-section").style.display =
+                      "block";
+                  } else if (appRolesMendix.includes(data.role)) {
+                    document.getElementById("mendix-section").style.display =
                       "block";
                   }
                 }
@@ -1138,7 +1226,6 @@
                 document.getElementById("hr-email").value = data.hr_email;
               }
             })
-
             .catch((error) => {
               console.error("Error fetching candidate data:", error);
               showToast("Failed to load candidate data.", "error");
@@ -1197,13 +1284,21 @@
 
           let tableSelector = "";
           let apiEndpoint = "";
-
           if (selectedRole.toLowerCase().includes("java")) {
             tableSelector = "#java-table-body tr";
             apiEndpoint = "/api/java_ec_submit-feedback";
           } else if (selectedRole.toLowerCase().includes(".net")) {
             tableSelector = "#dotnet-table-body tr";
             apiEndpoint = "/api/dotnet_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("react")) {
+            tableSelector = "#react-table-body tr";
+            apiEndpoint = "/api/react_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("angular")) {
+            tableSelector = "#angular-table-body tr";
+            apiEndpoint = "/api/angular_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("mendix")) {
+            tableSelector = "#mendix-table-body tr";
+            apiEndpoint = "/api/mendix_ec_submit-feedback";
           } else {
             alert("Selected role not supported.");
             return;
@@ -1236,7 +1331,7 @@
             const result = await response.json();
             if (response.ok) {
               showToast("✅ Feedback submitted successfully!");
-              window.location.href = 'l1-imocha.html';
+              window.location.href = "l1-imocha.html";
             } else {
               showToast(`❌ Error: ${result.error || "Something went wrong."}`);
             }
@@ -1256,6 +1351,21 @@
           "/api/dotnet_ec_questions",
           "dotnet-table-body",
           "dotnet_experience_"
+        );
+        loadQuestions(
+          "/api/react_ec_questions",
+          "react-table-body",
+          "react_experience_"
+        );
+        loadQuestions(
+          "/api/angular_ec_questions",
+          "angular-table-body",
+          "angular_experience_"
+        );
+        loadQuestions(
+          "/api/mendix_ec_questions",
+          "mendix-table-body",
+          "mendix_experience_"
         );
       });
 
@@ -1290,7 +1400,7 @@
           .replace(/\b\w/g, (char) => char.toUpperCase());
       }
 
-         async function generateFeedbackWithGemini(
+      async function generateFeedbackWithGemini(
         candidateEmail,
         selectedRole,
         skills
@@ -1341,6 +1451,12 @@
             tableSelector = "#java-table-body tr";
           } else if (selectedRole.toLowerCase().includes(".net")) {
             tableSelector = "#dotnet-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("react")) {
+            tableSelector = "#react-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("angular")) {
+            tableSelector = "#angular-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("mendix")) {
+            tableSelector = "#mendix-table-body tr";
           } else {
             alert("Selected role not supported for feedback generation.");
             return;
