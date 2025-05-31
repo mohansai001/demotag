@@ -602,7 +602,14 @@ async function openFeedbackForm(candidateEmail, recruitmentPhase) {
         `feedbackWindow_${candidateEmail}`,
         windowFeatures
       );
-    } else if (eng_center === "Data") {
+    }else if (eng_center === "Cloud EC" && isL2Round) {
+      feedbackWindows[candidateEmail] = window.open(
+        `L2-Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}&position=${encodeURIComponent(role)}`,
+        `feedbackWindow_${candidateEmail}`,
+        windowFeatures
+      );
+    } 
+    else if (eng_center === "Data") {
       feedbackWindows[candidateEmail] = window.open(
         `L2_Data_Technical.html?candidateEmail=${encodeURIComponent(candidateEmail)}&roundDetails=${encodeURIComponent(recruitmentPhase)}`,
         `feedbackWindow_${candidateEmail}`,
