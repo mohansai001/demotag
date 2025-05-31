@@ -162,7 +162,7 @@
         width: 100%;
         padding: 8px;
         box-sizing: border-box;
-        min-height: 100px;
+        min-height: 250px;
         resize: vertical;
         border-radius: 4px;
         font-size: 1rem;
@@ -455,286 +455,55 @@
       </div>
 
       <div id="cloud-section" style="display: none">
-        <div class="section">
-          <table class="experience-table">
-            <tr>
-              <th>Cloud Experience</th>
-              <th>Number of years or Months</th>
-              <th>
-                Please ask did he/she worked on Well-Architected Framework
-              </th>
-              <th>Please ask did he/she worked on Zero-trust security</th>
-            </tr>
-            <tr>
-              <td>Total Experience in Azure Cloud from overall experience?</td>
-              <td>
-                <input
-                  type="text"
-                  id="azure-experience"
-                  placeholder="Enter total experience in Years/Months"
-                />
-              </td>
-              <td>
-                <select id="azure-well-architected-framework">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td>
-                <select id="azure-zero-trust-security">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Total Experience in AWS Cloud ?</td>
-              <td>
-                <input
-                  type="text"
-                  id="aws-experience"
-                  placeholder="Enter total experience in Years/Months"
-                />
-              </td>
-              <td>
-                <select id="aws-well-architected-framework">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td>
-                <select id="aws-zero-trust-security">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-            </tr>
+        <div id="devops-section" class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>DevOps Experience</th>
+                <th>Number of years or Months</th>
+                <th>Projects Handled</th>
+              </tr>
+            </thead>
+            <tbody id="devops-table-body"></tbody>
           </table>
         </div>
 
-        <!-- Migration Experience -->
-        <div class="section">
+        <div id="cloudops-section" class="section">
           <table>
-            <tr>
-              <th>Migration Experience - Onpremise to Cloud</th>
-              <th>Number of Projects handled</th>
-            </tr>
-            <tr>
-              <td>As-Is Migration</td>
-              <td>
-                <input
-                  type="text"
-                  id="as-is-migration"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>PaaS migration to WebApp services</td>
-              <td>
-                <input
-                  type="text"
-                  id="paas-migration"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Database migration</td>
-              <td>
-                <input
-                  type="text"
-                  id="database-migration"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
+            <thead>
+              <tr>
+                <th>CloudOps Experience</th>
+                <th>Number of years or Months</th>
+                <th>Projects Handled</th>
+              </tr>
+            </thead>
+            <tbody id="cloudops-table-body"></tbody>
           </table>
         </div>
 
-        <!-- Pre-sales Experience -->
-        <div class="section">
+        <div id="platform-section" class="section">
           <table>
-            <tr>
-              <th>Pre-sales experience</th>
-              <th>Number of Proposals</th>
-              <th class="centered-text">
-                If candidate says, worked on proposals. Please ask did he/she
-                handle end-to-end proposals? Yes or no
-              </th>
-            </tr>
-            <tr>
-              <td>Proposals worked</td>
-              <td>
-                <input
-                  type="text"
-                  id="proposals-worked"
-                  placeholder="Enter number of proposals worked"
-                />
-              </td>
-              <td>
-                <select id="proposals-worked-end-to-end">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Efforts calculations Knowledge</td>
-              <td>
-                <input
-                  type="text"
-                  id="efforts-calculations"
-                  placeholder="Enter number of proposals worked"
-                />
-              </td>
-              <td>
-                <select id="efforts-calculations-end-to-end">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-            </tr>
+            <thead>
+              <tr>
+                <th>Platform Experience</th>
+                <th>Number of years or Months</th>
+                <th>Projects Handled</th>
+              </tr>
+            </thead>
+            <tbody id="platform-table-body"></tbody>
           </table>
         </div>
 
-        <!-- DevOps Experience -->
-        <div class="section">
+        <div id="sre-section" class="section">
           <table>
-            <tr>
-              <th>DevOps Experience</th>
-              <th>Level of experience - Theory or Implementation</th>
-              <th class="centered-text">
-                If candidate says Implementation knowledge, Please ask how many
-                projects of experience he/she has?
-              </th>
-            </tr>
-            <tr>
-              <td>Knowledge on DevOps Maturity Model</td>
-              <td>
-                <select id="devops-maturity-model">
-                  <option value="" selected>Select</option>
-                  <option value="Theory">Only Theory Knowledge</option>
-                  <option value="Implementation">
-                    Only Implementation Knowledge
-                  </option>
-                  <option value="Both">
-                    Both Theory and Implementation Knowledge
-                  </option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  id="devops-maturity-model-projects"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>DORA metrics</td>
-              <td>
-                <select id="dora-metrics">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  id="dora-metrics-projects"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Build Release Solutioning</td>
-              <td>
-                <select id="build-release-solutioning">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  id="build-release-solutioning-projects"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
-          </table>
-        </div>
-        <div class="section">
-          <table>
-            <tr>
-              <th>Observability</th>
-              <th>Level of experience</th>
-              <th class="centered-text">
-                If candidate says Implementation knowledge, please ask how many
-                projects of experience he/she has?
-              </th>
-            </tr>
-            <tr>
-              <td>Knowledge on Observability</td>
-              <td>
-                <select id="observability-knowledge">
-                  <option value="" selected>Select</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  id="observability-knowledge-projects"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="section">
-          <table>
-            <tr>
-              <th>Containerization</th>
-              <th>Level of experience</th>
-              <th class="centered-text">
-                If candidate says Implementation knowledge, please ask how many
-                projects experience he/she has?
-              </th>
-            </tr>
-            <tr>
-              <td>Knowledge on Containerization</td>
-              <td>
-                <select id="containerization-knowledge">
-                  <option value="" selected>Select</option>
-                  <option value="Theory">Only Theory Knowledge</option>
-                  <option value="Implementation">
-                    Only Implementation Knowledge
-                  </option>
-                  <option value="Both">
-                    Both Theory and Implementation Knowledge
-                  </option>
-                </select>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  id="containerization-knowledge-projects"
-                  placeholder="Enter number of projects handled"
-                />
-              </td>
-            </tr>
+            <thead>
+              <tr>
+                <th>Site Reliability Engineering (SRE) Experience</th>
+                <th>Number of years or Months</th>
+                <th>Projects Handled</th>
+              </tr>
+            </thead>
+            <tbody id="sre-table-body"></tbody>
           </table>
         </div>
       </div>
@@ -770,6 +539,53 @@
               <tbody id="dotnet-table-body"></tbody>
             </table>
           </div>
+        </div>
+      </div>
+      <!-- React Section -->
+      <div id="react-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>React Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="react-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Angular Section -->
+      <div id="angular-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>Angular Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="angular-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mendix Section -->
+      <div id="mendix-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>Mendix Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="mendix-table-body"></tbody>
+          </table>
         </div>
       </div>
 
@@ -934,7 +750,7 @@
         ></textarea>
       </div>
 
-         <button type="button" id="generate-feedback-btn">
+      <button type="button" id="generate-feedback-btn">
         Generate Feedback (AI)
       </button>
 
@@ -1038,7 +854,7 @@
         );
 
         // Fetch all candidate emails from the server
-        fetch("https://demotag.vercel.app/api/getAllCandidateEmails")
+        fetch("http://localhost:3000/api/getAllCandidateEmails")
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -1090,7 +906,7 @@
 
         function fetchCandidateData(email) {
           fetch(
-            `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`
+            `http://localhost:3000/api/getCandidateData?candidateEmail=${email}`
           )
             .then((response) => response.json())
             .then((data) => {
@@ -1100,19 +916,73 @@
                 document.getElementById("candidate-name").value =
                   data.candidate_name;
                 document.getElementById("position").value = data.role;
+                document.getElementById("rrf-id").value = data.rrf_id;
+                document.getElementById("hr-email").value = data.hr_email;
 
-                // Check if it's an App EC role
+                // --- App EC Roles ---
                 const appRolesJava = [
                   "Junior Java Cloud Native Application Engineer - Backend",
                   "Senior Java Cloud Native Application Engineer - Backend",
                 ];
-
                 const appRolesDotNet = [
                   "Junior .Net Cloud Native Application Engineer - Backend",
                   "Senior .Net Cloud Native Application Engineer - Backend",
                 ];
+                const appRolesReact = [
+                  "Junior React Cloud Native Application Engineer - Frontend",
+                  "Senior React Cloud Native Application Engineer - Frontend",
+                ];
+                const appRolesAngular = [
+                  "Junior Angular Cloud Native Application Engineer - Frontend",
+                  "Senior Angular Cloud Native Application Engineer - Frontend",
+                ];
+                const appRolesMendix = [
+                  "Junior Mendix LCNC Platform Engineer",
+                  "Senior Mendix LCNC Platform Engineer",
+                ];
 
-                if ([...appRolesJava, ...appRolesDotNet].includes(data.role)) {
+                // --- Cloud EC Roles ---
+                const devopsRoles = [
+                  "Junior Azure DevOps Engineer",
+                  "Senior Azure DevOps Engineer",
+                  "Lead Azure DevOps Engineer",
+                  "Junior AWS DevOps Engineer",
+                  "Senior AWS DevOps Engineer",
+                  "Lead AWS DevOps Engineer",
+                ];
+                const platformRoles = [
+                  "Junior Azure Platform Engineer",
+                  "Senior Azure Platform Engineer",
+                  "Lead Azure Platform Engineer",
+                  "Junior AWS Platform Engineer",
+                  "Senior AWS Platform Engineer",
+                  "Lead AWS Platform Engineer",
+                ];
+                const cloudopsRoles = [
+                  "Junior Azure Cloudops Engineer",
+                  "Senior Azure Cloudops Engineer",
+                  "Lead Azure Cloudops Engineer",
+                  "Junior AWS Cloudops Engineer",
+                  "Senior AWS Cloudops Engineer",
+                  "Lead AWS Cloudops Engineer",
+                ];
+
+                const isAppEC = [
+                  ...appRolesJava,
+                  ...appRolesDotNet,
+                  ...appRolesReact,
+                  ...appRolesAngular,
+                  ...appRolesMendix,
+                ].includes(data.role);
+
+                const isCloudEC = [
+                  ...devopsRoles,
+                  ...platformRoles,
+                  ...cloudopsRoles,
+                ].includes(data.role);
+
+                // --- Handle App EC Display ---
+                if (isAppEC) {
                   document.getElementById("ec-select").value = "App";
                   document.getElementById("app-section").style.display =
                     "block";
@@ -1121,24 +991,67 @@
                   document.getElementById("data-section").style.display =
                     "none";
 
+                  // Hide all app sections
+                  document.getElementById("java-section").style.display =
+                    "none";
+                  document.getElementById("dotnet-section").style.display =
+                    "none";
+                  document.getElementById("react-section").style.display =
+                    "none";
+                  document.getElementById("angular-section").style.display =
+                    "none";
+                  document.getElementById("mendix-section").style.display =
+                    "none";
+
                   if (appRolesJava.includes(data.role)) {
-                    document.getElementById("dotnet-section").style.display =
-                      "none";
                     document.getElementById("java-section").style.display =
                       "block";
                   } else if (appRolesDotNet.includes(data.role)) {
-                    document.getElementById("java-section").style.display =
-                      "none";
                     document.getElementById("dotnet-section").style.display =
+                      "block";
+                  } else if (appRolesReact.includes(data.role)) {
+                    document.getElementById("react-section").style.display =
+                      "block";
+                  } else if (appRolesAngular.includes(data.role)) {
+                    document.getElementById("angular-section").style.display =
+                      "block";
+                  } else if (appRolesMendix.includes(data.role)) {
+                    document.getElementById("mendix-section").style.display =
                       "block";
                   }
                 }
 
-                document.getElementById("rrf-id").value = data.rrf_id;
-                document.getElementById("hr-email").value = data.hr_email;
+                // --- Handle Cloud EC Display ---
+                if (isCloudEC) {
+                  document.getElementById("ec-select").value = "Cloud";
+                  document.getElementById("cloud-section").style.display =
+                    "block";
+                  document.getElementById("app-section").style.display = "none";
+                  document.getElementById("data-section").style.display =
+                    "none";
+
+                  // Hide all cloud sections
+                  document.getElementById("devops-section").style.display =
+                    "none";
+                  document.getElementById("cloudops-section").style.display =
+                    "none";
+                  document.getElementById("platform-section").style.display =
+                    "none";
+                  document.getElementById("sre-section").style.display = "none";
+
+                  if (devopsRoles.includes(data.role)) {
+                    document.getElementById("devops-section").style.display =
+                      "block";
+                  } else if (cloudopsRoles.includes(data.role)) {
+                    document.getElementById("cloudops-section").style.display =
+                      "block";
+                  } else if (platformRoles.includes(data.role)) {
+                    document.getElementById("platform-section").style.display =
+                      "block";
+                  }
+                }
               }
             })
-
             .catch((error) => {
               console.error("Error fetching candidate data:", error);
               showToast("Failed to load candidate data.", "error");
@@ -1183,10 +1096,9 @@
           const candidateEmail = document.getElementById(
             "candidate-email-dropdown"
           ).value;
-
           const detailedFeedback =
             document.getElementById("detailed-feedback").value;
-          const selectedRole = document.getElementById("position").value; // Add this dropdown
+          const selectedRole = document.getElementById("position").value;
           const summaryBox = document.getElementById("status-dropdown").value;
           console.log("Selected status:", summaryBox);
 
@@ -1198,12 +1110,33 @@
           let tableSelector = "";
           let apiEndpoint = "";
 
+          // App EC roles
           if (selectedRole.toLowerCase().includes("java")) {
             tableSelector = "#java-table-body tr";
             apiEndpoint = "/api/java_ec_submit-feedback";
           } else if (selectedRole.toLowerCase().includes(".net")) {
             tableSelector = "#dotnet-table-body tr";
             apiEndpoint = "/api/dotnet_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("react")) {
+            tableSelector = "#react-table-body tr";
+            apiEndpoint = "/api/react_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("angular")) {
+            tableSelector = "#angular-table-body tr";
+            apiEndpoint = "/api/angular_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("mendix")) {
+            tableSelector = "#mendix-table-body tr";
+            apiEndpoint = "/api/mendix_ec_submit-feedback";
+
+            // Cloud EC roles
+          } else if (selectedRole.toLowerCase().includes("devops")) {
+            tableSelector = "#devops-table-body tr";
+            apiEndpoint = "/api/devops_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("cloudops")) {
+            tableSelector = "#cloudops-table-body tr";
+            apiEndpoint = "/api/cloudops_ec_submit-feedback";
+          } else if (selectedRole.toLowerCase().includes("platform")) {
+            tableSelector = "#platform-table-body tr";
+            apiEndpoint = "/api/platform_ec_submit-feedback";
           } else {
             alert("Selected role not supported.");
             return;
@@ -1236,7 +1169,7 @@
             const result = await response.json();
             if (response.ok) {
               showToast("✅ Feedback submitted successfully!");
-              window.location.href = 'l1-imocha.html';
+              window.location.href = "l1-imocha.html";
             } else {
               showToast(`❌ Error: ${result.error || "Something went wrong."}`);
             }
@@ -1247,6 +1180,7 @@
         });
 
       document.addEventListener("DOMContentLoaded", () => {
+        // App EC roles
         loadQuestions(
           "/api/java_ec_questions",
           "java-table-body",
@@ -1256,6 +1190,43 @@
           "/api/dotnet_ec_questions",
           "dotnet-table-body",
           "dotnet_experience_"
+        );
+        loadQuestions(
+          "/api/react_ec_questions",
+          "react-table-body",
+          "react_experience_"
+        );
+        loadQuestions(
+          "/api/angular_ec_questions",
+          "angular-table-body",
+          "angular_experience_"
+        );
+        loadQuestions(
+          "/api/mendix_ec_questions",
+          "mendix-table-body",
+          "mendix_experience_"
+        );
+
+        // Cloud EC roles
+        loadQuestions(
+          "/api/devops_ec_questions",
+          "devops-table-body",
+          "devops_experience_"
+        );
+        loadQuestions(
+          "/api/cloudops_ec_questions",
+          "cloudops-table-body",
+          "cloudops_experience_"
+        );
+        loadQuestions(
+          "/api/platform_ec_questions",
+          "platform-table-body",
+          "platform_experience_"
+        );
+        loadQuestions(
+          "/api/sre_ec_questions",
+          "sre-table-body",
+          "sre_experience_"
         );
       });
 
@@ -1290,7 +1261,7 @@
           .replace(/\b\w/g, (char) => char.toUpperCase());
       }
 
-         async function generateFeedbackWithGemini(
+      async function generateFeedbackWithGemini(
         candidateEmail,
         selectedRole,
         skills
@@ -1338,13 +1309,28 @@
 
           let tableSelector = "";
           if (selectedRole.toLowerCase().includes("java")) {
-            tableSelector = "#java-table-body tr";
-          } else if (selectedRole.toLowerCase().includes(".net")) {
-            tableSelector = "#dotnet-table-body tr";
-          } else {
-            alert("Selected role not supported for feedback generation.");
-            return;
-          }
+  tableSelector = "#java-table-body tr";
+} else if (selectedRole.toLowerCase().includes(".net")) {
+  tableSelector = "#dotnet-table-body tr";
+} else if (selectedRole.toLowerCase().includes("react")) {
+  tableSelector = "#react-table-body tr";
+} else if (selectedRole.toLowerCase().includes("angular")) {
+  tableSelector = "#angular-table-body tr";
+} else if (selectedRole.toLowerCase().includes("mendix")) {
+  tableSelector = "#mendix-table-body tr";
+} else if (selectedRole.toLowerCase().includes("devops")) {
+  tableSelector = "#devops-table-body tr";
+} else if (selectedRole.toLowerCase().includes("cloudops")) {
+  tableSelector = "#cloudops-table-body tr";
+} else if (selectedRole.toLowerCase().includes("platform")) {
+  tableSelector = "#platform-table-body tr";
+} else if (selectedRole.toLowerCase().includes("sre")) {
+  tableSelector = "#sre-table-body tr";
+} else {
+  alert("Selected role not supported for feedback generation.");
+  return;
+}
+
 
           const rows = document.querySelectorAll(tableSelector);
           const skills = [];
