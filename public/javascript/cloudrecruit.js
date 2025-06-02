@@ -1354,6 +1354,190 @@ return re.test(email);
         // Show the interviews section
         document.getElementById('interviews').style.display = 'block';
     }
+
+document.addEventListener("DOMContentLoaded", () => {
+  populateRRFDropdownWithSearch();
+});
+
+async function populateRRFDropdownWithSearch() {
+  try {
+    // Fetch RRF IDs from your API
+    const response = await fetch('https://demotag.vercel.app/api/rrf-ids');
+    const rrfIds = await response.json();
+    
+    // Get the existing select element
+    const selectElement = document.getElementById('RRF-ID');
+    
+    // Important: Don't remove the original select - just hide it
+    // This ensures other functions can still access it
+    selectElement.style.display = 'none';
+    
+    // Create the first option (default option)
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Select RRF ID';
+    selectElement.appendChild(defaultOption);
+    
+    // Fill the original select with options from API
+    if (rrfIds.length > 0) {
+      rrfIds.forEach(id => {
+        const option = document.createElement('option');
+        option.value = id.rrfid;
+        option.textContent = id.rrfid;
+        selectElement.appendChild(option);
+      });
+    }
+    
+    // Create a container div for our custom dropdown
+    const container = document.createElement('div');
+    container.style.width = selectElement.style.width || '82%';
+    container.style.position = 'relative';
+    container.style.display = 'inline-block';
+    
+    // Create the search input
+    const searchInput = document.createElement('input');
+    searchInput.setAttribute('type', 'text');
+    searchInput.setAttribute('placeholder', 'Search RRF ID...');
+    searchInput.style.width = '100%';
+    searchInput.style.padding = selectElement.style.padding || '8px';
+    searchInput.style.marginTop = selectElement.style.marginTop || '5px';
+    searchInput.style.backgroundColor = selectElement.style.backgroundColor || '#E6E6FA';
+    searchInput.style.border = '1px solid #ccc';
+    searchInput.style.borderRadius = '4px';
+    searchInput.style.boxSizing = 'border-box';
+    
+    // Create the dropdown list container
+    const dropdownList = document.createElement('div');
+    dropdownList.style.display = 'none';
+    dropdownList.style.position = 'absolute';
+    dropdownList.style.width = '100%';
+    dropdownList.style.maxHeight = '200px';
+    dropdownList.style.overflowY = 'auto';
+    dropdownList.style.backgroundColor = '#fff';
+    dropdownList.style.border = '1px solid #ccc';
+    dropdownList.style.borderTop = 'none';
+    dropdownList.style.borderRadius = '0 0 4px 4px';
+    dropdownList.style.zIndex = '1000';
+    dropdownList.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    
+    // Insert our custom elements right after the hidden select
+    selectElement.parentNode.insertBefore(container, selectElement.nextSibling);
+    container.appendChild(searchInput);
+    container.appendChild(dropdownList);
+    
+    // Prepare the RRF ID data
+    const rrfIdValues = rrfIds.map(id => id.rrfid);
+    
+    // Set up event listeners
+    setupSearchFunctionality(searchInput, dropdownList, rrfIdValues, selectElement);
+    
+  } catch (error) {
+    console.error('Error loading RRF IDs:', error);
+  }
+}
+
+function setupSearchFunctionality(searchInput, dropdownList, rrfIdValues, originalSelect) {
+  // Focus event - show all options
+  searchInput.addEventListener('focus', () => {
+    updateDropdownOptions(dropdownList, rrfIdValues, searchInput, originalSelect);
+    dropdownList.style.display = 'block';
+  });
+
+  // Input event - filter options
+  searchInput.addEventListener('input', () => {
+    const searchTerm = searchInput.value.toLowerCase();
+    const filteredIds = rrfIdValues.filter(id =>
+      id.toLowerCase().includes(searchTerm)
+    );
+    updateDropdownOptions(dropdownList, filteredIds, searchInput, originalSelect);
+    dropdownList.style.display = 'block';
+  });
+
+  // Blur event - handle manual entry
+  searchInput.addEventListener('blur', () => {
+    const typedValue = searchInput.value.trim();
+    const match = rrfIdValues.find(id => id.toLowerCase() === typedValue.toLowerCase());
+    if (match) {
+      originalSelect.value = match;
+      originalSelect.dispatchEvent(new Event('change'));
+    } else {
+      // Optionally clear invalid input
+      searchInput.value = '';
+      originalSelect.value = '';
+    }
+
+    // Hide the dropdown after short delay to allow click event if needed
+    setTimeout(() => {
+      dropdownList.style.display = 'none';
+    }, 200);
+  });
+
+  // Handle click outside
+  document.addEventListener('click', (e) => {
+    if (e.target !== searchInput && e.target !== dropdownList) {
+      dropdownList.style.display = 'none';
+    }
+  });
+
+  // Prevent dropdown from closing when clicking inside it
+  dropdownList.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}
+
+function updateDropdownOptions(dropdownList, options, searchInput, originalSelect) {
+  // Clear previous options
+  dropdownList.innerHTML = '';
+  
+  if (options.length === 0) {
+    const noResults = document.createElement('div');
+    noResults.textContent = 'No matching RRF IDs found';
+    noResults.style.padding = '8px';
+    noResults.style.color = '#666';
+    noResults.style.fontStyle = 'italic';
+    noResults.style.textAlign = 'center';
+    dropdownList.appendChild(noResults);
+    return;
+  }
+  
+  // Add filtered options
+  options.forEach(option => {
+    const optionElement = document.createElement('div');
+    optionElement.textContent = option;
+    optionElement.style.padding = '8px';
+    optionElement.style.cursor = 'pointer';
+    optionElement.style.borderBottom = '1px solid #eee';
+    
+    // Hover effects
+    optionElement.addEventListener('mouseover', () => {
+      optionElement.style.backgroundColor = '#f5f5f5';
+    });
+    
+    optionElement.addEventListener('mouseout', () => {
+      optionElement.style.backgroundColor = '';
+    });
+    
+    // Selection event
+    optionElement.addEventListener('click', () => {
+      // Update the search input
+      searchInput.value = option;
+      
+      // Update the original select value (CRITICAL for compatibility)
+      originalSelect.value = option;
+      
+      // Trigger change event on original select for any listeners
+      const changeEvent = new Event('change', { bubbles: true });
+      originalSelect.dispatchEvent(changeEvent);
+      
+      // Hide dropdown
+      dropdownList.style.display = 'none';
+      
+      console.log('Selected RRF ID:', option);
+    });
+    
+    dropdownList.appendChild(optionElement);
+  });
+}
     async function fetchCandidates() {
         try {
             const response = await fetch('https://demotag.vercel.app/api/candidates');
