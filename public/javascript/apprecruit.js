@@ -1166,7 +1166,7 @@ function displayEvaluationInCards(
   };
   localStorage.setItem("candidateDetails", JSON.stringify(candidateDetails));
 
-  if (!isShortlisted) {
+  if (isShortlisted) {
     const nextButton = document.createElement("button");
     nextButton.classList.add("next-btn");
     nextButton.textContent = "Next";
