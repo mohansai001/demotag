@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express"):
 const { Pool, Client } = require("pg"); // PostgreSQL
 const cors = require("cors");
 const fetch = require("node-fetch"); // For inviting candidates (API request)
