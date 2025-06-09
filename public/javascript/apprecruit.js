@@ -1584,44 +1584,25 @@ function setupSearchFunctionality(searchInput, dropdownList, rrfIdValues, origin
     updateDropdownOptions(dropdownList, rrfIdValues, searchInput, originalSelect);
     dropdownList.style.display = 'block';
   });
-
+  
   // Input event - filter options
   searchInput.addEventListener('input', () => {
     const searchTerm = searchInput.value.toLowerCase();
-    const filteredIds = rrfIdValues.filter(id =>
+    const filteredIds = rrfIdValues.filter(id => 
       id.toLowerCase().includes(searchTerm)
     );
     updateDropdownOptions(dropdownList, filteredIds, searchInput, originalSelect);
     dropdownList.style.display = 'block';
   });
-
-  // Blur event - handle manual entry
-  searchInput.addEventListener('blur', () => {
-    const typedValue = searchInput.value.trim();
-    const match = rrfIdValues.find(id => id.toLowerCase() === typedValue.toLowerCase());
-    if (match) {
-      originalSelect.value = match;
-      originalSelect.dispatchEvent(new Event('change'));
-    } else {
-      // Optionally clear invalid input
-      searchInput.value = '';
-      originalSelect.value = '';
-    }
-
-    // Hide the dropdown after short delay to allow click event if needed
-    setTimeout(() => {
-      dropdownList.style.display = 'none';
-    }, 200);
-  });
-
+  
   // Handle click outside
   document.addEventListener('click', (e) => {
     if (e.target !== searchInput && e.target !== dropdownList) {
       dropdownList.style.display = 'none';
     }
   });
-
-  // Prevent dropdown from closing when clicking inside it
+  
+  // Prevent the dropdown from closing when clicking inside it
   dropdownList.addEventListener('click', (e) => {
     e.stopPropagation();
   });
