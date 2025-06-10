@@ -35,7 +35,7 @@ app.use(express.json());
 
 // PostgreSQL connection string
 const connectionString =
-  "postgresql://retool:4zBLlh1TPsAu@ep-frosty-pine-a6aqfk20.us-west-2.retooldb.com/retool?sslmode=require";
+  "postgresql://retool:npg_zoFfid4y7veY@ep-lucky-cell-a6iyz3dt.us-west-2.retooldb.com/retool?sslmode=require";
 
 // Create a new pool instance
 const pool = new Pool({
