@@ -466,41 +466,39 @@ async function getValidApiKey(resumeUrl) {
     "sec_ELtQJOZKC9dGCpaTRqb8kVzLSiOvfT89",
     "sec_zk4jxZJSQh95LaNGVebPta6bGfEM6yVl",
   ];
-  for (let apiKey of apiKeys) {
-    try {
-      const apiUrl = "https://api.chatpdf.com/v1/sources/add-url";
+for (let apiKey of apiKeys) {
+  try {
+    const apiUrl = "https://api.chatpdf.com/v1/sources/add-url";
 
-      // Try sending the resume URL with the current API key
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-        },
-        body: JSON.stringify({ url: resumeUrl }),
-      });
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body: JSON.stringify({ url: resumeUrl }),
+    });
 
-      if (response.ok) {
-        console.log(`Valid API key found: ${apiKey}`);
-        return apiKey; // Return the valid key
-      } else if (response.status === 401) {
-        console.warn(
-          `API key expired or unauthorized: ${apiKey}. Trying the next key...`
-        );
-      } else if (response.status === 403) {
-        console.warn(
-          `Quota exceeded for API key: ${apiKey}. Moving to the next key...`
-        );
-      } else if (response.status === 429) {
-        console.error(`Rate limit exceeded for API key: ${apiKey}.`);
-        return null; // Exit if rate limit is exceeded, as further retries might not work
-      } else {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error(`Error with API key: ${apiKey}`, error.message);
+    if (response.ok) {
+      console.log(`✅ Valid API key found: ${apiKey}`);
+      return apiKey;
+    } else if (response.status === 401) {
+      console.warn(`❌ API key unauthorized/expired: ${apiKey}. Trying next...`);
+    } else if (response.status === 403) {
+      console.warn(`⚠️ Quota exceeded for API key: ${apiKey}. Trying next...`);
+    } else if (response.status === 429) {
+      console.error(`🚫 Rate limit exceeded for API key: ${apiKey}. Aborting.`);
+      return null;
+    } else if (response.status === 500) {
+      console.error(`💥 Server error (500) encountered. Skipping this key: ${apiKey}`);
+      // Optionally: add a short delay before next retry
+    } else {
+      throw new Error(`Unexpected HTTP status: ${response.status}`);
     }
+  } catch (error) {
+    console.error(`❌ Network or processing error with API key: ${apiKey}`, error.message);
   }
+}
 
   console.error("No valid API key found.");
   return null; // Return null if no key works
