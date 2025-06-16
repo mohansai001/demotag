@@ -240,12 +240,12 @@ function updateNewBarChartData(teamACount, teamBCount, teamCCount, teamDCount) {
 async function fetchNewCountsAndUpdateChart() {
   try {
     const teamACount = await fetch(
-      "https://demotag.vercel.app/api/reactjs-resume-count"
+      "https://demotag.vercel.app/api/snow-resume-count"
     )
       .then((res) => res.json())
       .then((data) => data.count || 0);
     const teamBCount = await fetch(
-      "https://demotag.vercel.app/api/snow-resume-count"
+      "https://demotag.vercel.app/api/reactjs-resume-count"
     )
       .then((res) => res.json())
       .then((data) => data.count || 0);
