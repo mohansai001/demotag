@@ -241,41 +241,52 @@ async function uploadResume() {
 // Convert DOCX to PDF using Mammoth
 async function convertDocxToPdf(file) {
   try {
-    // Load Mammoth from CDN if not already loaded
+    // Load Mammoth if not available
     if (typeof mammoth === 'undefined') {
-      await loadScript('https://unpkg.com/mammoth@1.4.0/mammoth.browser.min.js');
+      await loadScript('https://unpkg.com/mammoth@1.4.2/mammoth.browser.min.js');
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });
-    
-    // Load jsPDF from CDN if not already loaded
+    const textContent = result.value || "";
+
+    // Load jsPDF if not available
     if (typeof jspdf === 'undefined') {
       await loadScript('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js');
     }
 
-    const doc = new jspdf.jsPDF();
-    const lines = result.value.split('\n');
-    let y = 10;
-    
-    for (const line of lines) {
-      if (y > 280) {
-        doc.addPage();
-        y = 10;
+    const doc = new jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+    const maxWidth = 180; // usable width in mm (A4: 210mm - 30mm margins)
+    const lineHeight = 8;
+    let y = 20;
+
+    doc.setFont("Courier", "normal"); // Monospaced font for layout
+    doc.setFontSize(11);
+
+    const paragraphs = textContent.split('\n').map(p => p.trim()).filter(Boolean);
+    for (const paragraph of paragraphs) {
+      const lines = doc.splitTextToSize(paragraph, maxWidth);
+
+      for (const line of lines) {
+        if (y + lineHeight > 290) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 15, y);
+        y += lineHeight;
       }
-      doc.text(line, 10, y);
-      y += 10;
+
+      y += 4; // Extra space between paragraphs
     }
-    
-    const pdfBlob = doc.output('blob');
+
+    const pdfBlob = doc.output("blob");
     return new File([pdfBlob], file.name.replace(/\.[^/.]+$/, ".pdf"), {
-      type: 'application/pdf'
+      type: "application/pdf",
     });
   } catch (error) {
     throw new Error(`DOCX conversion failed: ${error.message}`);
   }
 }
-
 // Convert DOC to PDF (fallback method)
 async function convertDocToPdf(file) {
   try {
