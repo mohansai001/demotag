@@ -157,12 +157,10 @@ let globalHrEmail;
 let globalRrfId;
 
 async function uploadResume() {
-  var fileInput = document.getElementById("resume");
-  var file = fileInput.files[0];
-
-  // Get the HR email input
-  var hrEmail = document.getElementById("hr-email").value;
-  var rrfId = document.getElementById("RRF-ID").value;
+  const fileInput = document.getElementById("resume");
+  let file = fileInput.files[0];
+  const hrEmail = document.getElementById("hr-email").value;
+  const rrfId = document.getElementById("RRF-ID").value;
 
   // Validate HR email
   if (!hrEmail || !validateEmail(hrEmail)) {
@@ -170,105 +168,177 @@ async function uploadResume() {
     return;
   }
 
-  // Store the HR email in the global variable
   globalHrEmail = hrEmail;
   globalRrfId = rrfId;
 
-  // Get the selected cloud provider value
-  var cloudProvider = document.querySelector(
-    'input[name="cloudProvider"]:checked'
-  );
-  var selectedProvider = cloudProvider ? cloudProvider.value : null;
-  console.log("Selected Cloud Provider:", selectedProvider);
+  // Check if the selected role is Full Stack Engineer
+  if (selectedRole !== "Full Stack Engineer") {
+    const cloudProvider = document.querySelector(
+      'input[name="cloudProvider"]:checked'
+    );
+    const selectedProvider = cloudProvider ? cloudProvider.value : null;
 
-  if (file) {
-    var progressBar = document.querySelector(".progress-bar");
-    progressBar.style.width = "0%"; // Reset progress bar
-
-    // Start progress bar animation
-    animateProgressBar(progressBar);
-
-    try {
-      let processedFile = file;
-
-      // Check if the file is a .docx file
-      if (
-        file.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        displaySuccessPopup("Converting DOCX to PDF, please wait...");
-
-        // Prepare the file for upload to the conversion endpoint
-        let formData = new FormData();
-        formData.append("word", file);
-
-        // Send the file to the /docxtopdf endpoint for conversion
-        const response = await fetch("https://demotag.vercel.app/docxtopdf", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const blob = await response.blob();
-          processedFile = new File([blob], file.name.replace(".docx", ".pdf"), {
-            type: "application/pdf",
-          });
-          displaySuccessPopup("DOCX file successfully converted to PDF.");
-        } else {
-          throw new Error("Error converting DOCX to PDF.");
-        }
-      } else if (file.type !== "application/pdf") {
-        throw new Error(
-          "Unsupported file type. Please upload a PDF or DOCX file."
-        );
-      }
-
-      // Simulate upload delay (for demonstration purposes)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Upload the resume to GitHub
-      var originalFileName = processedFile.name;
-      var timestamp = Date.now();
-      var fileName = timestamp + "_" + originalFileName;
-      var githubUrl = await uploadToGitHub(fileName, processedFile);
-
-      if (githubUrl) {
-        // Resume successfully uploaded
-        progressBar.style.width = "100%"; // Set progress bar to 100% on success
-        displaySuccessPopup(
-          "Resume uploaded successfully: " + processedFile.name
-        );
-     closePopup();
-        setTimeout(function() {
-          closeSuccessPopup(); // You should have a function that closes the popup
-        }, 3000); // Assuming this closes another popup or message
-
-        document.querySelector(".role-selection-container").style.display =
-          "none";
-        document.querySelector(".container").style.display = "block";
-
-        // Send the resume URL to ChatPDF API for evaluation
-        await evaluateResumeWithChatPDF(githubUrl);
-      } else {
-        // Resume already evaluated, reset the progress bar
-        console.log("Inside else block: Resume already evaluated");
-        progressBar.style.width = "0%";
-
-        setTimeout(() => {
-          displaySuccessPopup("Resume already evaluated.");
-          closePopup();
-        }, 100); // slight delay helps with UI race conditions
-      }
-    } catch (error) {
-      console.error("Error uploading file: ", error);
-      progressBar.style.width = "0%"; // Reset progress bar on failure
-      displaySuccessPopup("Failed to upload resume.");
+    if (!selectedProvider) {
+      displaySuccessPopup("Please select a cloud provider.");
+      return;
     }
+
+    console.log("Selected Cloud Provider:", selectedProvider);
   } else {
-    displaySuccessPopup("Please upload a valid PDF or DOCX file.");
+    console.log("No cloud provider required for Full Stack Engineer.");
+  }
+
+  if (!file) {
+    displaySuccessPopup("Please upload a valid document file.");
+    return;
+  }
+
+  const progressBar = document.querySelector(".progress-bar");
+  progressBar.style.width = "0%";
+  animateProgressBar(progressBar);
+
+  try {
+    let processedFile = file;
+    const fileName = file.name.toLowerCase();
+
+    // Handle different file types
+    if (fileName.endsWith(".doc") || fileName.endsWith(".docx") || fileName.endsWith(".pdf")) {
+      displaySuccessPopup("Processing document...");
+
+      if (fileName.endsWith(".doc")) {
+        // For .doc files, we'll use a different approach since Mammoth can't handle them
+        processedFile = await convertDocToPdf(file);
+      } else if (fileName.endsWith(".docx")) {
+        // For .docx files, use Mammoth
+        processedFile = await convertDocxToPdf(file);
+      }
+      // PDF files need no conversion
+    } else {
+      throw new Error("Unsupported file format. Please upload PDF, DOC, or DOCX.");
+    }
+
+    // Upload the processed file
+    const timestamp = Date.now();
+    const newFileName = `${timestamp}_${file.name.replace(/\.[^/.]+$/, ".pdf")}`;
+    const githubUrl = await uploadToGitHub(newFileName, processedFile);
+
+    progressBar.style.width = "100%";
+    displaySuccessPopup("Resume uploaded successfully: " + newFileName);
+    closePopup();
+    setTimeout(() => closeSuccessPopup(), 3000);
+
+    document.querySelector(".role-selection-container").style.display = "none";
+    document.querySelector(".container").style.display = "block";
+
+    await evaluateResumeWithChatPDF(githubUrl);
+  } catch (error) {
+    console.error("Error processing file: ", error);
+    progressBar.style.width = "0%";
+    displaySuccessPopup(`Failed to process resume: ${error.message}`);
   }
 }
 
+// Convert DOCX to PDF using Mammoth
+async function convertDocxToPdf(file) {
+  try {
+    // Load Mammoth from CDN if not already loaded
+    if (typeof mammoth === 'undefined') {
+      await loadScript('https://unpkg.com/mammoth@1.4.0/mammoth.browser.min.js');
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    
+    // Load jsPDF from CDN if not already loaded
+    if (typeof jspdf === 'undefined') {
+      await loadScript('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    }
+
+    const doc = new jspdf.jsPDF();
+    const lines = result.value.split('\n');
+    let y = 10;
+    
+    for (const line of lines) {
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
+      }
+      doc.text(line, 10, y);
+      y += 10;
+    }
+    
+    const pdfBlob = doc.output('blob');
+    return new File([pdfBlob], file.name.replace(/\.[^/.]+$/, ".pdf"), {
+      type: 'application/pdf'
+    });
+  } catch (error) {
+    throw new Error(`DOCX conversion failed: ${error.message}`);
+  }
+}
+
+// Convert DOC to PDF (fallback method)
+async function convertDocToPdf(file) {
+  try {
+    // Since we can't properly convert DOC in browser, we'll:
+    // 1. Try to extract text using a textarea fallback
+    // 2. Create a simple PDF with the text
+    
+    // Load jsPDF from CDN if not already loaded
+    if (typeof jspdf === 'undefined') {
+      await loadScript('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    }
+
+    const text = await extractTextFromDoc(file);
+    const doc = new jspdf.jsPDF();
+    
+    const lines = text.split('\n');
+    let y = 10;
+    
+    for (const line of lines) {
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
+      }
+      doc.text(line, 10, y);
+      y += 10;
+    }
+    
+    const pdfBlob = doc.output('blob');
+    return new File([pdfBlob], file.name.replace(/\.[^/.]+$/, ".pdf"), {
+      type: 'application/pdf'
+    });
+  } catch (error) {
+    throw new Error(`DOC conversion failed: ${error.message}`);
+  }
+}
+
+// Fallback text extraction for DOC files
+async function extractTextFromDoc(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // This is a very basic text extractor - won't work for all DOC files
+      const text = e.target.result.replace(/[^ -~\t\n\r]/g, '');
+      resolve(text);
+    };
+    reader.readAsText(file);
+  });
+}
+
+// Helper to load scripts dynamically
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      return resolve();
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.head.appendChild(script);
+  });
+}
 // Helper function to validate email
 function validateEmail(email) {
   var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
