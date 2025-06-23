@@ -854,7 +854,7 @@
         );
 
         // Fetch all candidate emails from the server
-        fetch("http://localhost:3000/api/getAllCandidateEmails")
+        fetch("https://demotag.vercel.app/api/getAllCandidateEmails")
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -906,7 +906,7 @@
 
         function fetchCandidateData(email) {
           fetch(
-            `http://localhost:3000/api/getCandidateData?candidateEmail=${email}`
+            `https://demotag.vercel.app/api/getCandidateData?candidateEmail=${email}`
           )
             .then((response) => response.json())
             .then((data) => {
