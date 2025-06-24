@@ -2330,7 +2330,7 @@ async function populatePosTable() {
     const searchInput = document.getElementById("posSearchInput");
     searchInput.addEventListener("input", () => {
       const searchTerm = searchInput.value.toLowerCase();
-      const filteredData = data.filter(({ pos_id }) =>
+      const filteredData = data.filter(({ rrf_id }) =>
         pos_id.toLowerCase().includes(searchTerm)
       );
       currentPage = 1; // Reset to the first page
