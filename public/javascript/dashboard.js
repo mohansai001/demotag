@@ -2331,7 +2331,7 @@ async function populatePosTable() {
     searchInput.addEventListener("input", () => {
       const searchTerm = searchInput.value.toLowerCase();
       const filteredData = data.filter(({ rrf_id }) =>
-        pos_id.toLowerCase().includes(searchTerm)
+        rrf_id.toLowerCase().includes(searchTerm)
       );
       currentPage = 1; // Reset to the first page
       renderTable(currentPage, filteredData);
@@ -2348,7 +2348,6 @@ async function populatePosTable() {
 
 // Call the function to populate the table
 populatePosTable();
-
 document.addEventListener("DOMContentLoaded", () => {
   // Get references to the elements
   const rrfContainer = document.querySelector(".container-RRF");
