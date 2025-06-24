@@ -2261,6 +2261,94 @@ async function populatePhaseTable() {
 // Call the function to populate the table
 populatePhaseTable();
 
+async function populatePosTable() {
+  try {
+    const response = await fetch("https://demotag.vercel.app/api/get-pos-id-count"); // Replace with the correct API endpoint for POS-ID counts
+    if (!response.ok) throw new Error("Failed to fetch POS-ID counts");
+
+    const data = await response.json();
+
+    const tableBody = document.querySelector("#posTable tbody");
+    tableBody.innerHTML = ""; // Clear existing rows
+
+    // Pagination variables
+    const rowsPerPage = 5;
+    let currentPage = 1;
+
+    // Function to render the table for the current page
+    function renderTable(page, filteredData = data) {
+      tableBody.innerHTML = ""; // Clear existing rows
+      const startIndex = (page - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+
+      if (paginatedData.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="2">No matching records found</td></tr>`;
+        return;
+      }
+
+      paginatedData.forEach(({ rrf_id, resume_count }) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${rrf_id}</td>
+          <td>${resume_count}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      renderPaginationControls(filteredData);
+    }
+
+    // Function to render pagination controls
+    function renderPaginationControls(filteredData = data) {
+      const paginationContainer = document.querySelector("#posPaginationControls");
+      paginationContainer.innerHTML = ""; // Clear existing controls
+
+      const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement("button");
+        button.textContent = i;
+        button.style.margin = "0 5px";
+        button.style.padding = "5px 10px";
+        button.style.border = "1px solid #ccc";
+        button.style.borderRadius = "4px";
+        button.style.backgroundColor = i === currentPage ? "#007bff" : "#fff";
+        button.style.color = i === currentPage ? "#fff" : "#000";
+
+        button.addEventListener("click", () => {
+          currentPage = i;
+          renderTable(currentPage, filteredData);
+        });
+
+        paginationContainer.appendChild(button);
+      }
+    }
+
+    // Add search functionality
+    const searchInput = document.getElementById("posSearchInput");
+    searchInput.addEventListener("input", () => {
+      const searchTerm = searchInput.value.toLowerCase();
+      const filteredData = data.filter(({ pos_id }) =>
+        pos_id.toLowerCase().includes(searchTerm)
+      );
+      currentPage = 1; // Reset to the first page
+      renderTable(currentPage, filteredData);
+    });
+
+    // Render the first page
+    renderTable(currentPage);
+  } catch (error) {
+    console.error("Error populating POS-ID table:", error);
+    const tableBody = document.querySelector("#posTable tbody");
+    tableBody.innerHTML = `<tr><td colspan="2">Error loading data</td></tr>`;
+  }
+}
+
+// Call the function to populate the table
+populatePosTable();
+
 document.addEventListener("DOMContentLoaded", () => {
   // Get references to the elements
   const rrfContainer = document.querySelector(".container-RRF");
