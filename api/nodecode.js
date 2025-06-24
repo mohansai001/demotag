@@ -5306,6 +5306,29 @@ app.post('/api/upload-rrfids', async (req, res) => {
   }
 });
 
+
+app.get("/api/get-pos-id-count", async (req, res) => {
+  try {
+    // Query to fetch rrf_id and resume_count from rrf_details table
+    const query = `
+      SELECT rrf_id, resume_count
+      FROM rrf_details
+      WHERE visible = TRUE; -- Optional: Add condition to filter visible records
+    `;
+
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "No data found in rrf_details table." });
+    }
+
+    res.status(200).json(result.rows); // Send the rrf_id and resume_count as the response
+  } catch (error) {
+    console.error("Error fetching POS-ID count:", error);
+    res.status(500).json({ error: "An error occurred while fetching POS-ID count." });
+  }
+});
+
 // async function createJavaExperienceQuestionsTable() { 
 //   try {
 //     // 1. Create table
