@@ -1917,6 +1917,35 @@
         <div id="paginationControls" style="margin-top: 10px; text-align: center;"></div>
       </div>
       </div>
+      
+        <div class="phase-table-container"
+  style="margin-top: 20px; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); width: 78%; margin-left: 20%;">
+  <h3 style="color: black; margin-bottom: 10px; text-align: center;">POS-ID Overview</h3>
+
+  <!-- Search Input for POS-ID -->
+  <div style="margin-bottom: 10px; text-align: center;">
+    <input type="text" id="posSearchInput" placeholder="Search by POS-ID"
+      style="width: 25%; padding: 5px; border: 1px solid #ccc; border-radius: 4px;" />
+  </div>
+
+  <table id="posTable" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; margin-top: 10px;">
+    <thead>
+      <tr>
+        <th style="background-color: darkcyan; color: white; font-weight: bold; border-right: 2px solid #ddd; padding: 12px 15px;">
+          POS-ID
+        </th>
+        <th style="background-color: #DAF7A6; color: black; font-weight: normal; padding: 12px 15px;">Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="2" style="padding: 12px 15px;">Loading...</td>
+      </tr>
+    </tbody>
+  </table>
+  <div id="posPaginationControls" style="margin-top: 10px; text-align: center;"></div>
+</div>
+
 
       <h4 style="color:black; padding-left: 200px;">By Role</h4>
       <div class="wrapper">
