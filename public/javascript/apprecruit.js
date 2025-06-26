@@ -41,66 +41,102 @@ function navigateTo(page) {
 }
 // AWS S3 configuration
 
-AWS.config.update({
-  region: "us-east-1", // Update with your region
-  credentials: new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: "us-east-1:583ab747-d668-4305-8c02-0a7e39d4b791", // Update with your Identity Pool ID
-  }),
-});
+// AWS.config.update({
+//   region: "us-east-1", // Update with your region
+//   credentials: new AWS.CognitoIdentityCredentials({
+//     IdentityPoolId: "us-east-1:583ab747-d668-4305-8c02-0a7e39d4b791", // Update with your Identity Pool ID
+//   }),
+// });
 
-var s3 = new AWS.S3({
-  apiVersion: "2006-03-01",
-  params: { Bucket: "tagteam-bucket" }, // Update with your bucket name if needed
-});
+// var s3 = new AWS.S3({
+//   apiVersion: "2006-03-01",
+//   params: { Bucket: "tagteam-bucket" }, // Update with your bucket name if needed
+// });
 
 let selectedRole = "";
 let selectedCloudProvider = "";
 let globalSelectedLevel = "";
+let globalfrontendTechnology = "";
 
-function fetchJobDescription(role, cloudProvider, selectedLevel) {
+async function fetchJobDescription(role, cloudProvider, selectedLevel, frontendTechnology) {
   globalSelectedLevel = selectedLevel;
+  globalfrontendTechnology = frontendTechnology;
+
   console.log("Selected role:", role);
   console.log("Cloud Provider:", cloudProvider);
-  console.log("selected level:", selectedLevel);
+  console.log("Selected level:", selectedLevel);
+  console.log("Frontend technology:", frontendTechnology);
 
+  // Validate inputs
+  if (!cloudProvider) {
+    console.error("Cloud Provider is missing.");
+    return Promise.reject("Cloud Provider is missing.");
+  }
+
+  // Handle cases where frontendTechnology is not selected
+  if (role === "Cloud Native Application Engineer - Full Stack" && !frontendTechnology) {
+    console.warn("Frontend Technology is not selected. Proceeding without it.");
+    frontendTechnology = "None"; // Fallback value or handle as needed
+  }
+
+  // Construct the file name
   let fileName = "";
   switch (role) {
     case "Cloud Native Application Engineer - Backend":
-      fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
+      fileName = `${selectedLevel}_${cloudProvider}_App.txt`;
       break;
     case "Cloud Native Application Engineer - Frontend":
-      fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
+      fileName = `${selectedLevel}_${cloudProvider}_App.txt`;
       break;
     case "LCNC Platform Engineer":
-      fileName = `Job Description/${selectedLevel}_${cloudProvider}_APP.txt`;
+      fileName = `${selectedLevel}_${cloudProvider}_APP.txt`;
       break;
     case "Integration Engineer":
-      fileName = `Job Description/${selectedLevel}_${cloudProvider}_App.txt`;
+      fileName = `${selectedLevel}_${cloudProvider}_App.txt`;
+      break;
+    case "Cloud Native Application Engineer - Full Stack":
+      fileName = `${selectedLevel}_${cloudProvider}_${frontendTechnology}_Full Stack.txt`;
       break;
     default:
-      console.log("Role not found");
+      console.error("Role not found");
       return Promise.reject("Role not found");
   }
 
-  var params = {
-    Bucket: "tagteam-bucket", // Make sure this matches the bucket name in S3
-    Key: fileName,
-  };
+  // GitHub API URL
+  const repoOwner = "mohansai001"; // Replace with your GitHub username
+  const repoName = "JD"; // Replace with your repository name
+  const folderPath = "JDS"; // Folder where job descriptions are stored
+  const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}/${fileName}`;
 
-  console.log("Fetching file with params:", params); // Debugging info
+  try {
+    const githubToken = await getGithubToken(); // Fetch the GitHub token
+    if (!githubToken) {
+      console.error("GitHub token is not available.");
+      return Promise.reject("GitHub token is not available.");
+    }
 
-  return new Promise((resolve, reject) => {
-    s3.getObject(params, function (err, data) {
-      if (err) {
-        console.log("Error fetching file:", err);
-        reject(err);
-      } else {
-        globalJobDescription = data.Body.toString("utf-8");
-        console.log("Fetched Job Description Content:", globalJobDescription);
-        resolve(globalJobDescription);
-      }
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        "Content-Type": "application/json",
+      },
     });
-  });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch file from GitHub: ${errorText}`);
+    }
+
+    const fileData = await response.json();
+    const fileContent = atob(fileData.content); // Decode base64 content
+    globalJobDescription = fileContent;
+    console.log("Fetched Job Description Content:", globalJobDescription);
+    return globalJobDescription;
+  } catch (error) {
+    console.error("Error fetching file from GitHub:", error);
+    return Promise.reject(error);
+  }
 }
 
 function selectRoleAndOpenPopup(role, dropdownId) {
@@ -111,15 +147,20 @@ function selectRoleAndOpenPopup(role, dropdownId) {
   var cloudProvider = document.querySelector(
     'input[name="cloudProvider"]:checked'
   );
+  var frontendTechnology = document.querySelector(
+    'input[name="frontendTechnology"]:checked'
+  );
   if (!cloudProvider) {
     // Show the custom popup if no cloud provider is selected
     document.getElementById("cloudProviderPopup").style.display = "block";
     return; // Stop further execution
   }
   selectedCloudProvider = cloudProvider ? cloudProvider.value : null;
+  globalfrontendTechnology = frontendTechnology ? frontendTechnology.value : null;
 
   // Log the selected cloud provider
   console.log("Selected Cloud Provider:", selectedCloudProvider);
+  console.log("Selected Frontend Technology:", globalfrontendTechnology);
 
   // Get the selected level from the specific dropdown using its id
   var selectedLevel = document.getElementById(dropdownId).value;
@@ -128,7 +169,7 @@ function selectRoleAndOpenPopup(role, dropdownId) {
   openPopup(); // Open the popup after setting the role and provider
 
   // Fetch job description after the popup is opened
-  fetchJobDescription(role, selectedCloudProvider, selectedLevel)
+  fetchJobDescription(role, selectedCloudProvider, selectedLevel,globalfrontendTechnology)
     .then((jobDescription) => {
       console.log("Job description fetched:", jobDescription);
     })
@@ -172,7 +213,7 @@ async function uploadResume() {
   globalRrfId = rrfId;
 
   // Check if the selected role is Full Stack Engineer
-  if (selectedRole !== "Full Stack Engineer") {
+  if (selectedRole == "Cloud Native Application Engineer - Full Stack") {
     const cloudProvider = document.querySelector(
       'input[name="cloudProvider"]:checked'
     );
@@ -399,8 +440,8 @@ async function uploadToGitHub(fileName, file) {
     console.error("GitHub token is not available.");
     return null;
   }
-  const repoOwner = "MohansaiAnde"; // Your GitHub username
-  const repoName = "Tagteam"; // Your repository name
+  const repoOwner = "mohansai001"; // Your GitHub username
+  const repoName = "resume"; // Your repository name
 
   const folderPath = "resumes"; // Folder where resumes are stored
 
@@ -950,13 +991,25 @@ function displayEvaluationInCards(
 
   const nameKeyword = "Full Name:";
   let candidateName = "";
-  let role =
-    (globalSelectedLevel || "Unknown Level") +
-    " " +
-    (selectedCloudProvider || "Unknown Provider") +
-    " " +
-    (selectedRole || "Unknown Role");
-  let candidateEmail = ""; // To store the candidate's email for the invitation
+  let role = "";
+
+  if (selectedRole === "Cloud Native Application Engineer - Full Stack") {
+    role =
+      (globalSelectedLevel || "Unknown Level") +
+      " " +
+      (selectedCloudProvider || "Unknown Backend Technology") +
+      " " +
+      (globalfrontendTechnology || "Unknown Frontend Technology") +
+      " " +
+      selectedRole;
+  } else {
+    role =
+      (globalSelectedLevel || "Unknown Level") +
+      " " +
+      (selectedCloudProvider || "Unknown Provider") +
+      " " +
+      (selectedRole || "Unknown Role");
+  }  let candidateEmail = ""; // To store the candidate's email for the invitation
   let candidateStatus = ""; // To store the candidate status (Shortlisted or Rejected)
   let cloudProvider = selectedCloudProvider || "Unknown provider";
   let candidatePhoneNumber = "";
@@ -1783,5 +1836,3 @@ function addPrefix() {
     rrfInput.value = "POS-" + value.replace(/^POS-/, "");
   }
 }
-
-
