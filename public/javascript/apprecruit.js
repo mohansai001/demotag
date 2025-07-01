@@ -624,7 +624,30 @@ for (let apiKey of apiKeys) {
 
   console.error("No valid API key found.");
   return null; // Return null if no key works
+}async function extractTextFromFile(url) {
+  if (url.endsWith(".pdf")) {
+    // PDF extraction
+    const pdf = await pdfjsLib.getDocument(url).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(item => item.str).join(' ') + '\n';
+    }
+    return text;
+  } else if (url.endsWith(".docx")) {
+    // Word extraction (client-side using Mammoth)
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  } else {
+    throw new Error("Unsupported file type. Please upload PDF or DOCX.");
+  }
 }
+
+
+
 
 async function evaluateResumeWithChatPDF(resumeUrl) {
   console.log("Resume URL:", resumeUrl);
@@ -636,139 +659,78 @@ async function evaluateResumeWithChatPDF(resumeUrl) {
     return;
   }
 
-  const validApiKey = await getValidApiKey(resumeUrl);
-  if (!validApiKey) {
-    document.getElementById("loading-popup").style.display = "none";
-    document.getElementById("evaluation-result-container").innerHTML =
-      "All API keys failed. Please update your API key list.";
-    return;
-  }
-
   try {
-    // Resume evaluation code continues here...
-    const apiUrl = "https://api.chatpdf.com/v1/sources/add-url";
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": validApiKey,
-      },
-      body: JSON.stringify({ url: resumeUrl }),
-    });
+    const resumeText = await extractTextFromFile(resumeUrl);
 
-    const uploadData = await response.json();
-    const sourceId = uploadData.sourceId;
-
-    // Request for evaluation of the resume with job description
+    // Resume Evaluation Prompt
     const evaluationResponse = await fetch(
-      "https://api.chatpdf.com/v1/chats/message",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyD1NqvfelSR6l-8FEIIFiZM3aJmbo2mw-Q`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": validApiKey,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sourceId: sourceId,
-          messages: [
+          contents: [
             {
               role: "user",
-              content: `
-                You are an expert HR assistant tasked with pre-screening resumes. Given a resume, analyze it thoroughly and provide a structured evaluation based on the following criteria:
-    
-    **Job Role Retrieval:**
-    ${globalJobDescription}
-    
-    **Candidate Overview:**
-    - Extract the candidate's full name.
-    - Identify the total years of professional experience.
-    - Determine the current or most recent job designation.
-    
-    **Contact Information:**
-    - Verify if essential details (email, phone number, location) are present.
-    
-    **Education:**
-    - Identify the highest level of education and the field of study.
-    - Note any relevant certifications or specialized training.
-    
-    **Work Experience:**
-    - Summarize the candidate's work history, focusing on the most recent or relevant positions.
-    - Highlight any roles or responsibilities that align with the job opening.
-    
-    **Skills:**
-    - List key technical and soft skills mentioned.
-    - Identify any skills that are particularly relevant to the position.
-    
-    **Achievements:**
-    - Note any significant accomplishments or awards.
-    - Highlight quantifiable achievements (e.g., "increased sales by 20%").
-    
-    **Candidate Stability:**
-    - Note any red flags (e.g., unexplained gaps in employment, frequent job changes).
-    
-    **Skill Gaps**
-    - Evaluate the candidate’s resume by comparing the listed skills against the required technical skills for the specified job role.
-    - Identify any gaps where the candidate lacks experience or proficiency.
-    - For each gap, briefly explain the missing skill and its relevance to the role, using specific keywords to highlight the absence of those skills.
-    - If the candidate is rejected, include the explanation of the skill gaps in the result. 
-    **Result:** Based on the analysis for the role of [Current Role] – Strong Match (meets/exceeds most requirements), Potential Match (meets key but lacks some), Not Suitable (does not meet essentials); add "Shortlisted for the next round" if suitable, or "Rejected" with gaps if not. Analyze and give the suitability percentage.
-                            `,
+              parts: [
+                {
+                  text: `
+You are an expert HR assistant tasked with pre-screening resumes. Given a resume, analyze it thoroughly and provide a structured evaluation based on the following criteria:
+
+**Job Role Retrieval:**
+${globalJobDescription}
+
+**Candidate Resume Content:**
+${resumeText}
+
+**Candidate Overview:**
+- Extract the candidate's full name.
+- Identify the total years of professional experience.
+- Determine the current or most recent job designation.
+
+**Contact Information:**
+- Verify if essential details (email, phone number, location) are present.
+
+**Education:**
+- Identify the highest level of education and the field of study.
+- Note any relevant certifications or specialized training.
+
+**Work Experience:**
+- Summarize the candidate's work history, focusing on the most recent or relevant positions.
+- Highlight any roles or responsibilities that align with the job opening.
+
+**Skills:**
+- List key technical and soft skills mentioned.
+- Identify any skills that are particularly relevant to the position.
+
+**Achievements:**
+- Note any significant accomplishments or awards.
+- Highlight quantifiable achievements (e.g., "increased sales by 20%").
+
+**Candidate Stability:**
+- Note any red flags (e.g., unexplained gaps in employment, frequent job changes).
+
+**Skill Gaps**
+- Evaluate the candidate’s resume by comparing the listed skills against the required technical skills for the specified job role.
+- Identify any gaps where the candidate lacks experience or proficiency.
+- For each gap, briefly explain the missing skill and its relevance to the role, using specific keywords to highlight the absence of those skills.
+- If the candidate is rejected, include the explanation of the skill gaps in the result. 
+
+**Result:** Based on the analysis for the role of [Current Role] – Strong Match (meets/exceeds most requirements), Potential Match (meets key but lacks some), Not Suitable (does not meet essentials); add "Shortlisted for the next round" if suitable, or "Rejected" with gaps if not. Analyze and give the suitability percentage.
+                  `,
+                },
+              ],
             },
           ],
         }),
       }
     );
 
-    if (!evaluationResponse.ok) {
-      const errorText = await evaluationResponse.text();
-      throw new Error(
-        `HTTP error! status: ${evaluationResponse.status}, message: ${errorText}`
-      );
-    }
-
-    const evaluationData = await evaluationResponse.json();
-    const evaluationContent = evaluationData.content; // Assuming structured evaluation text is in `content`
-
-    // Request for generating multiple-choice questions
-    const questionResponse = await fetch(
-      "https://api.chatpdf.com/v1/chats/message",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": validApiKey,
-        },
-        body: JSON.stringify({
-          sourceId: sourceId,
-          messages: [
-            {
-              role: "user",
-              content: `
-                            Analyze the technical skills extracted from the resume and generate multiple-choice questions that assess the candidate's knowledge and expertise in those skills. Focus on:
-                          1. Core technical skills and tools mentioned in the resume.
-                          2. Industry-standard practices related to these skills.
-                          3. Technical concepts and their applications.
-                          For each skill, generate a question with four answer options (A, B, C, D), including one correct answer.
-                          `,
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!questionResponse.ok) {
-      const errorText = await questionResponse.text();
-      throw new Error(
-        `HTTP error! status: ${questionResponse.status}, message: ${errorText}`
-      );
-    }
-
-    const questionData = await questionResponse.json();
-    const questionsContent = questionData.content;
+    const evalResult = await evaluationResponse.json();
+    const evaluationContent = evalResult.candidates?.[0]?.content?.parts?.[0]?.text || "No evaluation returned.";
 
     document.getElementById("loading-popup").style.display = "none";
 
-    // Display evaluation in cards
     displayEvaluationInCards(
       evaluationContent,
       resumeUrl,
@@ -776,16 +738,12 @@ async function evaluateResumeWithChatPDF(resumeUrl) {
       globalRrfId,
       selectedValue
     );
-
-    // Log questions content (can be displayed as needed)
-    console.log(questionsContent);
-    return; // Exit loop after a successful request
   } catch (error) {
-    console.error(`Error with API key: ${apiKey}`, error.message);
+    console.error("Error:", error.message);
+    document.getElementById("loading-popup").style.display = "none";
+    document.getElementById("evaluation-result-container").innerHTML =
+      "Resume evaluation failed.";
   }
-  document.getElementById("loading-popup").style.display = "none";
-  document.getElementById("evaluation-result-container").innerHTML =
-    "All API keys failed. Please update your API key list.";
 }
 
 async function processResumeEvaluation(resumeUrl, role) {
