@@ -1161,6 +1161,7 @@ function displayEvaluationInCards(
     );
     return;
   }
+  candidateEmail = candidateEmail.replace(/\s*\(.*?\)\s*/g, "").trim();
 
   sendCandidateInfoToDB(
     candidateName,
