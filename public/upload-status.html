@@ -482,7 +482,7 @@
           localStorage.setItem("evaluationData", JSON.stringify(evaluation));
 
           // Display the evaluation
-          displayEvaluationResults(
+        displayEvaluationResults(
             evaluation.content,
             evaluation.resume_url,
             evaluation.hr_email,
@@ -490,7 +490,8 @@
             evaluation.eng_center,
             evaluation.role,
             evaluation.level,
-            evaluation.cloud_provider
+            evaluation.cloud_provider,
+            evaluation.prescreening_status
           );
         } catch (error) {
           console.error("Error viewing evaluation:", error);
@@ -499,96 +500,89 @@
       }
 
       function displayEvaluationResults(
-        content,
-        resumeUrl,
-        hrEmail,
-        rrfId,
-        selectedValue,
-        selectedRole,
-        globalSelectedLevel,
-        selectedCloudProvider
-      ) {
-        const container = document.getElementById(
-          "evaluation-result-container"
-        );
-        container.innerHTML = `
-          <div class="evaluation-container">
-            <div class="evaluation-header">
-              <h2 class="evaluation-title">Candidate Analysis Report</h2>
-              <span class="status-badge ${
-                content.includes("Shortlisted")
-                  ? "status-shortlisted"
-                  : "status-rejected"
-              }">
-                ${content.includes("Shortlisted") ? "Shortlisted" : "Rejected"}
-              </span>
-            </div>
-            
-            <div class="evaluation-section">
-              <div class="section-header">Basic Information</div>
-              <div class="section-content">
-                <p><strong>Resume:</strong> ${extractFilename(resumeUrl)}</p>
-                <p><strong>RRF ID:</strong> ${rrfId || "N/A"}</p>
-                <p><strong>HR Email:</strong> ${hrEmail || "N/A"}</p>
-                <p><strong>Engineering Center:</strong> ${
-                  selectedValue || "N/A"
-                }</p>
-                <p><strong>Role:</strong> ${selectedRole || "N/A"}</p>
-                <p><strong>Level:</strong> ${globalSelectedLevel || "N/A"}</p>
-                <p><strong>Cloud Provider:</strong> ${
-                  selectedCloudProvider || "N/A"
-                }</p>
-              </div>
-            </div>
-            
-            <div id="evaluation-sections"></div>
-            
-            <div class="action-buttons">
-              <button class="download-btn" onclick="downloadEvaluationReport(
-                ${JSON.stringify(content)},
-                ${JSON.stringify(selectedValue)},
-                ${JSON.stringify(selectedRole)},
-                ${JSON.stringify(globalSelectedLevel)},
-                ${JSON.stringify(selectedCloudProvider)}
-              )">
-                Download Full Report
-              </button>
-              ${
-                content.includes("Shortlisted")
-                  ? `
-                <button class="next-btn" onclick="window.location.href='prescreeningform.html'">
-                  Proceed to Next Step
-                </button>
-              `
-                  : ""
-              }
-            </div>
-            <button class="back-to-results-btn" onclick="showResultsTable()">
-              Back to Candidates List
-            </button>
-          </div>
-        `;
+  content,
+  resumeUrl,
+  hrEmail,
+  rrfId,
+  selectedValue,
+  selectedRole,
+  globalSelectedLevel,
+  selectedCloudProvider,
+  prescreening_status // ✅ NEW PARAM
+) {
+  const container = document.getElementById("evaluation-result-container");
 
-        const sectionsContainer = container.querySelector(
-          "#evaluation-sections"
-        );
-        const sections = parseEvaluationContent(content);
+  const isShortlisted = prescreening_status === "Shortlisted";
 
-        sections.forEach((section) => {
-          if (!section.content.trim()) return;
+  container.innerHTML = `
+    <div class="evaluation-container">
+      <div class="evaluation-header">
+        <h2 class="evaluation-title">Candidate Analysis Report</h2>
+        <span class="status-badge ${
+          isShortlisted ? "status-shortlisted" : "status-rejected"
+        }">
+          ${isShortlisted ? "Shortlisted" : "Rejected"}
+        </span>
+      </div>
 
-          const sectionElement = document.createElement("div");
-          sectionElement.className = "evaluation-section";
-          sectionElement.innerHTML = `
-            <div class="section-header">${section.title}</div>
-            <div class="section-content">
-              ${formatSectionContent(section.content)}
-            </div>
-          `;
-          sectionsContainer.appendChild(sectionElement);
-        });
-      }
+      <div class="evaluation-section">
+        <div class="section-header">Basic Information</div>
+        <div class="section-content">
+          <p><strong>Resume:</strong> ${extractFilename(resumeUrl)}</p>
+          <p><strong>RRF ID:</strong> ${rrfId || "N/A"}</p>
+          <p><strong>HR Email:</strong> ${hrEmail || "N/A"}</p>
+          <p><strong>Engineering Center:</strong> ${selectedValue || "N/A"}</p>
+          <p><strong>Role:</strong> ${selectedRole || "N/A"}</p>
+          <p><strong>Level:</strong> ${globalSelectedLevel || "N/A"}</p>
+          <p><strong>Cloud Provider:</strong> ${selectedCloudProvider || "N/A"}</p>
+        </div>
+      </div>
 
+      <div id="evaluation-sections"></div>
+
+      <div class="action-buttons">
+        <button class="download-btn" onclick="downloadEvaluationReport(
+          ${JSON.stringify(content)},
+          ${JSON.stringify(selectedValue)},
+          ${JSON.stringify(selectedRole)},
+          ${JSON.stringify(globalSelectedLevel)},
+          ${JSON.stringify(selectedCloudProvider)}
+        )">
+          Download Full Report
+        </button>
+
+        ${
+          isShortlisted
+            ? `<button class="next-btn" onclick="window.location.href='prescreeningform.html'">
+                 Proceed to Next Step
+               </button>`
+            : ""
+        }
+      </div>
+
+      <button class="back-to-results-btn" onclick="showResultsTable()">
+        Back to Candidates List
+      </button>
+    </div>
+  `;
+
+  const sectionsContainer = container.querySelector("#evaluation-sections");
+  const sections = parseEvaluationContent(content);
+
+  sections.forEach((section) => {
+    if (!section.content.trim()) return;
+
+    const sectionElement = document.createElement("div");
+    sectionElement.className = "evaluation-section";
+    sectionElement.innerHTML = `
+      <div class="section-header">${section.title}</div>
+      <div class="section-content">
+        ${formatSectionContent(section.content)}
+      </div>
+    `;
+    sectionsContainer.appendChild(sectionElement);
+  });
+} 
       function parseEvaluationContent(content) {
         const sectionTitles = [
           "Candidate Overview",
