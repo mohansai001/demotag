@@ -356,7 +356,7 @@
               <tr>
                 <td>Introduction of ValueMomentum</td>
                 <td>
-                  <select id="introduction-value-momentum">
+                  <select id="introduction_to_valuemomentum">
                     <option value="" selected>Select</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -366,7 +366,7 @@
               <tr>
                 <td>Introduction of Cloud/App Engineering</td>
                 <td>
-                  <select id="introduction-cloud-app">
+                  <select id="introduction_of_cloud_app_engineering">
                     <option value="" selected>Select</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -376,7 +376,7 @@
               <tr>
                 <td>Introduction to Roles & Responsibilities</td>
                 <td>
-                  <select id="roles-responsibilities">
+                  <select id="introduction_to_roles_responsibilities">
                     <option value="" selected>Select</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -386,7 +386,48 @@
               <tr>
                 <td>Did Candidate qualify using pre-screening Q's</td>
                 <td>
-                  <select id="pre-screening">
+                  <select id="did_candidate_qualify_using_pre_screening_qs">
+                    <option value="" selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+              </tr>
+              <!-- New Fields -->
+              <tr>
+                <td>Current CTC</td>
+                <td>
+                  <input
+                    type="text"
+                    id="current_ctc"
+                    placeholder="e.g., 8 LPA"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Expected CTC</td>
+                <td>
+                  <input
+                    type="text"
+                    id="expected_ctc"
+                    placeholder="e.g., 12 LPA"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Notice Period</td>
+                <td>
+                  <input
+                    type="text"
+                    id="notice_period"
+                    placeholder="e.g., 30 days"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Offer in Hand</td>
+                <td>
+                  <select id="offer_in_hand">
                     <option value="" selected>Select</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -585,6 +626,21 @@
               </tr>
             </thead>
             <tbody id="mendix-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Full Stack Section -->
+      <div id="fullstack-section" style="display: none">
+        <div class="section">
+          <table>
+            <thead>
+              <tr>
+                <th>Full Stack Experience</th>
+                <th>Number of years or Months</th>
+                <th>Mandatory for Candidates</th>
+              </tr>
+            </thead>
+            <tbody id="fullstack-table-body"></tbody>
           </table>
         </div>
       </div>
@@ -794,12 +850,12 @@
         }
 
         // Retrieve candidate details from localStorage
-        const candidateDetails = JSON.parse(
-          localStorage.getItem("candidateDetails")
+        const evaluationData = JSON.parse(
+          localStorage.getItem("evaluationData")
         );
-        if (candidateDetails && candidateDetails.finalSummary) {
+        if (evaluationData && evaluationData.content) {
           document.getElementById("summary").value =
-            candidateDetails.finalSummary;
+            evaluationData.content;
         }
       });
 
@@ -849,8 +905,8 @@
         });
 
       document.addEventListener("DOMContentLoaded", function () {
-        const candidateDetails = JSON.parse(
-          localStorage.getItem("candidateDetails")
+        const evaluationData = JSON.parse(
+          localStorage.getItem("evaluationData")
         );
 
         // Fetch all candidate emails from the server
@@ -870,14 +926,14 @@
                 emailDropdown.appendChild(option);
               });
 
-              if (candidateDetails && candidateDetails.candidateEmail) {
+              if (evaluationData && evaluationData.candidate_email) {
                 console.log(
                   "Candidate email found in localStorage:",
-                  candidateDetails.candidateEmail
+                  evaluationData.candidate_email
                 );
-                emailDropdown.value = candidateDetails.candidateEmail;
+                emailDropdown.value = evaluationData.candidate_email;
 
-                fetchCandidateData(candidateDetails.candidateEmail);
+                fetchCandidateData(evaluationData.candidate_email);
                 const finalSummary = localStorage.getItem("finalSummary");
                 if (finalSummary) {
                   document.getElementById("summary").value = finalSummary;
@@ -936,9 +992,15 @@
                   "Junior Angular Cloud Native Application Engineer - Frontend",
                   "Senior Angular Cloud Native Application Engineer - Frontend",
                 ];
-                const appRolesMendix = [
-                  "Junior Mendix LCNC Platform Engineer",
-                  "Senior Mendix LCNC Platform Engineer",
+                const appRolesFullStack = [
+                  "Junior Java Angular Cloud Native Application Engineer - Full Stack",
+                  "Senior Java Angular Cloud Native Application Engineer - Full Stack",
+                  "Junior Java React Cloud Native Application Engineer - Full Stack",
+                  "Senior Java React Cloud Native Application Engineer - Full Stack",
+                  "Junior .Net Angular Cloud Native Application Engineer - Full Stack",
+                  "Senior .Net Angular Cloud Native Application Engineer - Full Stack",
+                  "Junior .Net React Cloud Native Application Engineer - Full Stack",
+                  "Senior .Net React Cloud Native Application Engineer - Full Stack",
                 ];
 
                 // --- Cloud EC Roles ---
@@ -972,7 +1034,7 @@
                   ...appRolesDotNet,
                   ...appRolesReact,
                   ...appRolesAngular,
-                  ...appRolesMendix,
+                  ...appRolesFullStack,
                 ].includes(data.role);
 
                 const isCloudEC = [
@@ -1000,7 +1062,7 @@
                     "none";
                   document.getElementById("angular-section").style.display =
                     "none";
-                  document.getElementById("mendix-section").style.display =
+                  document.getElementById("fullstack-section").style.display =
                     "none";
 
                   if (appRolesJava.includes(data.role)) {
@@ -1015,9 +1077,48 @@
                   } else if (appRolesAngular.includes(data.role)) {
                     document.getElementById("angular-section").style.display =
                       "block";
-                  } else if (appRolesMendix.includes(data.role)) {
-                    document.getElementById("mendix-section").style.display =
+                  } else if (appRolesFullStack.includes(data.role)) {
+                    document.getElementById("fullstack-section").style.display =
                       "block";
+
+                    // Load questions dynamically for Full Stack roles
+                    if (
+                      data.role.toLowerCase().includes("java") &&
+                      data.role.toLowerCase().includes("angular")
+                    ) {
+                      loadQuestions(
+                        "/api/java_angular_fullstack_questions",
+                        "fullstack-table-body",
+                        "java_angular_experience_"
+                      );
+                    } else if (
+                      data.role.toLowerCase().includes("java") &&
+                      data.role.toLowerCase().includes("react")
+                    ) {
+                      loadQuestions(
+                        "/api/java_react_fullstack_questions",
+                        "fullstack-table-body",
+                        "java_react_experience_"
+                      );
+                    } else if (
+                      data.role.toLowerCase().includes(".net") &&
+                      data.role.toLowerCase().includes("angular")
+                    ) {
+                      loadQuestions(
+                        "/api/dotnet_angular_fullstack_questions",
+                        "fullstack-table-body",
+                        "dotnet_angular_experience_"
+                      );
+                    } else if (
+                      data.role.toLowerCase().includes(".net") &&
+                      data.role.toLowerCase().includes("react")
+                    ) {
+                      loadQuestions(
+                        "/api/dotnet_react_fullstack_questions",
+                        "fullstack-table-body",
+                        "dotnet_react_experience_"
+                      );
+                    }
                   }
                 }
 
@@ -1100,6 +1201,25 @@
             document.getElementById("detailed-feedback").value;
           const selectedRole = document.getElementById("position").value;
           const summaryBox = document.getElementById("status-dropdown").value;
+          const introduction_to_valuemomentum = document.getElementById(
+            "introduction_to_valuemomentum"
+          ).value;
+          const introduction_of_cloud_app_engineering = document.getElementById(
+            "introduction_of_cloud_app_engineering"
+          ).value;
+          const introduction_to_roles_responsibilities =
+            document.getElementById(
+              "introduction_to_roles_responsibilities"
+            ).value;
+          const did_candidate_qualify_using_pre_screening_qs =
+            document.getElementById(
+              "did_candidate_qualify_using_pre_screening_qs"
+            ).value;
+          const current_ctc = document.getElementById("current_ctc").value;
+          const expected_ctc = document.getElementById("expected_ctc").value;
+          const notice_period = document.getElementById("notice_period").value;
+          const offer_in_hand = document.getElementById("offer_in_hand").value;
+
           console.log("Selected status:", summaryBox);
 
           if (!candidateEmail || !selectedRole) {
@@ -1110,8 +1230,34 @@
           let tableSelector = "";
           let apiEndpoint = "";
 
-          // App EC roles
-          if (selectedRole.toLowerCase().includes("java")) {
+          // Full Stack roles
+          if (
+            selectedRole.toLowerCase().includes("java") &&
+            selectedRole.toLowerCase().includes("angular")
+          ) {
+            tableSelector = "#fullstack-table-body tr";
+            apiEndpoint = "/api/java_angular_fullstack_submit-feedback";
+          } else if (
+            selectedRole.toLowerCase().includes("java") &&
+            selectedRole.toLowerCase().includes("react")
+          ) {
+            tableSelector = "#fullstack-table-body tr";
+            apiEndpoint = "/api/java_react_fullstack_submit-feedback";
+          } else if (
+            selectedRole.toLowerCase().includes(".net") &&
+            selectedRole.toLowerCase().includes("angular")
+          ) {
+            tableSelector = "#fullstack-table-body tr";
+            apiEndpoint = "/api/dotnet_angular_fullstack_submit-feedback";
+          } else if (
+            selectedRole.toLowerCase().includes(".net") &&
+            selectedRole.toLowerCase().includes("react")
+          ) {
+            tableSelector = "#fullstack-table-body tr";
+            apiEndpoint = "/api/dotnet_react_fullstack_submit-feedback";
+
+            // App EC roles
+          } else if (selectedRole.toLowerCase().includes("java")) {
             tableSelector = "#java-table-body tr";
             apiEndpoint = "/api/java_ec_submit-feedback";
           } else if (selectedRole.toLowerCase().includes(".net")) {
@@ -1154,6 +1300,14 @@
 
           const payload = {
             candidateEmail,
+            introduction_to_valuemomentum,
+            introduction_of_cloud_app_engineering,
+            introduction_to_roles_responsibilities,
+            did_candidate_qualify_using_pre_screening_qs,
+            current_ctc,
+            expected_ctc,
+            notice_period,
+            offer_in_hand,
             number_of_years_or_months,
             detailed_feedback: detailedFeedback,
             status: summaryBox,
@@ -1178,7 +1332,6 @@
             showToast("❌ Failed to submit feedback. See console for details.");
           }
         });
-
       document.addEventListener("DOMContentLoaded", () => {
         // App EC roles
         loadQuestions(
@@ -1309,28 +1462,27 @@
 
           let tableSelector = "";
           if (selectedRole.toLowerCase().includes("java")) {
-  tableSelector = "#java-table-body tr";
-} else if (selectedRole.toLowerCase().includes(".net")) {
-  tableSelector = "#dotnet-table-body tr";
-} else if (selectedRole.toLowerCase().includes("react")) {
-  tableSelector = "#react-table-body tr";
-} else if (selectedRole.toLowerCase().includes("angular")) {
-  tableSelector = "#angular-table-body tr";
-} else if (selectedRole.toLowerCase().includes("mendix")) {
-  tableSelector = "#mendix-table-body tr";
-} else if (selectedRole.toLowerCase().includes("devops")) {
-  tableSelector = "#devops-table-body tr";
-} else if (selectedRole.toLowerCase().includes("cloudops")) {
-  tableSelector = "#cloudops-table-body tr";
-} else if (selectedRole.toLowerCase().includes("platform")) {
-  tableSelector = "#platform-table-body tr";
-} else if (selectedRole.toLowerCase().includes("sre")) {
-  tableSelector = "#sre-table-body tr";
-} else {
-  alert("Selected role not supported for feedback generation.");
-  return;
-}
-
+            tableSelector = "#java-table-body tr";
+          } else if (selectedRole.toLowerCase().includes(".net")) {
+            tableSelector = "#dotnet-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("react")) {
+            tableSelector = "#react-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("angular")) {
+            tableSelector = "#angular-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("mendix")) {
+            tableSelector = "#mendix-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("devops")) {
+            tableSelector = "#devops-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("cloudops")) {
+            tableSelector = "#cloudops-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("platform")) {
+            tableSelector = "#platform-table-body tr";
+          } else if (selectedRole.toLowerCase().includes("sre")) {
+            tableSelector = "#sre-table-body tr";
+          } else {
+            alert("Selected role not supported for feedback generation.");
+            return;
+          }
 
           const rows = document.querySelectorAll(tableSelector);
           const skills = [];
