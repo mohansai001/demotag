@@ -6281,7 +6281,7 @@ app.post('/api/upload-rrfids', async (req, res) => {
 // }
 // javaresponsetable();
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Endpoint to convert DOCX to PDF
 app.post("/api/docxtopdf", upload.single("word"), (req, res) => {
