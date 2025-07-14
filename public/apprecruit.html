@@ -273,6 +273,69 @@
     .toast.error {
         background-color: #f44336;
     }
+    .styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.styled-table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.styled-table tbody tr.active-row {
+  font-weight: bold;
+  color: #009879;
+}
+
+.status-processing {
+  color: orange;
+}
+
+.status-completed {
+  color: green;
+}
+
+.view-btn {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  margin: 2px 1px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.view-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
 </style>
 
 <body>
@@ -387,8 +450,7 @@
                     <h2 style="color:black;">Cloud Native Application Engineer - Front End</h2>
                     <p style="color:black;">Innovates and builds the underlying systems that power application
                         development and deployment. Focuses on optimizing platform performance and scalability.</p>
-                    <h3 style="
-    margin-top: 42px;color:black; ">Select Cloud Provider and Level:</h3>
+                    <h3 style="margin-top: 42px;color:black; ">Select Cloud Provider and Level:</h3>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <!-- Cloud Provider Radio Buttons -->
                         <span class="radio-group">
@@ -415,12 +477,61 @@
                         style="margin-left: 51px;background-color:#DAF7A6; color:black;margin-top: 10px;;margin-inline-start: revert-layer;">Select</button>
                 </div>
                 <div class="role-card">
+    <h2 style="color:black;">Cloud Native Application Engineer - Full Stack</h2>
+    <p style="color:black;">
+        Designs and develops both front-end and back-end components of cloud-native applications. 
+        Focuses on building scalable, efficient, and reliable systems using Java, .NET, Angular, and React technologies.
+    </p>
+ 
+    <div style="display: flex; flex-direction: row; gap: 30px;">
+        <!-- Backend Technology Radio Buttons -->
+        <div style="flex: 1;">
+            <h4 style="color:black;">Backend Technologies:</h4>
+            <span class="radio-group">
+                <label>
+                    <input type="radio" name="cloudProvider" value="Java" id="javaRadio"> Java
+                </label>
+                <label style="margin-left: 10px;">
+                    <input type="radio" name="cloudProvider" value=".NET" id="dotnetRadio"> .NET
+                </label>
+            </span>
+        </div>
+
+        <!-- Frontend Technology Radio Buttons -->
+        <div style="flex: 1;">
+            <h4 style="color:black;">Frontend Technologies:</h4>
+            <span class="radio-group">
+                <label>
+                    <input type="radio" name="frontendTechnology" value="Angular" id="angularRadio"> Angular
+                </label>
+                <label style="margin-left: 10px;">
+                    <input type="radio" name="frontendTechnology" value="React" id="reactRadio"> React
+                </label>
+            </span>
+        </div>
+    </div>
+
+    <!-- Dropdown Field -->
+    <div style="margin-top: 20px;">
+        <h4 style="color:black;">Select Level:</h4>
+        <select id="levelDropdown6" style="padding: 5px; background: #E6E6FA; color: black;">
+            <option>select</option>
+            <option value="Junior">Junior</option>
+            <option value="Senior">Senior</option>
+            <option value="Lead">Lead</option>
+        </select>
+    </div>
+
+    <button
+        onclick="selectRoleAndOpenPopup('Cloud Native Application Engineer - Full Stack','levelDropdown6')"
+        style="margin-left: 46px; background-color:#DAF7A6; color:black; margin-top: 10px;">Select</button>
+</div>
+                <div class="role-card">
                     <h2 style="color:black;">LCNC Platform Engineer</h2>
                     <p style="color:black;">Manages cloud infrastructure and services, ensuring smooth deployment,
                         support, and monitoring of cloud environments. Works on automating cloud operations and
                         optimizing costs.</p>
-                    <h3 style="
-    margin-top: 40px;color:black;">Select Cloud Provider and Level:</h3>
+                    <h3 style="margin-top: 40px;color:black;">Select Cloud Provider and Level:</h3>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <!-- Cloud Provider Radio Buttons -->
                         <span class="radio-group">
@@ -434,8 +545,7 @@
                         </span>
 
                         <!-- Dropdown Field -->
-                        <select id="levelDropdown3" style="padding: 5px; background: #E6E6FA;
-    color: black;">
+                        <select id="levelDropdown3" style="padding: 5px; background: #E6E6FA;color: black;">
                             <option>select</option>
                             <option value="Junior">Junior</option>
                             <option value="Senior">Senior</option>
@@ -479,8 +589,7 @@
 
 
                         <!-- Dropdown Field -->
-                        <select id="levelDropdown4" style="padding: 5px;background: #E6E6FA;
-    color: black;">
+                        <select id="levelDropdown4" style="padding: 5px;background: #E6E6FA;color: black;">
                             <option>select</option>
                             <option value="Junior">Junior</option>
                             <option value="Senior">Senior</option>
@@ -491,6 +600,8 @@
                     <button onclick="selectRoleAndOpenPopup('Integration Engineer','levelDropdown4')"
                         style="background-color:#DAF7A6; color:black;">Select</button>
                 </div>
+               
+                
             </div>
 
 
@@ -559,44 +670,73 @@
 
 
 
+<div id="resume-popup" class="popup">
+  <div class="popup-content">
+    <h2 style="color:black;">Prescreening</h2>
 
-        <div id="resume-popup" class="popup">
-            <div class="popup-content">
-                <h2 style="color:black;">Prescreening</h2>
+    <!-- HR Email Input Field -->
+    <label for="hr-email" style="color:black;">TAG Email:</label>
+    <input type="email" id="hr-email" placeholder="Enter TAG Email"
+      style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;" />
 
-                <!-- HR Email Input Field -->
-                <label for="hr-email" style="color:black;">TAG Email:</label>
-                <input type="email" id="hr-email" placeholder="Enter TAG Email"
-                    style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;" />
+    <label for="RRF-ID" style="color:black;">RRF ID:</label>
+    <select id="RRF-ID" style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;">
+      <option value="">Select RRF ID</option>
+    </select>
 
-                            <label for="RRF-ID" style="color:black;">RRF ID:</label>
-<select id="RRF-ID" style="width: 82%; padding: 8px; margin-top: 5px; background-color: #E6E6FA;">
-    <option value="">Select RRF ID</option>
-</select>
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <label for="ec-name" style="color:black; margin-right: 10px;">EC Name:</label>
+      <input type="text" id="ec-name"
+        style="width: 60%; padding: 8px; background-color: #E6E6FA; text-align: center;" readonly />
+    </div>
 
+    <!-- Resume Upload -->
+    <input type="file" id="resume" accept=".pdf,.doc,.docx" multiple />
 
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <label for="ec-name" style="color:black; margin-right: 10px;">EC Name:</label>
-                    <input type="text" id="ec-name"
-                        style="width: 60%; padding: 8px; background-color: #E6E6FA; text-align: center;" readonly />
-                </div>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
 
-                <!-- Resume Upload -->
-                <input type="file" id="resume" accept=".pdf,.doc,.docx" />
+    <br />
 
+    <!-- Buttons -->
+    <button onclick="uploadResume()" style="background-color: #DAF7A6; width: 144px;">Upload</button>
+    <button onclick="closePopup()" style="background-color: #DAF7A6; width: 120px;">Cancel</button>
+  </div>
+</div>
 
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar"></div>
-                </div>
-
-                <br />
-
-                <!-- Buttons -->
-                <button onclick="uploadResume()" style="background-color: #DAF7A6; width: 144px;">Upload</button>
-                <button onclick="closePopup()" style="background-color: #DAF7A6; width: 120px;">Cancel</button>
-            </div>
-        </div>
+<!-- Table to Display Uploaded Resumes -->
+<!-- <div id="resume-analysis-container">
+  <table id="resume-analysis-table" border="1" style="width: 100%; text-align: left;">
+    <thead>
+      <tr>
+        <th>Resume Name</th>
+        <th>Candidate Name</th>
+        <th>Skills</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="resume-analysis-body">
+      <!-- Rows will be dynamically added here -->
+    </tbody>
+  </table>
+</div> -->
+<!-- <div id="upload-table-container" style="display: none;">
+  <table id="upload-table" class="styled-table">
+    <thead>
+      <tr>
+        <th>File Name</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="upload-table-body">
+      <!-- Rows will be added dynamically -->
+    </tbody>
+  </table>
+</div> -->
 
 
 
@@ -640,13 +780,31 @@
     margin-top: 55px;">
                         <h1 style="color: #bb86fc;"></h1>
                     </div>
+                    <!-- <div id="resume-analysis-container">
+  <table id="resume-analysis-table" border="1" style="width: 100%; text-align: left;">
+    <thead>
+      <tr>
+        <th>Resume Name</th>
+        <th>Candidate Name</th>
+        <th>Skills</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="resume-analysis-body">
+      <!-- Rows will be dynamically added here -->
+    </tbody>
+  </table>
+</div> -->
                     <div id="questions-form-container" class="form-container"></div>
                 </div>
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+        
         <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
         <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
 
