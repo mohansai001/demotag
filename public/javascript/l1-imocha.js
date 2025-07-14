@@ -45,41 +45,41 @@ let globalRrfId; // Declare a global variable
 
 window.onload = function () {
 
-  const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
-  if (candidateDetails) {
-    const candidateName = candidateDetails.candidateName;
+  const evaluationData = JSON.parse(localStorage.getItem("evaluationData"));
+  if (evaluationData) {
+    const candidateName = evaluationData.candidate_name;
     const candidateNameElements = document.querySelectorAll(".candidateName");
     candidateNameElements.forEach((element) => {
       element.innerText = candidateName;
       element.value = candidateName;
     });
 
-    const candidateEmail = candidateDetails.candidateEmail;
+    const candidateEmail = evaluationData.candidate_email;
     const candidateEmailElements = document.querySelectorAll(".candidateEmail");
     candidateEmailElements.forEach((element) => {
       element.innerText = candidateEmail;
       element.value = candidateEmail;
     });
 
-    document.getElementById("statusText").innerText = candidateDetails.statusText;
-    document.getElementById("role").innerText = candidateDetails.role;
+    document.getElementById("statusText").innerText = evaluationData.prescreening_status;
+    document.getElementById("role").innerText = evaluationData.role;
     document.getElementById("finalSummary").innerText =
-  candidateDetails.finalSummary.split("- Recommendation:")[0].trim();
-    document.getElementById("globalHrEmail").innerText = candidateDetails.globalHrEmail;
-    document.getElementById("globalRrfId").innerText = candidateDetails.globalRrfId;
+  evaluationData.content.split("- Recommendation:")[0].trim();
+    document.getElementById("globalHrEmail").innerText = evaluationData.hr_email;
+    document.getElementById("globalRrfId").innerText = evaluationData.rrf_id;
 
     // Store globalRrfId in a global variable
-    globalRrfId = candidateDetails.globalRrfId;
+    globalRrfId = evaluationData.rrf_id;
     console.log("Global RRF ID:", globalRrfId); // Log for debugging
 
-    const candidatePhoneNumber = candidateDetails.candidatePhoneNumber;
+    const candidatePhoneNumber = evaluationData.candidatePhoneNumber;
     const candidatePhoneNumberElements = document.querySelectorAll(".candidatePhoneNumber");
     candidatePhoneNumberElements.forEach((element) => {
       element.innerText = candidatePhoneNumber;
       element.value = candidatePhoneNumber;
     });
 
-    const suitabilityPercentage = candidateDetails.suitabilityPercentage;
+    const suitabilityPercentage = evaluationData.resume_score;
     const suitabilityElements = document.querySelectorAll(".suitabilityPercentage");
     suitabilityElements.forEach((element) => {
       element.innerText = suitabilityPercentage + "%";
@@ -95,17 +95,17 @@ const sendEmailInvite = async () => {
   sendButton.textContent = "Sending...";
   sendButton.disabled = true;
 
-  const candidateDetails = JSON.parse(localStorage.getItem("candidateDetails"));
+  const evaluationData = JSON.parse(localStorage.getItem("evaluationData"));
 
-  if (!candidateDetails) {
+  if (!evaluationData) {
     showToast("No candidate details found.", "error");
     sendButton.textContent = "Send Exam Invite";
     sendButton.disabled = false;
     return;
   }
 
-  const { candidateName, candidateEmail, role, globalHrEmail } =
-    candidateDetails;
+  const { candidate_name, candidate_email, role, hr_email } =
+    evaluationData;
 
   const roleToInviteIdMap = {
     "Junior Azure DevOps Engineer": 1292765,
@@ -158,14 +158,14 @@ const sendEmailInvite = async () => {
 
   const targetUrl = `https://demotag.vercel.app/api/invite-candidate`;
   const requestData = {
-    email: candidateEmail,
-    name: candidateName,
+    email: candidate_email,
+    name: candidate_name,
     sendEmail: "yes",
     callbackURL: "https://www.imocha.io/",
     redirectURL: "https://www.imocha.io/",
     disableMandatoryFields: 0,
     hideInstruction: 0,
-    ccEmail: globalHrEmail,
+    ccEmail: hr_email,
   };
 
   try {
