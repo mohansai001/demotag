@@ -1,3 +1,15 @@
+// ✅ MSAL setup (must be at top)
+const msalConfig = {
+  auth: {
+    clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673",
+    authority: "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323",
+    redirectUri: "https://demotag.vercel.app",
+  },
+};
+
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
   toast.textContent = message;
@@ -199,87 +211,93 @@ let globalRrfId;
 
 async function uploadResume() {
   const fileInput = document.getElementById("resume");
-  let file = fileInput.files[0];
+  const files = fileInput.files;
   const hrEmail = document.getElementById("hr-email").value;
   const rrfId = document.getElementById("RRF-ID").value;
 
-  // Validate HR email
   if (!hrEmail || !validateEmail(hrEmail)) {
     displaySuccessPopup("Please enter a valid HR email.");
+    return;
+  }
+
+  if (!files || files.length === 0) {
+    displaySuccessPopup("Please upload at least one document file.");
     return;
   }
 
   globalHrEmail = hrEmail;
   globalRrfId = rrfId;
 
-  // Check if the selected role is Full Stack Engineer
-  if (selectedRole == "Cloud Native Application Engineer - Full Stack") {
-    const cloudProvider = document.querySelector(
-      'input[name="cloudProvider"]:checked'
-    );
-    const selectedProvider = cloudProvider ? cloudProvider.value : null;
+  // Store necessary data for use in upload-status.html
+  const initialData = {
+    hrEmail: globalHrEmail,
+    rrfId: globalRrfId,
+    selectedValue: selectedValue,
+    selectedRole: selectedRole,
+    selectedCloudProvider: selectedCloudProvider,
+    globalSelectedLevel: globalSelectedLevel,
+    globalfrontendTechnology: globalfrontendTechnology,
+    globalJobDescription: globalJobDescription,  // ✅ add this line
+    fileEvaluations: {},
+    timestamp: new Date().toISOString(),
+  };
+  
 
-    if (!selectedProvider) {
-      displaySuccessPopup("Please select a cloud provider.");
-      return;
-    }
+  Array.from(files).forEach((file, index) => {
+    initialData.fileEvaluations[index] = {
+      fileName: file.name,
+      status: "Queued",
+      content: null,
+      resumeUrl: null,
+    };
+  });
 
-    console.log("Selected Cloud Provider:", selectedProvider);
-  } else {
-    console.log("No cloud provider required for Full Stack Engineer.");
-  }
+  // Save file list and data to localStorage for access in upload-status.html
+  localStorage.setItem("multiUploadData", JSON.stringify(initialData));
 
-  if (!file) {
-    displaySuccessPopup("Please upload a valid document file.");
-    return;
-  }
+  // Save the actual File objects separately using the FileReader and sessionStorage
+  // since localStorage doesn't support File objects directly
+  const fileReaders = Array.from(files).map((file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        resolve({ name: file.name, dataUrl: event.target.result });
+      };
+      reader.readAsDataURL(file);
+    });
+  });
 
-  const progressBar = document.querySelector(".progress-bar");
-  progressBar.style.width = "0%";
-  animateProgressBar(progressBar);
+  const fileDataArray = await Promise.all(fileReaders);
+  sessionStorage.setItem("multiUploadFiles", JSON.stringify(fileDataArray));
 
-  try {
-    let processedFile = file;
-    const fileName = file.name.toLowerCase();
-
-    // Handle different file types
-    if (fileName.endsWith(".doc") || fileName.endsWith(".docx") || fileName.endsWith(".pdf")) {
-      displaySuccessPopup("Processing document...");
-
-      if (fileName.endsWith(".doc")) {
-        // For .doc files, we'll use a different approach since Mammoth can't handle them
-        processedFile = await convertDocToPdf(file);
-      } else if (fileName.endsWith(".docx")) {
-        // For .docx files, use Mammoth
-        processedFile = await convertDocxToPdf(file);
-      }
-      // PDF files need no conversion
-    } else {
-      throw new Error("Unsupported file format. Please upload PDF, DOC, or DOCX.");
-    }
-
-    // Upload the processed file
-    const timestamp = Date.now();
-    const newFileName = `${timestamp}_${file.name.replace(/\.[^/.]+$/, ".pdf")}`;
-    const githubUrl = await uploadToGitHub(newFileName, processedFile);
-
-    progressBar.style.width = "100%";
-    displaySuccessPopup("Resume uploaded successfully: " + newFileName);
-    closePopup();
-    setTimeout(() => closeSuccessPopup(), 3000);
-
-    document.querySelector(".role-selection-container").style.display = "none";
-    document.querySelector(".container").style.display = "block";
-
-    await evaluateResumeWithChatPDF(githubUrl);
-  } catch (error) {
-    console.error("Error processing file: ", error);
-    progressBar.style.width = "0%";
-    displaySuccessPopup(`Failed to process resume: ${error.message}`);
-  }
+  // Navigate to the status page
+  window.location.href = "upload-status.html";
 }
 
-// Convert DOCX to PDF using Mammoth
+
+function updateFileStatus(index, fileName, status, content, resumeUrl) {
+    // Retrieve current data
+    const currentData = JSON.parse(localStorage.getItem('multiUploadData')) || {};
+    
+    // Update the specific file's status
+    currentData.fileEvaluations[index] = {
+        fileName,
+        status,
+        content,
+        resumeUrl,
+        hrEmail: currentData.hrEmail,
+        rrfId: currentData.rrfId,
+        selectedValue: currentData.selectedValue
+    };
+    
+    // Save back to localStorage
+    localStorage.setItem('multiUploadData', JSON.stringify(currentData));
+    
+    // Trigger storage event to update other tabs/pages
+    const event = new Event('storage');
+    window.dispatchEvent(event);
+}
+
 async function convertDocxToPdf(file) {
   try {
     // Load Mammoth if not available
@@ -624,7 +642,8 @@ for (let apiKey of apiKeys) {
 
   console.error("No valid API key found.");
   return null; // Return null if no key works
-}async function extractTextFromFile(url) {
+}
+async function extractTextFromFile(url) {
   if (url.endsWith(".pdf")) {
     // PDF extraction
     const pdf = await pdfjsLib.getDocument(url).promise;
@@ -651,10 +670,9 @@ for (let apiKey of apiKeys) {
 
 async function evaluateResumeWithChatPDF(resumeUrl) {
   console.log("Resume URL:", resumeUrl);
-  console.log("Job Description:", globalJobDescription);
-  document.getElementById("loading-popup").style.display = "block";
+  console.log("Job Description:", window.globalJobDescription);
 
-  if (!globalJobDescription) {
+  if (!window.globalJobDescription) {
     console.error("Job description is empty. Cannot proceed.");
     return;
   }
@@ -662,7 +680,6 @@ async function evaluateResumeWithChatPDF(resumeUrl) {
   try {
     const resumeText = await extractTextFromFile(resumeUrl);
 
-    // Resume Evaluation Prompt
     const evaluationResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyD1NqvfelSR6l-8FEIIFiZM3aJmbo2mw-Q`,
       {
@@ -678,7 +695,7 @@ async function evaluateResumeWithChatPDF(resumeUrl) {
 You are an expert HR assistant tasked with pre-screening resumes. Given a resume, analyze it thoroughly and provide a structured evaluation based on the following criteria:
 
 **Job Role Retrieval:**
-${globalJobDescription}
+${window.globalJobDescription}
 
 **Candidate Resume Content:**
 ${resumeText}
@@ -727,24 +744,29 @@ ${resumeText}
     );
 
     const evalResult = await evaluationResponse.json();
-    const evaluationContent = evalResult.candidates?.[0]?.content?.parts?.[0]?.text || "No evaluation returned.";
-
-    document.getElementById("loading-popup").style.display = "none";
+    const evaluationContent =
+      evalResult.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No evaluation returned.";
 
     displayEvaluationInCards(
       evaluationContent,
       resumeUrl,
-      globalHrEmail,
-      globalRrfId,
-      selectedValue
+      window.globalHrEmail,
+      window.globalRrfId,
+      window.selectedValue,
+      window.selectedRole,
+      window.globalSelectedLevel,
+      window.selectedCloudProvider
     );
   } catch (error) {
     console.error("Error:", error.message);
-    document.getElementById("loading-popup").style.display = "none";
-    document.getElementById("evaluation-result-container").innerHTML =
-      "Resume evaluation failed.";
+    const container = document.getElementById("evaluation-result-container");
+    if (container) {
+      container.innerHTML = "Resume evaluation failed.";
+    }
   }
 }
+
 
 async function processResumeEvaluation(resumeUrl, role) {
   try {
@@ -939,9 +961,13 @@ function displayEvaluationInCards(
   resumeUrl,
   globalHrEmail,
   globalRrfId,
-  selectedValue
+  selectedValue,
+  selectedRole,
+  globalSelectedLevel,
+  selectedCloudProvider,
 ) {
   console.log("Evaluation Content:", content);
+  
 
   const container = document.getElementById("evaluation-result-container");
   container.innerHTML = ""; // Clear any previous content
@@ -1161,20 +1187,24 @@ function displayEvaluationInCards(
     );
     return;
   }
-  candidateEmail = candidateEmail.replace(/\s*\(.*?\)\s*/g, "").trim();
 
-  sendCandidateInfoToDB(
-    candidateName,
-    candidateEmail,
-    statusText,
-    role,
-    suitabilityPercentage,
-    candidatePhoneNumber,
-    resumeUrl,
-    globalHrEmail,
-    globalRrfId,
-    selectedValue
-  );
+// Clean email by removing anything inside parentheses along with the brackets
+candidateEmail = candidateEmail.replace(/\s*\(.*?\)\s*/g, "").trim();
+
+sendCandidateInfoToDB(
+  candidateName,
+  candidateEmail,
+  statusText,
+  role,
+  suitabilityPercentage,
+  candidatePhoneNumber,
+  resumeUrl,
+  globalHrEmail,
+  globalRrfId,
+  selectedValue,
+  content
+);
+
   sendPrescreeningInfoToDB(
     candidateName,
     candidateEmail,
@@ -1299,7 +1329,8 @@ function sendCandidateInfoToDB(
   resumeUrl,
   globalHrEmail,
   globalRrfId,
-  selectedValue
+  selectedValue,
+  content
 ) {
   // Determine the recruitment phase based on the status
   let recruitmentPhase;
@@ -1330,6 +1361,7 @@ function sendCandidateInfoToDB(
       hr_email: globalHrEmail,
       rrf_id: globalRrfId,
       eng_center: selectedValue,
+      content: content,
     }),
   })
     .then((response) => response.json())
@@ -1396,16 +1428,16 @@ function sendPrescreeningInfoToDB(
     });
 }
 
-const msalConfig = {
-  auth: {
-    clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
-    authority:
-      "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
-    redirectUri: "https://demotag.vercel.app", // Ensure this matches Azure AD's redirect URI
-  },
-};
+// const msalConfig = {
+//   auth: {
+//     clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673", // Replace with your Azure AD app client ID
+//     authority:
+//       "https://login.microsoftonline.com/13085c86-4bcb-460a-a6f0-b373421c6323", // Replace with your tenant ID
+//     redirectUri: "https://demotag.vercel.app", // Ensure this matches Azure AD's redirect URI
+//   },
+// };
 
-const msalInstance = new msal.PublicClientApplication(msalConfig);
+// const msalInstance = new msal.PublicClientApplication(msalConfig);
 
 async function sendCandidateDetailsToHR(
   candidateName,
