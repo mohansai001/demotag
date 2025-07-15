@@ -6326,6 +6326,35 @@ app.get("/api/get-pos-id-count", async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching POS-ID count." });
   }
 });
+app.get('/api/get/candidate-infos', async (req, res) => {
+  try {
+    const { date } = req.query;
+    
+    let query = 'SELECT * FROM candidate_info';
+    let params = [];
+    
+    if (date) {
+      query += ' WHERE date = $1';
+      params.push(date);
+    }
+    
+    query += ' ORDER BY date DESC';
+    
+    const { rows } = await pool.query(query, params);
+    
+    res.json({
+      success: true,
+      data: rows
+    });
+    
+  } catch (error) {
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch candidate data'
+    });
+  }
+});
 
 
 
