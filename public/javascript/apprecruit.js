@@ -1332,7 +1332,6 @@ function sendCandidateInfoToDB(
   selectedValue,
   content
 ) {
-  // Determine the recruitment phase based on the status
   let recruitmentPhase;
 
   if (status.toLowerCase() === "rejected") {
@@ -1341,7 +1340,6 @@ function sendCandidateInfoToDB(
     recruitmentPhase = "Move to L1";
   }
 
-  // The resume_score column will now store the suitability percentage
   const resume_score = `${suitabilityPercentage}% Matching With JD`;
 
   fetch("https://demotag.vercel.app/api/add-candidate-info", {
@@ -1356,8 +1354,8 @@ function sendCandidateInfoToDB(
       prescreening_status: status,
       candidate_phone: candidatePhoneNumber,
       role: role,
-      recruitment_phase: recruitmentPhase, // Add the recruitment_phase value
-      resume_score: resume_score, // Add the suitability percentage as the resume_score
+      recruitment_phase: recruitmentPhase,
+      resume_score: resume_score,
       hr_email: globalHrEmail,
       rrf_id: globalRrfId,
       eng_center: selectedValue,
@@ -1367,16 +1365,46 @@ function sendCandidateInfoToDB(
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log("Candidate information saved successfully:", data);
+        console.log("✅ Candidate info saved:", data);
         const candidateId = data.data.id;
-        console.log(`Candidate ID: ${candidateId}`);
         localStorage.setItem("candidateId", candidateId);
+      } else if (data.code === "23505") {
+        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
+      } else {
+        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
       }
     })
     .catch((error) => {
-      console.error("Error saving candidate information:", error);
+      console.error("❌ Error saving candidate:", error);
+      if (error.message?.includes("duplicate key") || error.code === "23505") {
+        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
+      } else {
+        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
+      }
     });
+} 
+
+function showPopup(message) {
+  const popup = document.createElement("div");
+  popup.textContent = message;
+  popup.style.position = "fixed";
+  popup.style.top = "20px";
+  popup.style.left = "50%";
+  popup.style.transform = "translateX(-50%)";
+  popup.style.background = "#f44336";
+  popup.style.color = "#fff";
+  popup.style.padding = "10px 20px";
+  popup.style.borderRadius = "5px";
+  popup.style.zIndex = 9999;
+  popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.remove();
+  }, 3000); // auto-dismiss
 }
+
+
 
 function sendPrescreeningInfoToDB(
   name,
