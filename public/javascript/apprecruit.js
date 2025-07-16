@@ -1409,6 +1409,7 @@ function closeModal() {
 
 async function fetchExistingCandidates() {
   const emailsOnly = Array.from(duplicateCandidates).map(e => e.split(" - ")[1]);
+
   try {
     const response = await fetch("https://demotag.vercel.app/api/get-existing-candidates", {
       method: "POST",
@@ -1417,16 +1418,23 @@ async function fetchExistingCandidates() {
     });
 
     const result = await response.json();
+
     if (result.success && Array.isArray(result.data)) {
-      console.log("🎯 Existing candidates:", result.data);
+      // ✅ Store the data temporarily in sessionStorage
+      sessionStorage.setItem("existingCandidateData", JSON.stringify(result.data));
+
+      // ✅ Navigate to the new page
+      window.location.href = "existing-candidates.html";
     } else {
-      alert("No existing records found.");
+      alert("No matching records found.");
     }
   } catch (err) {
-    console.error("Failed to fetch existing candidates", err);
-    alert("Error retrieving candidates.");
+    console.error("Error fetching existing candidates:", err);
+    alert("Error retrieving records.");
   }
 }
+
+
 
 
 
@@ -1884,6 +1892,7 @@ function addPrefix() {
     rrfInput.value = "POS-" + value.replace(/^POS-/, "");
   }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
   // Select your logout div using its class name
   const logoutButton = document.querySelector('.logout-option');
@@ -1933,4 +1942,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
 
