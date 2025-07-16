@@ -228,11 +228,54 @@
         modalText.textContent = message;
         modal.style.display = "block";
       }
+      
+      /**
+       * NEW FUNCTION TO LOG LOGIN DETAILS
+       * This function sends user details to your backend API.
+       */
+   /**
+ * MODIFIED FUNCTION TO LOG LOGIN DETAILS
+ * This function now stores the returned ID in localStorage.
+ */
+async function logLoginDetails(email, name) {
+  const now = new Date();
+  const loginData = {
+    email: email,
+    name: name,
+    date: now.toLocaleDateString('en-CA'), // Formats date as YYYY-MM-DD
+    time: now.toTimeString().split(' ')[0], // Formats time as HH:MM:SS
+  };
+
+  try {
+    const response = await fetch('/api/log-login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(loginData),
+    });
+    
+    // Check if the request was successful
+    if (!response.ok) {
+      console.error('Failed to log login details:', await response.text());
+      return; // Stop if the API call fails
+    }
+    
+    // Get the response data and store the ID
+    const responseData = await response.json();
+    if (responseData.success && responseData.id) {
+      localStorage.setItem('loggin-id', responseData.id); // Store the ID
+      console.log('Login details logged successfully. ID:', responseData.id);
+    }
+
+  } catch (error) {
+    console.error('Error sending login details to the server:', error);
+  }
+}
+
 
       // Handle Login Button Click
       const loginButton = document.getElementById("msal-login-button");
-      // Handle Login Button Click
-      // Handle Login Button Click
       loginButton.addEventListener("click", async function () {
         const team = document.getElementById("team-select").value;
 
@@ -250,9 +293,14 @@
 
             if (account) {
               const email = account.username;
+              const name = account.name;
               localStorage.setItem("userEmail", email);
               console.log("Logged in email:", email);
-              showModal(`Welcome, ${account.name}!`);
+              
+              // **MODIFICATION**: Call the function to log details to the database
+              await logLoginDetails(email, name);
+
+              showModal(`Welcome, ${name}!`);
 
               // If panel, skip DB check and redirect directly
               if (team === "panel") {
@@ -284,7 +332,7 @@
 
               // Redirect based on the selected team
               if (["tag", "app-ec", "data-ec", "cloud-ec"].includes(team)) {
-                window.location.href = `candidatespage.html?ec_mapping=${encodeURIComponent(
+                window.location.href = `ECselection.html?ec_mapping=${encodeURIComponent(
                   ec_mapping
                 )}`;
               }
@@ -317,6 +365,6 @@
           );
         }
       }
-    </script>
+</script>
   </body>
 </html>
