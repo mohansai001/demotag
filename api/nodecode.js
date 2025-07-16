@@ -14,15 +14,17 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, "..", "public")));
+// Serve React build files
+app.use(express.static(path.join(__dirname, "..", "build")));
 
+// Fallback route to serve React app
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
 });
 
 // CORS configuration
 const corsOptions = {
-  //origin: 'http://localhost:3000', // Your Vercel frontend domain
+  origin: ['http://localhost:3000', 'https://demotag.vercel.app'], // Allow both development and production
   methods: "GET, POST, PUT, OPTIONS", // Allow specific HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
   credentials: true, // Enable cookies/sessions if needed
