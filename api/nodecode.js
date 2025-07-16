@@ -6,7 +6,7 @@ const axios = require("axios"); // For fetching test results
 const path = require("path"); // For static file handlingtime
 const cron = require("node-cron");
 const fs = require("fs"); // For file system operations
-// const { utcToZonedTime, format } = require('date-fns-tz');
+const { utcToZonedTime, format } = require('date-fns-tz');
 
 // const { format } = require('date-fns-tz');api/candidates
 
