@@ -450,12 +450,18 @@ app.post("/api/add-candidate-info", async (req, res) => {
         message: "Candidate info saved",
         data: result.rows[0],
       });
-  } catch (error) {
+  }catch (error) {
     console.error("Error saving candidate information:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error saving candidate info" });
+    const isDuplicate = error.code === '23505';
+  
+    res.status(500).json({
+      success: false,
+      message: isDuplicate ? "Duplicate candidate email" : "Error saving candidate info",
+      code: error.code,
+      detail: error.detail
+    });
   }
+  
 });
 
 // In your Node.js API (app.js or routes file)
@@ -6281,7 +6287,7 @@ app.post('/api/upload-rrfids', async (req, res) => {
 // }
 // javaresponsetable();
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ dest: "uploads/" });
 
 // Endpoint to convert DOCX to PDF
 app.post("/api/docxtopdf", upload.single("word"), (req, res) => {
@@ -6326,6 +6332,7 @@ app.get("/api/get-pos-id-count", async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching POS-ID count." });
   }
 });
+
 app.get('/api/get/candidate-infos', async (req, res) => {
   try {
     const { date } = req.query;
@@ -6355,6 +6362,84 @@ app.get('/api/get/candidate-infos', async (req, res) => {
     });
   }
 });
+
+// MODIFIED: Backend Login Endpoint
+// This now returns the ID of the new row.
+app.post('/api/log-login', async (req, res) => {
+  const { email, name, date, time } = req.body;
+
+  if (!email || !name || !date || !time) {
+    return res.status(400).send({ success: false, message: 'Missing required fields.' });
+  }
+
+  try {
+    // The "RETURNING id" part is crucial for getting the new record's ID
+    const query = 'INSERT INTO login_users(email, name, date, "time") VALUES($1, $2, $3, $4) RETURNING id';
+    const values = [email, name, date, time];
+    const newLogin = await pool.query(query, values);
+
+    // Send the new ID back to the frontend
+    res.status(200).send({ success: true, id: newLogin.rows[0].id });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).send({ success: false, message: 'Server error while logging login.' });
+  }
+});
+
+// NEW: Backend Logout Endpoint
+// This updates the record with the logout time.
+app.patch('/api/log-logout', async (req, res) => {
+  const { id } = req.body; // The ID stored in the browser's localStorage
+  const logoutTime = new Date().toTimeString().split(' ')[0]; // Format as HH:MM:SS
+
+  if (!id) {
+    return res.status(400).send({ success: false, message: 'Login ID is required.' });
+  }
+
+  try {
+    const query = 'UPDATE login_users SET logout_time = $1 WHERE id = $2';
+    const values = [logoutTime, id];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send({ success: false, message: 'Login record not found.' });
+    }
+
+    res.status(200).send({ success: true, message: 'Logout time updated successfully.' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).send({ success: false, message: 'Server error while logging out.' });
+  }
+});
+app.post("/api/get-existing-candidates", async (req, res) => {
+  const { emails } = req.body;
+
+  if (!emails || !Array.isArray(emails) || emails.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or empty email list.",
+    });
+  }
+
+  try {
+    const placeholders = emails.map((_, index) => `$${index + 1}`).join(", ");
+    const query = `SELECT * FROM candidate_info WHERE candidate_email IN (${placeholders})`;
+
+    const result = await pool.query(query, emails);
+
+    res.json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("❌ Error fetching existing candidates:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching existing candidates",
+      error: error.message,
+    });
+  }
+});
+
+
+
 
 
 
