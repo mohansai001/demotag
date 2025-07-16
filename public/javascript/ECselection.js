@@ -41,3 +41,52 @@ if (ecMappingParam) {
     }
   });
 }
+document.addEventListener('DOMContentLoaded', () => {
+  // Select your logout div using its class name
+  const logoutButton = document.querySelector('.logout-option');
+
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+      // Get the stored ID from localStorage
+      const loginId = localStorage.getItem('loggin-id');
+
+      if (!loginId) {
+        console.error('No login ID found. Cannot process logout time update.');
+        // Clear session and redirect anyway as a fallback
+        localStorage.clear(); 
+        window.location.href = 'index.html'; // Redirect to the login page
+        return;
+      }
+      
+      try {
+        // Call the endpoint to update the logout time in your database
+        const response = await fetch('/api/log-logout', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: loginId }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to update logout time:', await response.text());
+        } else {
+          console.log('Logout time updated successfully.');
+        }
+
+      } catch (error) {
+        console.error('Error during logout API call:', error);
+      } finally {
+        // This block runs regardless of whether the API call succeeded or failed
+        
+        // **IMPORTANT**: Clear the session data from the browser
+        localStorage.removeItem('loggin-id');
+        localStorage.removeItem('userEmail');
+        // Or use localStorage.clear() to remove everything
+
+        // Redirect to the login page
+        window.location.href = 'index.html'; 
+      }
+    });
+  }
+});
