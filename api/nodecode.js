@@ -6,7 +6,7 @@ const axios = require("axios"); // For fetching test results
 const path = require("path"); // For static file handlingtime
 const cron = require("node-cron");
 const fs = require("fs"); // For file system operations
-const { utcToZonedTime, format } = require('date-fns-tz');
+// const { utcToZonedTime, format } = require('date-fns-tz');
 
 // const { format } = require('date-fns-tz');api/candidates
 
@@ -6398,9 +6398,12 @@ app.patch('/api/log-logout', async (req, res) => {
   }
 
   try {
+    // ✅ Use dynamic import to fix "is not a function" error on Vercel
+    const { utcToZonedTime, format } = await import('date-fns-tz');
+
     const utcDate = new Date();
-    const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata'); // ✅ Convert to IST
-    const logoutTime = format(istDate, 'HH:mm:ss'); // ✅ Format as HH:MM:SS
+    const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
+    const logoutTime = format(istDate, 'HH:mm:ss');
 
     const query = 'UPDATE login_users SET logout_time = $1 WHERE id = $2';
     const values = [logoutTime, id];
@@ -6416,7 +6419,6 @@ app.patch('/api/log-logout', async (req, res) => {
     res.status(500).send({ success: false, message: 'Server error while logging out.' });
   }
 });
-
 app.post("/api/get-existing-candidates", async (req, res) => {
   const { emails } = req.body;
 
