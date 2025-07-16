@@ -6391,20 +6391,14 @@ app.post('/api/log-login', async (req, res) => {
 // NEW: Backend Logout Endpoint
 // This updates the record with the logout time.
 app.patch('/api/log-logout', async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.body; // The ID stored in the browser's localStorage
+  const logoutTime = new Date().toTimeString().split(' ')[0]; // Format as HH:MM:SS
 
   if (!id) {
     return res.status(400).send({ success: false, message: 'Login ID is required.' });
   }
 
   try {
-    // ✅ Use dynamic import to fix "is not a function" error on Vercel
-    const { utcToZonedTime, format } = await import('date-fns-tz');
-
-    const utcDate = new Date();
-    const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
-    const logoutTime = format(istDate, 'HH:mm:ss');
-
     const query = 'UPDATE login_users SET logout_time = $1 WHERE id = $2';
     const values = [logoutTime, id];
     const result = await pool.query(query, values);
@@ -6413,12 +6407,13 @@ app.patch('/api/log-logout', async (req, res) => {
       return res.status(404).send({ success: false, message: 'Login record not found.' });
     }
 
-    res.status(200).send({ success: true, message: 'Logout time updated successfully.', time: logoutTime });
+    res.status(200).send({ success: true, message: 'Logout time updated successfully.' });
   } catch (error) {
     console.error('Database error:', error);
     res.status(500).send({ success: false, message: 'Server error while logging out.' });
   }
 });
+
 app.post("/api/get-existing-candidates", async (req, res) => {
   const { emails } = req.body;
 
