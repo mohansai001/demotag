@@ -6391,14 +6391,22 @@ app.post('/api/log-login', async (req, res) => {
 // NEW: Backend Logout Endpoint
 // This updates the record with the logout time.
 app.patch('/api/log-logout', async (req, res) => {
-  const { id } = req.body; // The ID stored in the browser's localStorage
-  const logoutTime = new Date().toTimeString().split(' ')[0]; // Format as HH:MM:SS
+  const { id } = req.body;
 
   if (!id) {
     return res.status(400).send({ success: false, message: 'Login ID is required.' });
   }
 
   try {
+    // ✅ Convert server time to IST (Asia/Kolkata) as HH:mm:ss
+    const logoutTime = new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(new Date());
+
     const query = 'UPDATE login_users SET logout_time = $1 WHERE id = $2';
     const values = [logoutTime, id];
     const result = await pool.query(query, values);
@@ -6407,12 +6415,17 @@ app.patch('/api/log-logout', async (req, res) => {
       return res.status(404).send({ success: false, message: 'Login record not found.' });
     }
 
-    res.status(200).send({ success: true, message: 'Logout time updated successfully.' });
+    res.status(200).send({
+      success: true,
+      message: 'Logout time updated successfully.',
+      logout_time: logoutTime,
+    });
   } catch (error) {
     console.error('Database error:', error);
     res.status(500).send({ success: false, message: 'Server error while logging out.' });
   }
 });
+
 
 app.post("/api/get-existing-candidates", async (req, res) => {
   const { emails } = req.body;
