@@ -219,29 +219,98 @@
         margin-left: auto;
         margin-right: auto;
       }
-
-      .modal {
+      /* 🔒 Modal container */
+      .custom-modal {
         position: fixed;
-        z-index: 10000;
-        left: 0;
         top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
       }
-      .modal.hidden {
+
+      /* ✅ Hidden class */
+      .custom-modal.hidden {
         display: none;
       }
-      .modal-content {
-        background-color: #fff;
-        padding: 24px;
-        border-radius: 8px;
-        max-width: 450px;
+
+      /* 📦 Modal box */
+      .custom-modal-content {
+        background: #fff;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        max-width: 550px;
+        width: 90%;
         text-align: center;
+        animation: slideIn 0.3s ease;
       }
+
+      /* 🚀 Slide-in animation */
+      @keyframes slideIn {
+        from {
+          transform: translateY(-30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* ✉️ List of duplicate emails */
+      .duplicate-email-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+        max-height: 200px;
+        overflow-y: auto;
+        text-align: left;
+      }
+      .duplicate-email-list li {
+        padding: 8px;
+        background: #f8f8f8;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        font-size: 15px;
+      }
+
+      /* 🔘 Buttons */
+      .modal-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+      }
+      .modal-button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        font-size: 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+      .fetch-btn {
+        background-color: #1976d2;
+        color: white;
+      }
+      .fetch-btn:hover {
+        background-color: #125aa3;
+      }
+      .close-btn {
+        background-color: #e53935;
+        color: white;
+      }
+      .close-btn:hover {
+        background-color: #b71c1c;
+      }
+
       #duplicateEmailList {
         list-style: none;
         padding: 0;
@@ -249,16 +318,199 @@
         max-height: 200px;
         overflow-y: auto;
       }
+      .disable-column td:last-child {
+        pointer-events: none;
+        opacity: 0.4;
+      }
+      .sidebar-menu {
+        width: 14.8%;
+        position: fixed;
+        top: 0px;
+        left: 0;
+        height: 90%;
+        margin-top: 55px;
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+        border: 2px solid;
+        background: white;
+        z-index: 1001;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        /* Stack items vertically */
+        justify-content: flex-start;
+        border-radius: 5px;
+      }
+
+      .sidebar-menu.show {
+        transform: translateX(0);
+        /* Show the sidebar */
+      }
+
+      .logout-option {
+        margin-top: auto;
+        /* Push the logout option to the bottom */
+        padding: 15px 20px;
+        /* Ensure padding on the logout item */
+        display: flex;
+        align-items: center;
+        width: 100%;
+        /* Full width of the sidebar */
+        cursor: pointer;
+      }
+
+      .logout-option i {
+        margin-right: 10px;
+        /* Space between icon and text */
+      }
+
+      #toggle-sidebar-btn {
+        position: fixed;
+        top: 10px;
+        background-color: white;
+        color: black;
+        border: none;
+        /* padding: 10px 15px; */
+        cursor: pointer;
+        font-size: 18px;
+        width: 15%;
+        border-radius: 4px;
+        height: 41px;
+        z-index: 1002;
+      }
+
+      .sidebar-option {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        /* Smooth transitions for all properties */
+        position: relative;
+        width: 81%;
+        color: black;
+        border-radius: 5px;
+        /* Adds rounded corners */
+      }
+
+      .sidebar-option i {
+        margin-right: 10px;
+        /* Space between icon and text */
+      }
+
+      .sidebar-option:hover {
+        background-color: #daf7a6;
+        /* Light gray hover background */
+        color: black;
+        /* Text changes to blue */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* Subtle shadow */
+        transform: translateY(-2px);
+        /* Slight upward movement */
+      }
+
+      .sidebar-option::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 3px;
+        background-color: black;
+        /* Highlight bar color */
+        transition: width 0.3s ease;
+      }
+
+      .sidebar-option:hover::before {
+        width: 100%;
+        /* Expands the highlight bar */
+      }
+
+      .chip {
+        display: inline-block;
+        margin-left: 10px;
+        /* Adjust spacing from the Dashboard */
+        padding: 5px 10px;
+        font-size: 8px;
+        font-weight: bold;
+        color: white;
+        background-color: grey;
+        /* Orange color for 'Coming Soon' */
+        border-radius: 15px;
+        transition: background-color 0.3s ease;
+      }
+
+      .chip.primary {
+        background-color: grey;
+        /* Define your primary color */
+      }
     </style>
   </head>
   <body>
-    <div id="emailModal" class="modal hidden">
-      <div class="modal-content">
-        <h3>Duplicate Candidates Detected</h3>
+    <!-- Toast and Toggle Button -->
+
+    <button id="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar-menu hidden">
+      <div class="sidebar-option active" onclick="navigateTo('Dashboard.html')">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="sidebar-option" onclick="navigateTo('Excelread.html')">
+        <i class="fas fa-file-upload"></i>
+        <span>Upload RRF</span>
+      </div>
+      <div
+        class="sidebar-option"
+        onclick="navigateWithECMapping('ECselection.html')"
+      >
+        <i class="fas fa-users"></i>
+        <span>Recruit</span>
+      </div>
+      <div class="sidebar-option" onclick="navigateTo('candidatespage.html')">
+        <i class="fas fa-tasks"></i>
+        <span>RRF Tracking</span>
+      </div>
+      <div class="sidebar-option" onclick="navigateTo('GTPrescreening.html')">
+        <i class="fas fa-clipboard-check"></i>
+        <span>GT's Prescreening</span>
+      </div>
+      <div
+        class="sidebar-option"
+        onclick="navigateTo('interview-schedule.html')"
+      >
+        <i class="fas fa-calendar-alt"></i>
+        <span>My Interviews</span>
+      </div>
+      <div
+        class="sidebar-option logout-option"
+        onclick="navigateTo('index.html')"
+      >
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </div>
+    </div>
+
+    <!-- 🔁 Duplicate Candidates Modal -->
+    <div id="emailModal" class="custom-modal hidden">
+      <div class="custom-modal-content">
+        <h2>⚠️ Duplicate Candidates Detected</h2>
         <p>The following candidates have already been evaluated:</p>
-        <ul id="duplicateEmailList"></ul>
-        <button onclick="fetchExistingCandidates()">Fetch Existing Info</button>
-        <button onclick="closeModal()">Close</button>
+
+        <ul id="duplicateEmailList" class="duplicate-email-list"></ul>
+
+        <div class="modal-actions">
+          <button
+            class="modal-button fetch-btn"
+            onclick="fetchExistingCandidates()"
+          >
+            🔍 View Existing Records
+          </button>
+          <button class="modal-button close-btn" onclick="closeModal()">
+            ❌ Close
+          </button>
+        </div>
       </div>
     </div>
 
@@ -309,6 +561,8 @@
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
         const tableBody = document.getElementById("upload-table-body");
+
+        // Show loading spinner initially
         tableBody.innerHTML = `
     <tr>
       <td colspan="5" class="loading">
@@ -317,14 +571,21 @@
       </td>
     </tr>`;
 
+        // Disable all View buttons + dim Action column
+        document
+          .querySelector("#upload-table-body")
+          ?.classList.add("disable-column");
+        document
+          .querySelectorAll(".view-btn")
+          .forEach((btn) => (btn.disabled = true));
+
         try {
-          // 1. Load candidates from database
+          // Load candidates from DB
           const response = await fetch(
             "https://demotag.vercel.app/api/get/candidate-info"
           );
           if (!response.ok)
             throw new Error(`Failed to load candidates: ${response.status}`);
-
           const result = await response.json();
           if (!result.success || !Array.isArray(result.data))
             throw new Error("Invalid data format");
@@ -336,11 +597,7 @@
             renderCandidateTable(candidates);
           }
 
-          // ✅ Track filenames already shown from DB
-          const shownFileNames = new Set();
-          candidates.forEach((c) => shownFileNames.add(c.resume_name?.trim()));
-
-          // 2. Load and show in-memory uploaded resumes
+          // Process in-memory uploaded resumes
           const multiUploadFiles = JSON.parse(
             sessionStorage.getItem("multiUploadFiles") || "[]"
           );
@@ -348,7 +605,16 @@
             localStorage.getItem("multiUploadData") || "{}"
           );
 
-          if (!multiUploadData || multiUploadFiles.length === 0) return;
+          if (!multiUploadData || multiUploadFiles.length === 0) {
+            // ✅ No new resumes to process, re-enable everything
+            document
+              .querySelectorAll(".view-btn")
+              .forEach((btn) => (btn.disabled = false));
+            document
+              .querySelector("#upload-table-body")
+              ?.classList.remove("disable-column");
+            return;
+          }
 
           let completedCount = 0;
           const totalFiles = multiUploadFiles.length;
@@ -357,8 +623,11 @@
             const fileData = multiUploadFiles[i];
             const fileName = fileData.name;
 
-            // ✅ Skip if already shown
-            if (shownFileNames.has(fileName.trim())) {
+            // Skip already existing rows
+            const alreadyExists = Array.from(
+              document.querySelectorAll("#upload-table-body tr td:nth-child(2)")
+            ).some((td) => td.textContent.trim() === fileName);
+            if (alreadyExists) {
               completedCount++;
               continue;
             }
@@ -387,7 +656,7 @@
                 type: fileBlob.type,
               });
 
-              // Convert if .doc/.docx
+              // Convert if needed
               if (fileName.endsWith(".doc")) {
                 file = await convertDocToPdf(file);
               } else if (fileName.endsWith(".docx")) {
@@ -445,16 +714,22 @@
               viewBtn.disabled = true;
             }
 
-            // ✅ Track completed and refresh when done
             completedCount++;
-            // if (completedCount === totalFiles) {
-            //   setTimeout(() => {
-            //     window.location.reload();
-            //   }, 10000);
-            // }
+
+            // ✅ When all resumes processed, enable all buttons
+            if (completedCount === totalFiles) {
+              setTimeout(() => {
+                document
+                  .querySelectorAll(".view-btn")
+                  .forEach((btn) => (btn.disabled = false));
+                document
+                  .querySelector("#upload-table-body")
+                  ?.classList.remove("disable-column");
+              }, 5000);
+            }
           }
 
-          // ✅ Cleanup
+          // Cleanup session/local data
           localStorage.removeItem("multiUploadData");
           sessionStorage.removeItem("multiUploadFiles");
         } catch (error) {
@@ -462,6 +737,7 @@
           showErrorMessage(error.message);
         }
       });
+
       function renderCandidateTable(candidates) {
         const tableBody = document.getElementById("upload-table-body");
         tableBody.innerHTML = "";
@@ -874,7 +1150,7 @@
       <td>${fileName}</td>
       <td>${multiUploadData.rrfId || "N/A"}</td>
       <td class="status-cell status-processing" id="status-${i}">Queued</td>
-      <td><button class="view-btn" id="view-btn-${i}" >View</button></td>
+      <td><button class="view-btn" id="view-btn-${i}" disabled>View</button></td>
     `;
           tableBody.appendChild(row);
 
@@ -882,17 +1158,18 @@
           const viewBtn = document.getElementById(`view-btn-${i}`);
 
           try {
-            // Convert base64 to File object
+            // Disable button while processing
+            viewBtn.disabled = true;
+
             const response = await fetch(fileData.dataUrl);
             const blob = await response.blob();
-            const file = new File([blob], fileName, { type: blob.type });
+            let file = new File([blob], fileName, { type: blob.type });
 
-            // === Conversion & Upload ===
-            let processedFile = file;
+            // Convert .doc/.docx
             if (fileName.endsWith(".doc")) {
-              processedFile = await convertDocToPdf(file);
+              file = await convertDocToPdf(file);
             } else if (fileName.endsWith(".docx")) {
-              processedFile = await convertDocxToPdf(file);
+              file = await convertDocxToPdf(file);
             }
 
             const timestamp = Date.now();
@@ -900,9 +1177,9 @@
               /\.[^/.]+$/,
               ".pdf"
             )}`;
-            const githubUrl = await uploadToGitHub(newFileName, processedFile);
+            const githubUrl = await uploadToGitHub(newFileName, file);
 
-            // ✅ Setup all globals
+            // Set globals
             const {
               hrEmail,
               rrfId,
@@ -913,7 +1190,6 @@
               globalJobDescription,
             } = multiUploadData;
 
-            // ✅ Define as window globals
             window.globalHrEmail = hrEmail;
             window.globalRrfId = rrfId;
             window.selectedValue = selectedValue;
@@ -924,21 +1200,20 @@
 
             const evaluation = await evaluateResumeWithChatPDF(githubUrl);
 
-            // === Store results to DB or show in UI ===
             statusCell.textContent = "Completed";
             statusCell.className = "status-cell status-completed";
-            viewBtn.disabled = false;
+            viewBtn.disabled = false; // ✅ Enable after success
 
             viewBtn.onclick = () => {
               displayEvaluationResults(
                 evaluation,
                 githubUrl,
-                multiUploadData.hrEmail,
-                multiUploadData.rrfId,
-                multiUploadData.selectedValue,
-                multiUploadData.selectedRole,
-                multiUploadData.globalSelectedLevel,
-                multiUploadData.selectedCloudProvider
+                hrEmail,
+                rrfId,
+                selectedValue,
+                selectedRole,
+                globalSelectedLevel,
+                selectedCloudProvider
               );
             };
           } catch (err) {
@@ -953,6 +1228,7 @@
         localStorage.removeItem("multiUploadData");
         sessionStorage.removeItem("multiUploadFiles");
       });
+
       // Add this with your other functions
       async function filterByDate() {
         const dateInput = document.getElementById("date-filter");
