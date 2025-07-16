@@ -1,4 +1,5 @@
 // ✅ MSAL setup (must be at top)
+const duplicateCandidates = new Set();
 const msalConfig = {
   auth: {
     clientId: "ed0b1bf7-b012-4e13-a526-b696932c0673",
@@ -1369,40 +1370,68 @@ function sendCandidateInfoToDB(
         const candidateId = data.data.id;
         localStorage.setItem("candidateId", candidateId);
       } else if (data.code === "23505") {
-        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
+        showDuplicateModal(email, name);
       } else {
-        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
+        console.warn("Unhandled DB response:", data);
       }
     })
     .catch((error) => {
       console.error("❌ Error saving candidate:", error);
-      if (error.message?.includes("duplicate key") || error.code === "23505") {
-        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
-      } else {
-        showPopup(`⚠️ Candidate "${name}" has already been evaluated.`);
+      if (
+        error.message?.includes("duplicate key") ||
+        error.code === "23505"
+      ) {
+        showDuplicateModal(email, name);
       }
     });
-} 
-
-function showPopup(message) {
-  const popup = document.createElement("div");
-  popup.textContent = message;
-  popup.style.position = "fixed";
-  popup.style.top = "20px";
-  popup.style.left = "50%";
-  popup.style.transform = "translateX(-50%)";
-  popup.style.background = "#f44336";
-  popup.style.color = "#fff";
-  popup.style.padding = "10px 20px";
-  popup.style.borderRadius = "5px";
-  popup.style.zIndex = 9999;
-  popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-  document.body.appendChild(popup);
-
-  setTimeout(() => {
-    popup.remove();
-  }, 3000); // auto-dismiss
 }
+
+// ✅ Declare global set FIRST
+
+
+// ✅ Then define modal-related functions
+function showDuplicateModal(email, name) {
+  duplicateCandidates.add(`${name} - ${email}`);
+
+  const modal = document.getElementById("emailModal");
+  const list = document.getElementById("duplicateEmailList");
+
+  list.innerHTML = Array.from(duplicateCandidates)
+    .map(e => `<li>${e}</li>`)
+    .join("");
+
+  modal.classList.remove("hidden");
+}
+
+function closeModal() {
+  document.getElementById("emailModal").classList.add("hidden");
+}
+
+async function fetchExistingCandidates() {
+  const emailsOnly = Array.from(duplicateCandidates).map(e => e.split(" - ")[1]);
+  try {
+    const response = await fetch("https://demotag.vercel.app/api/get-existing-candidates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ emails: emailsOnly }),
+    });
+
+    const result = await response.json();
+    if (result.success && Array.isArray(result.data)) {
+      console.log("🎯 Existing candidates:", result.data);
+    } else {
+      alert("No existing records found.");
+    }
+  } catch (err) {
+    console.error("Failed to fetch existing candidates", err);
+    alert("Error retrieving candidates.");
+  }
+}
+
+
+
+
+
 
 
 
@@ -1855,3 +1884,53 @@ function addPrefix() {
     rrfInput.value = "POS-" + value.replace(/^POS-/, "");
   }
 }
+document.addEventListener('DOMContentLoaded', () => {
+  // Select your logout div using its class name
+  const logoutButton = document.querySelector('.logout-option');
+
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+      // Get the stored ID from localStorage
+      const loginId = localStorage.getItem('loggin-id');
+
+      if (!loginId) {
+        console.error('No login ID found. Cannot process logout time update.');
+        // Clear session and redirect anyway as a fallback
+        localStorage.clear(); 
+        window.location.href = 'index.html'; // Redirect to the login page
+        return;
+      }
+      
+      try {
+        // Call the endpoint to update the logout time in your database
+        const response = await fetch('/api/log-logout', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: loginId }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to update logout time:', await response.text());
+        } else {
+          console.log('Logout time updated successfully.');
+        }
+
+      } catch (error) {
+        console.error('Error during logout API call:', error);
+      } finally {
+        // This block runs regardless of whether the API call succeeded or failed
+        
+        // **IMPORTANT**: Clear the session data from the browser
+        localStorage.removeItem('loggin-id');
+        localStorage.removeItem('userEmail');
+        // Or use localStorage.clear() to remove everything
+
+        // Redirect to the login page
+        window.location.href = 'index.html'; 
+      }
+    });
+  }
+});
+
