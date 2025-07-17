@@ -452,19 +452,16 @@ async function getGithubToken() {
     return null; // Handle the error as needed
   }
 }
-
 async function uploadToGitHub(fileName, file) {
   const githubToken = await getGithubToken(); // Fetch the GitHub token here
   if (!githubToken) {
     console.error("GitHub token is not available.");
     return null;
   }
-  const repoOwner = "mohansai001"; // Your GitHub username
-  const repoName = "resume"; // Your repository name
+  const repoOwner = "mohansai001";
+  const repoName = "resume";
+  const folderPath = "resumes";
 
-  const folderPath = "resumes"; // Folder where resumes are stored
-
-  // Sanitize the file name
   const sanitizedFileName = fileName.includes("_")
     ? fileName.split("_").slice(1).join("_")
     : fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -472,7 +469,7 @@ async function uploadToGitHub(fileName, file) {
   const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}/${sanitizedFileName}`;
 
   try {
-    // Get the total number of resumes in the folder
+    // Log total resumes before upload
     const folderApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
     const folderResponse = await fetch(folderApiUrl, {
       method: "GET",
@@ -486,22 +483,18 @@ async function uploadToGitHub(fileName, file) {
       const folderData = await folderResponse.json();
       const totalResumes = folderData.length;
       console.log(`Total resumes before upload: ${totalResumes}`);
-    } else {
-      console.error(
-        "Failed to retrieve folder contents:",
-        await folderResponse.text()
-      );
     }
 
-    // Read the file content
+    // Convert file to Base64
     const fileReader = new FileReader();
     const base64Content = await new Promise((resolve, reject) => {
-      fileReader.onload = (event) => resolve(event.target.result.split(",")[1]); // Extract base64 content
+      fileReader.onload = (event) => resolve(event.target.result.split(",")[1]);
       fileReader.onerror = (error) => reject(error);
       fileReader.readAsDataURL(file);
     });
 
-    // Check if the file already exists in the GitHub repository
+    // Check if file exists to get its sha
+    let sha = null;
     const checkFileResponse = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -510,21 +503,12 @@ async function uploadToGitHub(fileName, file) {
       },
     });
 
-    let sha = null;
     if (checkFileResponse.status === 200) {
-      // File exists, get the sha
       const existingFileData = await checkFileResponse.json();
       sha = existingFileData.sha;
-
-      // Get existing file's content and compare it with the current file
-      const existingBase64Content = existingFileData.content.replace(/\n/g, ""); // Remove newlines for comparison
-      if (existingBase64Content === base64Content) {
-        console.log("The file content is the same. No upload needed.");
-        return null;
-      }
     }
 
-    // Proceed with the upload if the file doesn't exist or content has changed
+    // Upload or update the file regardless of content
     const response = await fetch(apiUrl, {
       method: "PUT",
       headers: {
@@ -534,7 +518,7 @@ async function uploadToGitHub(fileName, file) {
       body: JSON.stringify({
         message: `Upload resume: ${sanitizedFileName}`,
         content: base64Content,
-        sha: sha, // Include the sha if it's an update
+        sha: sha,
       }),
     });
 
@@ -542,7 +526,7 @@ async function uploadToGitHub(fileName, file) {
       const responseData = await response.json();
       console.log("Resume uploaded successfully.");
 
-      // Get the updated total number of resumes after the upload
+      // Get updated resume count
       const updatedFolderResponse = await fetch(folderApiUrl, {
         method: "GET",
         headers: {
@@ -555,17 +539,10 @@ async function uploadToGitHub(fileName, file) {
         const updatedFolderData = await updatedFolderResponse.json();
         const count = updatedFolderData.length;
         console.log(`Total resumes after upload: ${count}`);
-
-        // Send updated count to the database
         await sendCountToDatabase(count);
-      } else {
-        console.error(
-          "Failed to retrieve updated folder contents:",
-          await updatedFolderResponse.text()
-        );
       }
 
-      return responseData.content.download_url; // Return the GitHub download URL
+      return responseData.content.download_url;
     } else {
       console.error("GitHub API error:", await response.text());
       return null;
