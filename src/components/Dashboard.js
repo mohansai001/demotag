@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Button, Card, LoadingSpinner } from './common';
 import './Dashboard.css';
 
 // Register Chart.js components
@@ -123,8 +124,11 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="dashboard-container">
-        <div className="spinner"></div>
-        <p>Loading dashboard...</p>
+        <LoadingSpinner 
+          size="large" 
+          text="Loading dashboard..." 
+          variant="primary"
+        />
       </div>
     );
   }
@@ -134,12 +138,20 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <h1>Recruitment Dashboard</h1>
         <div className="dashboard-actions">
-          <button className="btn btn-primary" onClick={() => navigateTo('/recruitment')}>
-            <i className="fas fa-plus"></i> New Recruitment
-          </button>
-          <button className="btn btn-secondary" onClick={() => navigateTo('/candidates')}>
-            <i className="fas fa-users"></i> View Candidates
-          </button>
+          <Button 
+            variant="primary" 
+            onClick={() => navigateTo('/recruitment')}
+            icon="fas fa-plus"
+          >
+            New Recruitment
+          </Button>
+          <Button 
+            variant="secondary" 
+            onClick={() => navigateTo('/candidates')}
+            icon="fas fa-users"
+          >
+            View Candidates
+          </Button>
         </div>
       </div>
 
@@ -187,31 +199,35 @@ const Dashboard = () => {
 
       <div className="charts-container">
         <div className="chart-section">
-          <div className="chart-card">
-            <div className="card-header">
-              <h3>Status Distribution</h3>
-            </div>
-            <div className="chart-wrapper">
-              <Doughnut 
-                data={chartData.status} 
-                options={chartOptions}
-                plugins={[ChartDataLabels]}
-              />
-            </div>
-          </div>
+          <Card hover shadow="medium">
+            <Card.Header>
+              <Card.Title>Status Distribution</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <div className="chart-wrapper">
+                <Doughnut 
+                  data={chartData.status} 
+                  options={chartOptions}
+                  plugins={[ChartDataLabels]}
+                />
+              </div>
+            </Card.Body>
+          </Card>
 
-          <div className="chart-card">
-            <div className="card-header">
-              <h3>Role Distribution</h3>
-            </div>
-            <div className="chart-wrapper">
-              <Bar 
-                data={chartData.role} 
-                options={barChartOptions}
-                plugins={[ChartDataLabels]}
-              />
-            </div>
-          </div>
+          <Card hover shadow="medium">
+            <Card.Header>
+              <Card.Title>Role Distribution</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <div className="chart-wrapper">
+                <Bar 
+                  data={chartData.role} 
+                  options={barChartOptions}
+                  plugins={[ChartDataLabels]}
+                />
+              </div>
+            </Card.Body>
+          </Card>
         </div>
 
         <div className="chart-section">
@@ -257,15 +273,27 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-actions-footer">
-        <button className="btn btn-success" onClick={() => navigateTo('/interviews')}>
-          <i className="fas fa-calendar"></i> Schedule Interview
-        </button>
-        <button className="btn btn-info" onClick={() => navigateTo('/panel')}>
-          <i className="fas fa-users"></i> Panel Management
-        </button>
-        <button className="btn btn-warning" onClick={() => navigateTo('/feedback')}>
-          <i className="fas fa-comment"></i> Feedback
-        </button>
+        <Button 
+          variant="success" 
+          onClick={() => navigateTo('/interviews')}
+          icon="fas fa-calendar"
+        >
+          Schedule Interview
+        </Button>
+        <Button 
+          variant="info" 
+          onClick={() => navigateTo('/panel')}
+          icon="fas fa-users"
+        >
+          Panel Management
+        </Button>
+        <Button 
+          variant="warning" 
+          onClick={() => navigateTo('/feedback')}
+          icon="fas fa-comment"
+        >
+          Feedback
+        </Button>
       </div>
     </div>
   );

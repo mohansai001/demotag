@@ -1,0 +1,244 @@
+/* Loading Container */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+}
+
+/* Base Spinner Styles */
+.loading-spinner {
+  display: inline-block;
+  position: relative;
+  animation: loading-rotate 1.2s linear infinite;
+}
+
+@keyframes loading-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Spinner Circles */
+.spinner-circle {
+  position: absolute;
+  border-radius: 50%;
+  animation: loading-bounce 1.2s ease-in-out infinite;
+}
+
+.spinner-circle:nth-child(1) {
+  top: 0;
+  left: 0;
+  animation-delay: -0.45s;
+}
+
+.spinner-circle:nth-child(2) {
+  top: 0;
+  right: 0;
+  animation-delay: -0.3s;
+}
+
+.spinner-circle:nth-child(3) {
+  bottom: 0;
+  right: 0;
+  animation-delay: -0.15s;
+}
+
+.spinner-circle:nth-child(4) {
+  bottom: 0;
+  left: 0;
+  animation-delay: 0s;
+}
+
+@keyframes loading-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Spinner Sizes */
+.loading-spinner-small {
+  width: 20px;
+  height: 20px;
+}
+
+.loading-spinner-small .spinner-circle {
+  width: 6px;
+  height: 6px;
+}
+
+.loading-spinner-medium {
+  width: 40px;
+  height: 40px;
+}
+
+.loading-spinner-medium .spinner-circle {
+  width: 12px;
+  height: 12px;
+}
+
+.loading-spinner-large {
+  width: 60px;
+  height: 60px;
+}
+
+.loading-spinner-large .spinner-circle {
+  width: 18px;
+  height: 18px;
+}
+
+.loading-spinner-extra-large {
+  width: 80px;
+  height: 80px;
+}
+
+.loading-spinner-extra-large .spinner-circle {
+  width: 24px;
+  height: 24px;
+}
+
+/* Spinner Variants */
+.loading-spinner-primary .spinner-circle {
+  background-color: #007bff;
+}
+
+.loading-spinner-secondary .spinner-circle {
+  background-color: #6c757d;
+}
+
+.loading-spinner-success .spinner-circle {
+  background-color: #28a745;
+}
+
+.loading-spinner-danger .spinner-circle {
+  background-color: #dc3545;
+}
+
+.loading-spinner-warning .spinner-circle {
+  background-color: #ffc107;
+}
+
+.loading-spinner-info .spinner-circle {
+  background-color: #17a2b8;
+}
+
+.loading-spinner-light .spinner-circle {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.loading-spinner-dark .spinner-circle {
+  background-color: #343a40;
+}
+
+/* Loading Text */
+.loading-text {
+  font-size: 14px;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.loading-spinner-small + .loading-text {
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.loading-spinner-large + .loading-text {
+  font-size: 16px;
+  margin-top: 15px;
+}
+
+.loading-spinner-extra-large + .loading-text {
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* Alternative Spinner Styles */
+.loading-spinner-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.loading-spinner-dots .spinner-circle {
+  position: relative;
+  animation: loading-dots 1.4s ease-in-out infinite both;
+}
+
+.loading-spinner-dots .spinner-circle:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-spinner-dots .spinner-circle:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-spinner-dots .spinner-circle:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes loading-dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Pulse Spinner */
+.loading-spinner-pulse .spinner-circle {
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .loading-spinner-extra-large {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .loading-spinner-extra-large .spinner-circle {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .loading-spinner-large {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .loading-spinner-large .spinner-circle {
+    width: 15px;
+    height: 15px;
+  }
+}

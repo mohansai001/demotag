@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button, Card, Input, Modal, LoadingSpinner } from './common';
 import './Recruitment.css';
 
 const Recruitment = () => {
@@ -74,8 +75,11 @@ const Recruitment = () => {
   if (loading) {
     return (
       <div className="recruitment-container">
-        <div className="spinner"></div>
-        <p>Loading recruitment data...</p>
+        <LoadingSpinner 
+          size="large" 
+          text="Loading recruitment data..." 
+          variant="primary"
+        />
       </div>
     );
   }
@@ -84,109 +88,105 @@ const Recruitment = () => {
     <div className="recruitment-container">
       <div className="recruitment-header">
         <h1>Recruitment Management</h1>
-        <button 
-          className="btn btn-primary"
+        <Button 
+          variant="primary"
           onClick={() => setShowAddForm(true)}
+          icon="fas fa-plus"
         >
-          <i className="fas fa-plus"></i> Add New Position
-        </button>
+          Add New Position
+        </Button>
       </div>
 
-      {showAddForm && (
-        <div className="modal show">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>Add New Recruitment Position</h3>
-              <span className="close" onClick={() => setShowAddForm(false)}>&times;</span>
-            </div>
-            <form onSubmit={handleSubmit} className="recruitment-form">
-              <div className="form-group">
-                <label htmlFor="position">Position Title:</label>
-                <input
-                  type="text"
-                  id="position"
-                  name="position"
-                  value={formData.position}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
+      <Modal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        title="Add New Recruitment Position"
+        size="large"
+      >
+        <form onSubmit={handleSubmit} className="recruitment-form">
+          <Input
+            label="Position Title"
+            name="position"
+            value={formData.position}
+            onChange={handleInputChange}
+            required
+            icon="fas fa-briefcase"
+          />
 
-              <div className="form-group">
-                <label htmlFor="department">Department:</label>
-                <select
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Department</option>
-                  <option value="devops">DevOps</option>
-                  <option value="platform">Platform</option>
-                  <option value="cloudops">CloudOps</option>
-                  <option value="migration">Migration</option>
-                  <option value="application">Application</option>
-                  <option value="data">Data</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="experience">Experience Level:</label>
-                <select
-                  id="experience"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Experience</option>
-                  <option value="entry">Entry Level (0-2 years)</option>
-                  <option value="mid">Mid Level (2-5 years)</option>
-                  <option value="senior">Senior Level (5+ years)</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="location">Location:</label>
-                <input
-                  type="text"
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="description">Job Description:</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows="4"
-                  required
-                ></textarea>
-              </div>
-
-              <div className="form-actions">
-                <button type="submit" className="btn btn-primary">
-                  Add Position
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setShowAddForm(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+          <div className="form-group">
+            <label htmlFor="department">Department:</label>
+            <select
+              id="department"
+              name="department"
+              value={formData.department}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Department</option>
+              <option value="devops">DevOps</option>
+              <option value="platform">Platform</option>
+              <option value="cloudops">CloudOps</option>
+              <option value="migration">Migration</option>
+              <option value="application">Application</option>
+              <option value="data">Data</option>
+            </select>
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label htmlFor="experience">Experience Level:</label>
+            <select
+              id="experience"
+              name="experience"
+              value={formData.experience}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Experience</option>
+              <option value="entry">Entry Level (0-2 years)</option>
+              <option value="mid">Mid Level (2-5 years)</option>
+              <option value="senior">Senior Level (5+ years)</option>
+            </select>
+          </div>
+
+          <Input
+            label="Location"
+            name="location"
+            value={formData.location}
+            onChange={handleInputChange}
+            required
+            icon="fas fa-map-marker-alt"
+          />
+
+          <div className="form-group">
+            <label htmlFor="description">Job Description:</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows="4"
+              required
+            ></textarea>
+          </div>
+
+          <Modal.Footer>
+            <Button 
+              type="submit" 
+              variant="primary"
+              icon="fas fa-plus"
+            >
+              Add Position
+            </Button>
+            <Button 
+              type="button" 
+              variant="secondary"
+              onClick={() => setShowAddForm(false)}
+            >
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </form>
+      </Modal>
 
       <div className="recruitment-grid">
         {recruitmentData.length === 0 ? (
@@ -197,28 +197,42 @@ const Recruitment = () => {
           </div>
         ) : (
           recruitmentData.map((position, index) => (
-            <div key={index} className="recruitment-card">
-              <div className="card-header">
-                <h3>{position.position}</h3>
+            <Card key={index} hover shadow="medium" className="recruitment-card">
+              <Card.Header>
+                <Card.Title>{position.position}</Card.Title>
                 <span className="department-badge">{position.department}</span>
-              </div>
-              <div className="card-body">
+              </Card.Header>
+              <Card.Body>
                 <p><strong>Experience:</strong> {position.experience}</p>
                 <p><strong>Location:</strong> {position.location}</p>
                 <p className="description">{position.description}</p>
-              </div>
-              <div className="card-actions">
-                <button className="btn btn-primary">
-                  <i className="fas fa-users"></i> View Candidates
-                </button>
-                <button className="btn btn-secondary">
-                  <i className="fas fa-edit"></i> Edit
-                </button>
-                <button className="btn btn-danger">
-                  <i className="fas fa-trash"></i> Delete
-                </button>
-              </div>
-            </div>
+              </Card.Body>
+              <Card.Footer>
+                <div className="card-actions">
+                  <Button 
+                    variant="primary" 
+                    size="small"
+                    icon="fas fa-users"
+                  >
+                    View Candidates
+                  </Button>
+                  <Button 
+                    variant="secondary" 
+                    size="small"
+                    icon="fas fa-edit"
+                  >
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="danger" 
+                    size="small"
+                    icon="fas fa-trash"
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Card.Footer>
+            </Card>
           ))
         )}
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Card, Input } from './common';
 import './Login.css';
 
 const Login = () => {
@@ -181,39 +182,38 @@ const Login = () => {
 
           {showAdminFields && (
             <div className="admin-credentials">
-              <div className="form-group">
-                <label htmlFor="admin-username">Username:</label>
-                <input
-                  type="text"
-                  id="admin-username"
-                  name="username"
-                  value={adminCredentials.username}
-                  onChange={handleAdminCredentialsChange}
-                  placeholder="Enter Username"
-                />
-              </div>
+              <Input
+                label="Username"
+                type="text"
+                placeholder="Enter Username"
+                value={adminCredentials.username}
+                onChange={(e) => handleAdminCredentialsChange({ target: { name: 'username', value: e.target.value } })}
+                required
+                icon="fas fa-user"
+              />
               
-              <div className="form-group">
-                <label htmlFor="admin-password">Password:</label>
-                <input
-                  type="password"
-                  id="admin-password"
-                  name="password"
-                  value={adminCredentials.password}
-                  onChange={handleAdminCredentialsChange}
-                  placeholder="Enter Password"
-                />
-              </div>
+              <Input
+                label="Password"
+                type="password"
+                placeholder="Enter Password"
+                value={adminCredentials.password}
+                onChange={(e) => handleAdminCredentialsChange({ target: { name: 'password', value: e.target.value } })}
+                required
+                icon="fas fa-lock"
+              />
             </div>
           )}
 
-          <button
+          <Button
             type="button"
             onClick={handleLogin}
-            className="btn btn-primary login-btn"
+            variant="primary"
+            size="large"
+            className="login-btn"
+            icon="fas fa-sign-in-alt"
           >
             Login
-          </button>
+          </Button>
         </form>
       </div>
     </div>
