@@ -1,0 +1,134 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+  position: relative;
+}
+
+.login-logo {
+  position: fixed;
+  top: 55px;
+  left: 20px;
+  max-width: 46%;
+  z-index: 10;
+}
+
+.login-logo img {
+  max-width: 100%;
+  height: auto;
+}
+
+.login-form-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.login-form-container h1 {
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.admin-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(240, 240, 240, 0.5);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.login-btn {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .login-logo {
+    position: static;
+    max-width: 200px;
+    margin: 0 auto 20px;
+  }
+  
+  .login-form-container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .login-form-container h1 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-container {
+    padding: 20px 15px;
+  }
+  
+  .login-form-container h1 {
+    font-size: 1.1rem;
+  }
+  
+  .form-group select,
+  .form-group input {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .login-btn {
+    padding: 12px 25px;
+    font-size: 14px;
+  }
+}

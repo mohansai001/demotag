@@ -19,11 +19,21 @@ const libre = require("libreoffice-convert");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, "..", "public")));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
-});
+// Serve React build files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, "..", "build")));
+  
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+  });
+} else {
+  // In development, serve the old public files for backward compatibility
+  app.use(express.static(path.join(__dirname, "..", "public")));
+  
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+  });
+}
 
 // CORS configuration
 const corsOptions = {

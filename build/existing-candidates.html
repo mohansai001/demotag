@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Duplicate Candidates</title>
+    <style>
+      h2 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .table-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        overflow-x: auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 800px;
+      }
+
+      thead th {
+        background-color: #f4f4f4;
+        color: black;
+        text-align: left;
+        padding: 14px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
+      tbody td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #ddd;
+        color: #333;
+      }
+
+      tbody tr {
+        transition: background 0.2s ease;
+      }
+
+      tbody tr:hover {
+        background-color: #f2f9ff;
+      }
+
+      .loading-cell {
+        text-align: center;
+        padding: 30px;
+        font-size: 16px;
+        color: #666;
+      }
+
+      button {
+        background-color: #1976d2;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #125aa3;
+      }
+
+      @media (max-width: 768px) {
+        table {
+          font-size: 14px;
+        }
+        button {
+          padding: 6px 12px;
+        }
+      }
+      .feedback-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .feedback-modal-content {
+        position: relative;
+        background-color: #fff;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 850px;
+        height: 90%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      #feedbackIframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      .feedback-close {
+        position: absolute;
+        top: 10px;
+        right: 16px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #444;
+      }
+      .feedback-close:hover {
+        color: #e53935;
+      }
+      body,
+      html {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(120deg, #e6e6fa, #daf7a6);
+        color: #333;
+        height: max-content;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Previously Evaluated Candidates</h2>
+    <!-- 📋 Feedback Modal -->
+    <div id="feedbackPopup" class="feedback-modal">
+      <div class="feedback-modal-content">
+        <iframe id="feedbackIframe" frameborder="0"></iframe>
+        <span class="feedback-close" onclick="closeFeedback()">×</span>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="candidate-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Role</th>
+            <th>Resume Score</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody id="candidate-body">
+          <tr>
+            <td colspan="6" class="loading-cell">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tableBody = document.getElementById("candidate-body");
+        const data = JSON.parse(
+          sessionStorage.getItem("existingCandidateData") || "[]"
+        );
+
+        if (data.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="6" class="loading-cell">No data found.</td></tr>`;
+          return;
+        }
+
+        tableBody.innerHTML = "";
+        data.forEach((candidate, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${candidate.candidate_name || "N/A"}</td>
+            <td>${candidate.candidate_email || "N/A"}</td>
+            <td>${candidate.recruitment_phase || "N/A"}</td>
+            <td>${candidate.role || "N/A"}</td>
+            <td>${candidate.resume_score || "N/A"}</td>
+         <td>
+  <button class="feedbackButton" data-email="${candidate.candidate_email}">
+    Feedback
+  </button>
+</td>
+
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+
+      function viewContent(index) {
+        const data = JSON.parse(
+          sessionStorage.getItem("existingCandidateData") || "[]"
+        );
+        const candidate = data[index];
+        alert(candidate.content || "No content available");
+      }
+      document.addEventListener("click", function (event) {
+        if (event.target && event.target.classList.contains("feedbackButton")) {
+          let candidateEmail = event.target.getAttribute("data-email");
+          let modal = document.getElementById("feedbackPopup");
+          let iframe = document.getElementById("feedbackIframe");
+
+          iframe.src = `finalfeedback.html?email=${encodeURIComponent(
+            candidateEmail
+          )}`;
+          modal.style.display = "flex"; // Show modal
+        }
+      });
+
+      function closeFeedback() {
+        const modal = document.getElementById("feedbackPopup");
+        const iframe = document.getElementById("feedbackIframe");
+        iframe.src = ""; // clear iframe to stop video or script
+        modal.style.display = "none";
+      }
+    </script>
+  </body>
+</html>
