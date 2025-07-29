@@ -193,16 +193,16 @@ app.post("/api/rrf-update", async (req, res) => {
 });
 
 app.post("/api/update-candidate-recruitment-phase", async (req, res) => {
-  const { id, recruitment_phase } = req.body;
+  const { candidate_email, recruitment_phase } = req.body;
 
   try {
     const query = `
           UPDATE candidate_info
           SET recruitment_phase = $1
-          WHERE id = $2
+          WHERE candidate_email = $2
           RETURNING *;
       `;
-    const values = [recruitment_phase, id];
+    const values = [recruitment_phase, candidate_email];
 
     const result = await pool.query(query, values);
 
