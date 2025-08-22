@@ -535,7 +535,7 @@
   .dashboard-container {
     display: flex;
     padding-left: 200px;
-    width: calc(97.5% - 200px);
+    width: 100%;
     gap: 20px;
     margin-top: 20px;
   }
@@ -1670,7 +1670,13 @@
 
 
       <div id="content">
-        <div class="dashboard-container">
+        <div class="dashboard-container" style="
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    /* gap: 20px; */
+">
           <div class="cards" id="card">
             <h2 id="uploadCount">0</h2>
             <p>Applications</p>
